@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Darkguyaiman</title>
+    <link rel="icon" type="image/x-icon" href="Public/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+    <script>
+
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <style>
+        .privacy-content {
+            padding: 120px 20px 80px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .privacy-header {
+            margin-bottom: 3rem;
+        }
+        
+        .privacy-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 1rem;
+        }
+        
+        .privacy-last-updated {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-style: italic;
+        }
+        
+        .privacy-section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .privacy-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .privacy-section h2:first-of-type {
+            margin-top: 0;
+        }
+        
+        .privacy-section p {
+            font-size: 1rem;
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 1.2rem;
+        }
+        
+        .privacy-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1.2rem;
+        }
+        
+        .privacy-section li {
+            font-size: 1rem;
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .privacy-section li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--red);
+            font-weight: bold;
+        }
+        
+        .privacy-section a {
+            color: var(--red);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .privacy-section a:hover {
+            text-decoration: underline;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: lowercase;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            font-weight: 500;
+            margin-bottom: 2.5rem;
+        }
+        
+        .back-link i {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: var(--red);
+            background: var(--light-gray);
+            border-color: var(--red);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(197, 29, 52, 0.1);
+        }
+        
+        .back-link:hover i.fa-chevron-left {
+            transform: translateX(-3px);
+        }
+        
+        [data-theme="dark"] .back-link:hover {
+            background: var(--light-gray);
+            border-color: var(--red);
+        }
+        
+        [data-theme="dark"] .privacy-title {
+            color: var(--dark-gray);
+        }
+        
+        [data-theme="dark"] .privacy-section h2 {
+            color: var(--dark-gray);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html" class="logo-link">Darkguyaiman</a>
+                <!-- Easter Egg Modal -->
+                <div class="easter-egg" id="easterEgg">
+                    <div class="easter-egg-content">
+                        <div class="easter-egg-image-container">
+                            <img src="Public/Assets/2D Mohamed.webp" alt="2D Mohamed" class="easter-egg-image">
+                        </div>
+                        <div class="easter-egg-name">darkguyaiman</div>
+                        <div class="easter-egg-message" id="easterEggMessage"></div>
+                    </div>
+                </div>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-close-container">
+                    <button class="nav-close-btn" id="navCloseBtn" aria-label="Close menu">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+                <li><a href="index.html#home" class="nav-link">home</a></li>
+                <li><a href="index.html#projects" class="nav-link">projects</a></li>
+                <li><a href="index.html#work" class="nav-link">work</a></li>
+                <li><a href="index.html#education" class="nav-link">education</a></li>
+                <li><a href="index.html#languages" class="nav-link">languages</a></li>
+                <li><a href="index.html#contact" class="nav-link">contact</a></li>
+                <li class="nav-image-container">
+                    <div class="nav-image-wrapper">
+                        <div class="nav-greeting-wrapper">
+                            <span class="nav-greeting" id="navGreeting"></span>
+                        </div>
+                        <div class="nav-image-content">
+                            <div class="nav-image-glow"></div>
+                            <img src="Public/Assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning" class="nav-leaning-image">
+                            <div class="nav-name">darkguyaiman</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Privacy Content Section -->
+    <section class="privacy-content">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-chevron-left"></i>
+                <span>back to home</span>
+            </a>
+            
+            <div class="privacy-header">
+                <h1 class="privacy-title">privacy policy</h1>
+                <p class="privacy-last-updated">Last Updated: <span id="lastUpdatedDate">Sep 2024</span></p>
+            </div>
+            
+            <div class="privacy-section">
+                <h2>Hellow, Welcome!</h2>
+                <p>Thanks for stopping by! This Privacy Policy is just here to let you know how things work around here. My website is mainly about showcasing my work, and I'm all about respecting your privacy.</p>
+            </div>
+            
+            <div class="privacy-section">
+                <h2>What Information I Collect (Hint: Not Much)</h2>
+                <p>Honestly, this is just a static portfolio site, so I don't actively collect any personal information. There's no account creation, no tracking cookies, and definitely no sneaky data gathering.</p>
+                
+                <h3 style="font-size: 1.2rem; font-weight: 600; color: var(--dark-gray); margin-top: 1.5rem; margin-bottom: 0.8rem;">1. Contact Info</h3>
+                <p>If you reach out via email or through my other socials, the info you provide is entirely up to you. I'll only use it to reply and have a conversation with you-no funny business.</p>
+            </div>
+            
+            <div class="privacy-section">
+                <h2>How I Use the Info</h2>
+                <p>Here's what I might do with any information I collect:</p>
+                <ul>
+                    <li>Make sure the site is running smoothly</li>
+                    <li>Improve the website based on feedback you might share</li>
+                    <li>Respond to your questions or feedback</li>
+                </ul>
+            </div>
+            
+            <div class="privacy-section">
+                <h2>Sharing Your Info (Spoiler: I Don't)</h2>
+                <p>I don't sell, trade, or rent your personal info. If you shared something sensitive by accident, feel free to reach out, and I'll help you remove it.</p>
+            </div>
+            
+            <div class="privacy-section">
+                <h2>Security (The Internet Isn't Perfect)</h2>
+                <p>I'll do my best to keep any info you share safe, but let's be real-no system is foolproof. While I'll take reasonable steps to protect your info, I can't promise 100% security.</p>
+            </div>
+            
+            <div class="privacy-section">
+                <h2>Policy Updates (No Surprises)</h2>
+                <p>This policy is current as of <span id="policyCurrentDate">Sep 2024</span>. If I make any changes, I'll update it here, so you're always in the loop. Feel free to check back occasionally, but don't worry-I'm not making any big changes without letting you know.</p>
+            </div>
+            
+            <div class="privacy-section">
+                <h2>Got Questions?</h2>
+                <p>If you have any questions, concerns, or just want to say hi, drop me an email at <a href="mailto:mohamedaiman103@gmail.com">mohamedaiman103@gmail.com</a> or use the contact form. I'd love to hear from you!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span class="footer-year">2025</span> Mohamed Aiman | <a href="privacy.html" class="footer-link">privacy?</a></p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+
+        function updateLastUpdatedDate() {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const now = new Date();
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
+            const dateString = `${month} ${year}`;
+            
+            const lastUpdatedElement = document.getElementById('lastUpdatedDate');
+            const policyCurrentElement = document.getElementById('policyCurrentDate');
+            
+            if (lastUpdatedElement) {
+                lastUpdatedElement.textContent = dateString;
+            }
+            if (policyCurrentElement) {
+                policyCurrentElement.textContent = dateString;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLastUpdatedDate();
+        });
+    </script>
+</body>
+</html>
+

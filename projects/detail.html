@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details - Darkguyaiman</title>
+    <meta name="description" id="metaDescription" content="Project details by Mohamed Aiman - Web Developer Portfolio">
+    <meta name="keywords" id="metaKeywords" content="Mohamed Aiman, web development, project">
+    <meta name="author" content="Mohamed Aiman">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" id="ogType">
+    <meta property="og:url" id="ogUrl" content="">
+    <meta property="og:title" id="ogTitle" content="Project Details - Darkguyaiman">
+    <meta property="og:description" id="ogDescription" content="Project details by Mohamed Aiman">
+    <meta property="og:image" id="ogImage" content="https://darkguyaiman.github.io/Public/Assets/Mohamed Aiman.webp">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" id="twitterUrl" content="">
+    <meta name="twitter:title" id="twitterTitle" content="Project Details - Darkguyaiman">
+    <meta name="twitter:description" id="twitterDescription" content="Project details by Mohamed Aiman">
+    <meta name="twitter:image" id="twitterImage" content="https://darkguyaiman.github.io/Public/Assets/Mohamed Aiman.webp">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" id="canonicalUrl" href="">
+    
+    <link rel="icon" type="image/x-icon" href="../Public/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+    <script>
+
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <style>
+        .project-detail {
+            padding: 120px 20px 80px;
+        }
+        
+        .project-detail-header {
+            margin-bottom: 3rem;
+        }
+        
+        .project-detail-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 1rem;
+        }
+        
+        .project-detail-description {
+            font-size: 1.1rem;
+            color: var(--gray);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+        
+        .project-detail-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .project-detail-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .project-detail-image:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Image Modal */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .image-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-modal-content {
+            position: relative;
+            max-width: 95%;
+            max-height: 95%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-modal-img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+        }
+        
+        .image-modal-img.zoomed {
+            cursor: zoom-out;
+            transform: scale(2);
+        }
+        
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10001;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .image-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+        
+        .image-modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            z-index: 10001;
+        }
+        
+        .image-modal-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .image-modal-prev {
+            left: 20px;
+        }
+        
+        .image-modal-next {
+            right: 20px;
+        }
+        
+        .image-modal-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Tech Icons Grid - Match skills section styling */
+        .project-tech-icons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+            align-items: center;
+            justify-items: center;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .project-tech-icons {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .project-tech-icons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .tech-icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 1.5rem 1rem;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            background: transparent;
+            min-height: 120px;
+            width: 100%;
+        }
+        
+        /* Light theme - outline only visible on hover */
+        .tech-icon-item:hover {
+            border-color: var(--red);
+            box-shadow: 0 2px 8px rgba(197, 29, 52, 0.1);
+        }
+        
+        /* Dark theme - outline visible by default */
+        [data-theme="dark"] .tech-icon-item {
+            border-color: var(--light-gray);
+        }
+        
+        [data-theme="dark"] .tech-icon-item:hover {
+            border-color: var(--dark-gray);
+            box-shadow: 0 2px 8px rgba(232, 232, 232, 0.1);
+        }
+        
+        .tech-icon-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .tech-icon-item {
+            cursor: help;
+        }
+        
+        .tech-icon-item i {
+            font-size: 2.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+        }
+        
+        /* Font Awesome icons in detail page */
+        .tech-icon-item i.fa-brands,
+        .tech-icon-item i.fa-regular,
+        .tech-icon-item i.fa-solid {
+            color: var(--red);
+        }
+        
+        [data-theme="dark"] .tech-icon-item i.fa-brands,
+        [data-theme="dark"] .tech-icon-item i.fa-regular,
+        [data-theme="dark"] .tech-icon-item i.fa-solid {
+            color: var(--dark-gray) !important;
+        }
+        
+        /* Show true colors on hover for FA icons */
+        .tech-icon-item:hover i.fa-brands.fa-google-drive {
+            color: #4285F4 !important;
+        }
+        
+        .tech-icon-item:hover i.fa-regular.fa-file-excel {
+            color: #0F9D58 !important;
+        }
+        
+        /* Font Awesome icons in detail page */
+        .tech-icon-item i.fa-brands,
+        .tech-icon-item i.fa-regular,
+        .tech-icon-item i.fa-solid {
+            color: var(--red);
+        }
+        
+        [data-theme="dark"] .tech-icon-item i.fa-brands,
+        [data-theme="dark"] .tech-icon-item i.fa-regular,
+        [data-theme="dark"] .tech-icon-item i.fa-solid {
+            color: var(--dark-gray) !important;
+        }
+        
+        /* Show true colors on hover for FA icons */
+        .tech-icon-item:hover i.fa-brands.fa-google-drive {
+            color: #4285F4 !important;
+        }
+        
+        .tech-icon-item:hover i.fa-regular.fa-file-excel {
+            color: #0F9D58 !important;
+        }
+        
+        /* Default state - red in light mode, override Devicon colors */
+        .tech-icon-item i.colored {
+            color: var(--red) !important;
+        }
+        
+        /* Ensure icons are visible in dark mode by default - use filter for SVG icons */
+        [data-theme="dark"] .tech-icon-item i {
+            color: var(--cream-white) !important;
+        }
+        
+        [data-theme="dark"] .tech-icon-item i.colored {
+            color: var(--cream-white) !important;
+            filter: brightness(0) saturate(100%) invert(1);
+        }
+        
+        /* Show true colors when show-true-color class is added - remove color override */
+        .tech-icon-item i.colored.show-true-color {
+            color: inherit !important;
+            filter: none !important;
+        }
+        
+        [data-theme="dark"] .tech-icon-item i.colored.show-true-color {
+            filter: none !important;
+        }
+        
+        /* Show true colors on hover - remove filter and override color */
+        .tech-icon-item:hover i.colored {
+            filter: none !important;
+        }
+        
+        /* Specific overrides for each icon to show true colors on hover */
+        .tech-icon-item:hover i[class*="html"] {
+            color: #E34F26 !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i[class*="css"] {
+            color: #1572B6 !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i[class*="javascript"] {
+            color: #F7DF1E !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i[class*="nodejs"] {
+            color: #339933 !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i[class*="express"] {
+            color: #000000 !important;
+            filter: none !important;
+        }
+        
+        /* Express icon hover in dark mode - use red instead of black */
+        [data-theme="dark"] .tech-icon-item:hover i[class*="express"] {
+            color: var(--red) !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i[class*="mysql"] {
+            color: #4479A1 !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i[class*="bootstrap"] {
+            color: #7952B3 !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i[class*="jquery"] {
+            color: #0769AD !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i[class*="tailwindcss"] {
+            color: #06B6D4 !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i[class*="python"] {
+            color: #3776AB !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i[class*="google"] {
+            color: #4285F4 !important;
+            filter: none !important;
+        }
+        
+        .tech-icon-item:hover i.fa-solid.fa-envelope {
+            color: #EA4335 !important;
+            filter: none !important;
+        }
+        
+        /* EJS icon styling */
+        .tech-icon-item .ejs-icon {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--red);
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+        }
+        
+        /* Light mode - hover shows orange */
+        .tech-icon-item:hover .ejs-icon:not(.show-true-color) {
+            color: #ff6b35 !important;
+        }
+        
+        .tech-icon-item .ejs-icon.show-true-color {
+            color: #ff6b35 !important;
+        }
+        
+        /* Dark theme - cream colored by default */
+        [data-theme="dark"] .tech-icon-item .ejs-icon {
+            color: var(--dark-gray) !important;
+        }
+        
+        [data-theme="dark"] .tech-icon-item:hover .ejs-icon:not(.show-true-color) {
+            color: #ff6b35 !important;
+        }
+        
+        [data-theme="dark"] .tech-icon-item .ejs-icon.show-true-color {
+            color: #ff6b35 !important;
+        }
+        
+        .tech-icon-name {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        [data-theme="dark"] .tech-icon-name {
+            color: var(--dark-gray);
+        }
+        
+        [data-theme="dark"] .project-detail-title {
+            color: var(--dark-gray);
+        }
+        
+        [data-theme="dark"] .project-detail-description {
+            color: var(--gray);
+        }
+        
+        .project-detail-tech {
+            margin-bottom: 2rem;
+        }
+        
+        .project-detail-links {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: lowercase;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            font-weight: 500;
+            margin-bottom: 2.5rem;
+        }
+        
+        .back-link i {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: var(--red);
+            background: var(--light-gray);
+            border-color: var(--red);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(197, 29, 52, 0.1);
+        }
+        
+        .back-link:hover i.fa-chevron-left {
+            transform: translateX(-3px);
+        }
+        
+        [data-theme="dark"] .back-link:hover {
+            background: var(--light-gray);
+            border-color: var(--red);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="../index.html" class="logo-link">Darkguyaiman</a>
+                <!-- Easter Egg Modal -->
+                <div class="easter-egg" id="easterEgg">
+                    <div class="easter-egg-content">
+                        <div class="easter-egg-image-container">
+                            <img src="../Public/Assets/2D Mohamed.webp" alt="2D Mohamed" class="easter-egg-image">
+                        </div>
+                        <div class="easter-egg-name">darkguyaiman</div>
+                        <div class="easter-egg-message" id="easterEggMessage"></div>
+                    </div>
+                </div>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-close-container">
+                    <button class="nav-close-btn" id="navCloseBtn" aria-label="Close menu">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+                <li><a href="../index.html#home" class="nav-link">home</a></li>
+                <li><a href="../index.html#projects" class="nav-link">projects</a></li>
+                <li><a href="../index.html#work" class="nav-link">work</a></li>
+                <li><a href="../index.html#education" class="nav-link">education</a></li>
+                <li><a href="../index.html#languages" class="nav-link">languages</a></li>
+                <li><a href="../index.html#contact" class="nav-link">contact</a></li>
+                <li class="nav-image-container">
+                    <div class="nav-image-wrapper">
+                        <div class="nav-greeting-wrapper">
+                            <span class="nav-greeting" id="navGreeting"></span>
+                        </div>
+                        <div class="nav-image-content">
+                            <div class="nav-image-glow"></div>
+                            <img src="../Public/Assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning" class="nav-leaning-image">
+                            <div class="nav-name">darkguyaiman</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+    <!-- Project Detail Section -->
+    <section class="project-detail">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-chevron-left"></i>
+                <span>back to projects</span>
+            </a>
+            
+            <div class="project-detail-header">
+                <h1 class="project-detail-title" id="projectTitle"></h1>
+                <p class="project-detail-description" id="projectDescription"></p>
+            </div>
+            
+            <div class="project-detail-images" id="projectImages"></div>
+            
+            <div class="project-detail-tech">
+                <h3 class="section-title" style="margin-bottom: 1rem;">technologies used</h3>
+                <div class="project-tech-icons" id="projectTech"></div>
+            </div>
+            
+            <div class="project-detail-links" id="projectLinks"></div>
+        </div>
+    </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span class="footer-year">2025</span> Mohamed Aiman | <a href="../privacy.html" class="footer-link">privacy?</a></p>
+        </div>
+    </footer>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="imageModal">
+        <span class="image-modal-close" id="modalClose">&times;</span>
+        <span class="image-modal-nav image-modal-prev" id="modalPrev">
+            <i class="fas fa-chevron-left"></i>
+        </span>
+        <span class="image-modal-nav image-modal-next" id="modalNext">
+            <i class="fas fa-chevron-right"></i>
+        </span>
+        <div class="image-modal-content">
+            <img class="image-modal-img" id="modalImage" src="" alt="">
+        </div>
+        <div class="image-modal-counter" id="modalCounter"></div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script>
+
+        function getTechIcon(tech) {
+
+            const iconData = window.techIconMap ? window.techIconMap[tech] : null;
+            if (!iconData) {
+
+                return `<div class="tech-icon-item" data-tech="${tech.toLowerCase()}" title="${tech}">
+                    <span class="tech-icon-name">${tech}</span>
+                </div>`;
+            }
+            
+
+            const techKey = tech.toLowerCase().replace(/\s+/g, '').replace('.', '');
+            
+            if (iconData.type === 'ejs') {
+                return `<div class="tech-icon-item" data-tech="ejs" title="${tech}">
+                    <span class="ejs-icon">EJS</span>
+                    <span class="tech-icon-name">EJS</span>
+                </div>`;
+            }
+            
+            if (iconData.type === 'fa') {
+                return `<div class="tech-icon-item" data-tech="${techKey}" title="${tech}">
+                    <i class="${iconData.class}"></i>
+                    <span class="tech-icon-name">${tech}</span>
+                </div>`;
+            }
+            
+            return `<div class="tech-icon-item" data-tech="${techKey}" title="${tech}">
+                <i class="${iconData.class}"></i>
+                <span class="tech-icon-name">${tech}</span>
+            </div>`;
+        }
+        
+
+        let currentImageIndex = 0;
+        let projectImages = [];
+        
+        function openImageModal(index, images) {
+            projectImages = images;
+            currentImageIndex = index;
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalCounter = document.getElementById('modalCounter');
+            
+            modalImg.src = `../${images[index]}`;
+            modalImg.classList.remove('zoomed');
+            modal.classList.add('active');
+            updateModalCounter();
+        }
+        
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
+        }
+        
+        function nextImage() {
+            if (projectImages.length === 0) return;
+            currentImageIndex = (currentImageIndex + 1) % projectImages.length;
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = `../${projectImages[currentImageIndex]}`;
+            modalImg.classList.remove('zoomed');
+            updateModalCounter();
+        }
+        
+        function prevImage() {
+            if (projectImages.length === 0) return;
+            currentImageIndex = (currentImageIndex - 1 + projectImages.length) % projectImages.length;
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = `../${projectImages[currentImageIndex]}`;
+            modalImg.classList.remove('zoomed');
+            updateModalCounter();
+        }
+        
+        function updateModalCounter() {
+            const modalCounter = document.getElementById('modalCounter');
+            modalCounter.textContent = `${currentImageIndex + 1} / ${projectImages.length}`;
+        }
+        
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalClose = document.getElementById('modalClose');
+            const modalPrev = document.getElementById('modalPrev');
+            const modalNext = document.getElementById('modalNext');
+            
+            modalClose.addEventListener('click', closeImageModal);
+            modalPrev.addEventListener('click', prevImage);
+            modalNext.addEventListener('click', nextImage);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeImageModal();
+                }
+            });
+            
+            modalImg.addEventListener('click', () => {
+                modalImg.classList.toggle('zoomed');
+            });
+            
+
+            document.addEventListener('keydown', (e) => {
+                if (!modal.classList.contains('active')) return;
+                
+                if (e.key === 'Escape') {
+                    closeImageModal();
+                } else if (e.key === 'ArrowLeft') {
+                    prevImage();
+                } else if (e.key === 'ArrowRight') {
+                    nextImage();
+                }
+            });
+        });
+
+        function getProjectName() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('project');
+        }
+        
+
+        async function loadProjectDetail() {
+            try {
+                const projectName = getProjectName();
+                
+                if (!projectName) {
+                    document.body.innerHTML = '<div class="container" style="padding-top: 120px;"><h1>Project not specified</h1><a href="index.html">Back to Projects</a></div>';
+                    return;
+                }
+                
+                const response = await fetch('../projects.json');
+                const projects = await response.json();
+                
+
+                const project = projects.find(p => p.projectName === projectName);
+                
+                if (!project) {
+                    document.body.innerHTML = '<div class="container" style="padding-top: 120px;"><h1>Project not found</h1><a href="index.html">Back to Projects</a></div>';
+                    return;
+                }
+                
+
+                const baseUrl = 'https://darkguyaiman.github.io';
+                const currentUrl = `${baseUrl}/projects/detail.html?project=${encodeURIComponent(project.projectName)}`;
+                const projectImage = project.images && project.images.length > 0 
+                    ? `${baseUrl}/${project.images[0]}` 
+                    : `${baseUrl}/Public/Assets/Mohamed Aiman.webp`;
+                const techKeywords = project.techUsed.join(', ');
+                
+
+                const truncateDescription = (text, maxLength = 155) => {
+                    if (text.length <= maxLength) return text;
+                    return text.substring(0, maxLength).trim() + '...';
+                };
+                
+                const seoDescription = truncateDescription(project.description);
+                const fullDescription = `${seoDescription} Built with: ${techKeywords}`;
+                
+
+                document.title = `${project.projectName} - Mohamed Aiman Portfolio`;
+                
+
+                document.getElementById('metaDescription').setAttribute('content', truncateDescription(fullDescription, 160));
+                
+
+                document.getElementById('metaKeywords').setAttribute('content', `${project.projectName}, ${techKeywords}, Mohamed Aiman, web development, project`);
+                
+
+                document.getElementById('ogUrl').setAttribute('content', currentUrl);
+                document.getElementById('ogTitle').setAttribute('content', `${project.projectName} - Mohamed Aiman Portfolio`);
+                document.getElementById('ogDescription').setAttribute('content', seoDescription);
+                document.getElementById('ogImage').setAttribute('content', projectImage);
+                
+
+                document.getElementById('twitterUrl').setAttribute('content', currentUrl);
+                document.getElementById('twitterTitle').setAttribute('content', `${project.projectName} - Mohamed Aiman Portfolio`);
+                document.getElementById('twitterDescription').setAttribute('content', seoDescription);
+                document.getElementById('twitterImage').setAttribute('content', projectImage);
+                
+
+                document.getElementById('canonicalUrl').setAttribute('href', currentUrl);
+                
+
+                document.getElementById('projectTitle').textContent = project.projectName;
+                document.getElementById('projectDescription').textContent = project.description;
+                
+
+                const techContainer = document.getElementById('projectTech');
+                techContainer.innerHTML = project.techUsed.map(tech => getTechIcon(tech)).join('');
+                
+
+                const imagesContainer = document.getElementById('projectImages');
+                if (project.images && project.images.length > 0) {
+                    imagesContainer.innerHTML = project.images.map((img, index) => 
+                        `<img src="../${img}" alt="${project.projectName}" class="project-detail-image" data-image-index="${index}">`
+                    ).join('');
+                    
+
+                    const images = imagesContainer.querySelectorAll('.project-detail-image');
+                    images.forEach((img, index) => {
+                        img.addEventListener('click', () => {
+                            openImageModal(index, project.images);
+                        });
+                    });
+                } else {
+                    imagesContainer.style.display = 'none';
+                }
+                
+
+                const linksContainer = document.getElementById('projectLinks');
+                const links = [];
+                if (project.deployedLink) {
+                    links.push(`<a href="${project.deployedLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} website">Website</a>`);
+                }
+                if (project.githubLink) {
+                    links.push(`<a href="${project.githubLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} source code">Source</a>`);
+                }
+                linksContainer.innerHTML = links.join('');
+            } catch (error) {
+                console.error('Error loading project details:', error);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjectDetail();
+        });
+    </script>
+</body>
+</html>
+

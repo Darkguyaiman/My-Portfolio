@@ -1,0 +1,31 @@
+{
+    "education": [
+      {
+        "qualification": "Diploma of Information Technology",
+        "institution": "Malaysia University of Science and Technology",
+        "field": "Information Technology",
+        "duration": {
+          "start": "December 2024",
+          "end": "July 2027"
+        },
+        "description": "The Diploma in Information Technology programme equips students with technologies and skills essential for the Digital Economy. It exposes students to information systems, computer programming, database systems, web and mobile applications, software development, data mining, cybersecurity, IoT, drone technology, computer networks, and communication technologies."
+      },
+      {
+        "qualification": "IGCSE O Level",
+        "institution": "International Modern Arabic School",
+        "field": "High School / Secondary Education",
+        "duration": {
+          "start": "September 2021",
+          "end": "June 2024"
+        },
+        "results": {
+          "total_subjects": 7,
+          "grades": {
+            "A*": 4,
+            "A": 3
+          }
+        },
+        "description": "Completed lower education at IMAS, gaining strong academic foundations, meaningful friendships, and a clear understanding that personal ability and action matter more than external perceptions."
+      }
+    ]
+  }  

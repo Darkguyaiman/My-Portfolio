@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohamed Aiman - Web Developer Portfolio</title>
+    <meta name="description" content="Mohamed Aiman is a 17-year-old web developer from Malaysia, specializing in server-side development. Explore my projects, work experience, and skills in Node.js, Express, MySQL, and more.">
+    <meta name="keywords" content="Mohamed Aiman, web developer, backend developer, Node.js, Express.js, MySQL, portfolio, Malaysia, Myanmar, Sudan">
+    <meta name="author" content="Mohamed Aiman">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://darkguyaiman.github.io/">
+    <meta property="og:title" content="Mohamed Aiman - Web Developer Portfolio">
+    <meta property="og:description" content="Mohamed Aiman is a 17-year-old web developer from Malaysia, specializing in server-side development. Explore my projects, work experience, and skills.">
+    <meta property="og:image" content="https://darkguyaiman.github.io/Public/Assets/Mohamed Aiman.webp">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://darkguyaiman.github.io/">
+    <meta name="twitter:title" content="Mohamed Aiman - Web Developer Portfolio">
+    <meta name="twitter:description" content="Mohamed Aiman is a 17-year-old web developer from Malaysia, specializing in server-side development. Explore my projects, work experience, and skills.">
+    <meta name="twitter:image" content="https://darkguyaiman.github.io/Public/Assets/Mohamed Aiman.webp">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://darkguyaiman.github.io/">
+    
+    <link rel="icon" type="image/x-icon" href="Public/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+    <script>
+
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="#home" class="logo-link">Darkguyaiman</a>
+                <!-- Easter Egg Modal -->
+                <div class="easter-egg" id="easterEgg">
+                    <div class="easter-egg-content">
+                        <div class="easter-egg-image-container">
+                            <img src="Public/Assets/2D Mohamed.webp" alt="2D Mohamed" class="easter-egg-image">
+                        </div>
+                        <div class="easter-egg-name">darkguyaiman</div>
+                        <div class="easter-egg-message" id="easterEggMessage"></div>
+                    </div>
+                </div>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-close-container">
+                    <button class="nav-close-btn" id="navCloseBtn" aria-label="Close menu">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+                <li><a href="#home" class="nav-link">home</a></li>
+                <li><a href="#projects" class="nav-link">projects</a></li>
+                <li><a href="#work" class="nav-link">work</a></li>
+                <li><a href="#education" class="nav-link">education</a></li>
+                <li><a href="#languages" class="nav-link">languages</a></li>
+                <li><a href="#contact" class="nav-link">contact</a></li>
+                <li class="nav-image-container">
+                    <div class="nav-image-wrapper">
+                        <div class="nav-greeting-wrapper">
+                            <span class="nav-greeting" id="navGreeting"></span>
+                        </div>
+                        <div class="nav-image-content">
+                            <div class="nav-image-glow"></div>
+                            <img src="Public/Assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning" class="nav-leaning-image">
+                            <div class="nav-name">darkguyaiman</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">Hellow, I'm <span class="name-highlight">Mohamed Aiman</span>.</h1>
+                    <p class="hero-subtitle"><span class="age" id="age">17</span> yo web developer in <span class="location">Malaysia</span>, from <span class="location">Myanmar</span> & <span class="location">Sudan</span> <span class="blasian-note">(yes, that makes me blasian)</span></p>
+                    <p class="hero-description">
+                        I specialise in server-side development, that makes me more of a backend developer however I am proficient on the frontend as well such as making responsive UIs.
+                    </p>
+                    <div class="hero-links">
+                        <a href="Public/Resume/resume.pdf" target="_blank" class="resume-link" id="resumeLink">
+                            <i class="fas fa-file-pdf"></i>
+                            Resume
+                        </a>
+                        <div class="social-links">
+                            <a href="https://www.linkedin.com/in/mohamed-aiman-7365701ba/" target="_blank" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                            <a href="https://github.com/Darkguyaiman" target="_blank" class="social-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                            <a href="https://x.com/MohamedAiman103" target="_blank" class="social-link" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                            <a href="https://www.instagram.com/darkguyaiman/" target="_blank" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="https://www.facebook.com/darkguyaiman" target="_blank" class="social-link" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                            <a href="mailto:mohamedaiman103@gmail.com" class="social-link" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image-container">
+                    <div class="image-wrapper">
+                        <img src="Public/Assets/Mohamed Aiman.webp" alt="Mohamed Aiman" class="profile-image" id="profileImage">
+                        <img src="Public/Assets/Mohamed Aiman Alter Ego.webp" alt="Mohamed Aiman Alter Ego" class="profile-image alter-ego" id="alterEgoImage">
+                        <div class="image-glow"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="skills">
+        <div class="container">
+            <div class="skills-grid">
+                <div class="skill-item" data-skill="html">
+                    <i class="devicon-html5-plain colored"></i>
+                    <span class="skill-name">HTML</span>
+                    <span class="skill-number"></span>
+                </div>
+                <div class="skill-item" data-skill="css">
+                    <i class="devicon-css3-plain colored"></i>
+                    <span class="skill-name">CSS</span>
+                    <span class="skill-number"></span>
+                </div>
+                <div class="skill-item" data-skill="javascript">
+                    <i class="devicon-javascript-plain colored"></i>
+                    <span class="skill-name">JavaScript</span>
+                    <span class="skill-number"></span>
+                </div>
+                <div class="skill-item" data-skill="node">
+                    <i class="devicon-nodejs-plain colored"></i>
+                    <span class="skill-name">Node</span>
+                    <span class="skill-number"></span>
+                </div>
+                <div class="skill-item" data-skill="express">
+                    <i class="devicon-express-original colored"></i>
+                    <span class="skill-name">Express</span>
+                    <span class="skill-number"></span>
+                </div>
+                <div class="skill-item" data-skill="mysql">
+                    <i class="devicon-mysql-plain colored"></i>
+                    <span class="skill-name">MySQL</span>
+                    <span class="skill-number"></span>
+                </div>
+                <div class="skill-item" data-skill="bootstrap">
+                    <i class="devicon-bootstrap-plain colored"></i>
+                    <span class="skill-name">Bootstrap</span>
+                    <span class="skill-number"></span>
+                </div>
+                <div class="skill-item" data-skill="jquery">
+                    <i class="devicon-jquery-plain colored"></i>
+                    <span class="skill-name">jQuery</span>
+                    <span class="skill-number"></span>
+                </div>
+                <div class="skill-item" data-skill="ejs">
+                    <span class="ejs-icon">EJS</span>
+                    <span class="skill-name">EJS</span>
+                    <span class="skill-number"></span>
+                </div>
+                <div class="skill-item" data-skill="tailwind">
+                    <i class="devicon-tailwindcss-plain colored"></i>
+                    <span class="skill-name">Tailwind</span>
+                    <span class="skill-number"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">featured projects</h2>
+                <a href="projects/index.html" class="view-more">view more <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Projects will be dynamically loaded from projects.json -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Work Section -->
+    <section id="work" class="work">
+        <div class="container">
+            <h2 class="section-title">Work</h2>
+            <div class="timeline" id="workTimeline">
+                <!-- Work items will be dynamically loaded from work.json -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="education">
+        <div class="container">
+            <h2 class="section-title">Education</h2>
+            <div class="timeline" id="educationTimeline">
+                <!-- Education items will be dynamically loaded from education.json -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Languages Section -->
+    <section id="languages" class="languages">
+        <div class="container">
+            <h2 class="section-title">I speak these human languages</h2>
+            <div class="languages-grid" id="languagesGrid">
+                <!-- Languages will be dynamically loaded from languages.json -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-content">
+                <h2 class="section-title contact-title">contact</h2>
+                <div class="contact-wrapper">
+                    <p class="contact-text">
+                        I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.
+                    </p>
+                    <div class="contact-links">
+                        <a href="https://www.linkedin.com/in/mohamed-aiman-7365701ba/" target="_blank" class="contact-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://github.com/Darkguyaiman" target="_blank" class="contact-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="https://x.com/MohamedAiman103" target="_blank" class="contact-link" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                        <a href="https://www.instagram.com/darkguyaiman/" target="_blank" class="contact-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/darkguyaiman" target="_blank" class="contact-link" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="mailto:mohamedaiman103@gmail.com" class="contact-link" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span class="toast-message">Resume opened in a new tab</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span class="footer-year">2025</span> Mohamed Aiman | <a href="privacy.html" class="footer-link">privacy?</a></p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

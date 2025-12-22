@@ -1,0 +1,28 @@
+[
+  {
+    "company": "Backpack Techworks",
+    "role": "Co-Founder",
+    "startDate": "2025-01",
+    "endDate": "present",
+    "logo": "Public/Companies/Backpack.webp",
+    "description": [
+      "Developed custom systems in Google App Script as well as web apps in Node.js",
+      "Set up the company's initial websites in Canva using design skills",
+      "Developed the simple website to the current website on backpack2u.com",
+      "Representing the company as its spokesperson"
+    ]
+  },
+  {
+    "company": "Fussional",
+    "role": "Team Leader",
+    "startDate": "2024-05",
+    "endDate": "2025-09",
+    "logo": "Public/Companies/Fussional.webp",
+    "description": [
+      "Focused on guiding the team toward our goals, ensuring everyone has what they need to succeed",
+      "Kept things on track and created an environment for collaboration",
+      "Solved problems and delivered great results together"
+    ]
+  }
+]
+
