@@ -1,144 +1,226 @@
 [
-    {
-        "projectName": "Backpack-Website",
-        "description": "The official Backpack Tech Work website, built as a server-rendered web application with dynamic pages and interactive user interfaces.",
-        "techUsed": ["Node.js", "Express.js", "EJS", "jQuery", "HTML", "CSS", "JavaScript"],
-        "images": [
-          "Public/Projects/Backpack Website 1.webp",
-          "Public/Projects/Backpack Website 2.webp",
-          "Public/Projects/Backpack Website 3.webp",
-          "Public/Projects/Backpack Website 4.webp",
-          "Public/Projects/Backpack Website 5.webp"
-          ],
-          "deployedLink": "https://backpack2u.com"
-    },
-    {
-        "projectName": "Al-Osmani-Pharmacy-ERP-system",
-        "description": "A full-featured pharmacy ERP system built for multi-branch operations with integrated e-commerce, inventory tracking, POS, order management, role-based access control, and sales reporting.",
-        "techUsed": ["Node.js", "Express.js", "MySQL", "EJS", "JavaScript", "CSS", "HTML"],
-        "images": [
-          "Public/Projects/Al-Osmani Pharmacy 1.webp",
-          "Public/Projects/Al-Osmani Pharmacy 2.webp",
-          "Public/Projects/Al-Osmani Pharmacy 3.webp",
-          "Public/Projects/Al-Osmani Pharmacy 4.webp",
-          "Public/Projects/Al-Osmani Pharmacy 5.webp",
-          "Public/Projects/Al-Osmani Pharmacy 6.webp",
-          "Public/Projects/Al-Osmani Pharmacy 7.webp",
-          "Public/Projects/Al-Osmani Pharmacy 8.webp",
-          "Public/Projects/Al-Osmani Pharmacy 9.webp"
-          ]
-    },
-    {
-        "projectName": "Logistics and Fulfilment Client Analytics Dashboard",
-        "description": "A comprehensive logistics and fulfilment client management application built with Node.js, Express, EJS, and MySQL, designed to track client activity, operational data, and performance metrics through an analytics-driven dashboard.",
-        "techUsed": ["Node.js", "Express.js", "EJS", "MySQL", "JavaScript", "HTML", "CSS", "Google Sheets API"],
-        "images": [
-          "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 1.webp",
-          "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 2.webp",
-          "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 3.webp",
-          "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 4.webp",
-          "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 5.webp",
-          "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 6.webp"
-        ]
-    },
-    {
-      "projectName": "Multimedia-Management-System",
-      "description": "A multimedia file management system that integrates with Google Drive and Google Sheets, allowing users to organize, search, and add remarks to files through a responsive web interface.",
-      "techUsed": ["Google Apps Script", "Google Drive API", "Google Sheets API", "HTML", "CSS", "JavaScript"],
-      "githubLink": "https://github.com/BackpackTechWork/Multimedia-Management-System",
-      "images": [
-        "Public/Projects/Multimedia Management System 1.webp",
-        "Public/Projects/Multimedia Management System 2.webp",
-        "Public/Projects/Multimedia Management System 3.webp"
-        ]
-    },
-    {
-      "projectName": "Credit-System",
-      "description": "A web-based credit management system for tracking medical device credits, built using Google Apps Script and Google Sheets.",
-      "techUsed": ["Google Apps Script", "JavaScript", "HTML", "CSS", "Google Sheets"],
-      "githubLink": "https://github.com/Darkguyaiman/Credit-System",
-      "images": [
-            "Public/Projects/Credit System 1.webp",
-            "Public/Projects/Credit System 2.webp",
-            "Public/Projects/Credit System 3.webp",
-            "Public/Projects/Credit System 4.webp",
-            "Public/Projects/Credit System 5.webp"
-            ]
-    },
-    {
-      "projectName": "Staf-Claim-System",
-      "description": "A staff claim and expense management system that simplifies claim submissions and tracking.",
-      "techUsed": ["Google Apps Script", "JavaScript", "HTML", "CSS", "Google Sheets", "Tailwind CSS", "Gmail API"],
-      "githubLink": "https://github.com/Darkguyaiman/Staf-Claim-System_PR",
-      "images": [
-        "Public/Projects/Claim System 1.webp",
-        "Public/Projects/Claim System 2.webp",
-        "Public/Projects/Claim System 3.webp",
-        "Public/Projects/Claim System 4.webp",
-        "Public/Projects/Claim System 5.webp"
-        ]
-    },
-    {
-      "projectName": "Roster-System",
-      "description": "A staff roster management web application that simplifies scheduling and shift organization.",
-      "techUsed": ["Google Apps Script", "JavaScript", "HTML", "CSS", "Google Sheets", "Bootstrap", "jQuery"],
-      "githubLink": "https://github.com/Darkguyaiman/Roster-System-PR",
-      "images": [
-        "Public/Projects/Rooster System 1.webp",
-        "Public/Projects/Rooster System 2.webp",
-        "Public/Projects/Rooster System 3.webp"
-        ]
-    },
-    {
-      "projectName": "Consent-Forms",
-      "description": "A digital consent form system for collecting and managing user acknowledgements.",
-      "techUsed": ["HTML", "CSS", "JavaScript", "Google Apps Script", "Google Sheets", "Gmail API"],
-      "githubLink": "https://github.com/Darkguyaiman/Consent-Forms",
-      "images": [
-        "Public/Projects/Consent Form 1.webp",
-        "Public/Projects/Consent Form 2.webp",
-        "Public/Projects/Consent Form 3.webp",
-        "Public/Projects/Consent Form 4.webp",
-        "Public/Projects/Consent Form 5.webp",
-        "Public/Projects/Consent Form 6.webp"
-        ]
-    },
-    {
-      "projectName": "LMS-Starter-Kit",
-      "description": "A learning management system starter kit intended as a foundation for training and education platforms.",
-      "techUsed": ["Google Apps Script", "JavaScript", "HTML", "CSS", "Google Sheets", "Tailwind CSS", "Gmail API"],
-      "githubLink": "https://github.com/Darkguyaiman/LMS-Starter-Kit"
-    },
-    {
-      "projectName": "LexiLogos-Clone",
-      "description": "A near-identical clone of the LexiLogos Arabic keyboard, created for Quran class usage and learning purposes.",
-      "techUsed": ["HTML", "CSS", "JavaScript"],
-      "githubLink": "https://github.com/Darkguyaiman/LexiLogos-Clone",
-      "images": ["Public/Projects/Lexilogos.webp"]
-    },
-    {
-      "projectName": "Football-Fixtures-Database-Project",
-      "description": "A database project developed for academic purposes, focused on managing football fixtures and related data.",
-      "techUsed": ["MySQL"],
-      "githubLink": "https://github.com/Darkguyaiman/Football-Fixtures-Database-Project"
-    },
-    {
-      "projectName": "Library-Book-Borrowing-System",
-      "description": "A comprehensive command-line application for managing library books and their borrowing status, enabling librarians to handle inventory, member borrowing, and return processes efficiently.",
-      "techUsed": ["Python"],
-      "githubLink": "https://github.com/Darkguyaiman/Library-Book-Borrowing-System"
-    },
-    {
-      "projectName": "Modular-Student-Utility-System-MSUS",
-      "description": "A modular Python application designed to manage student data and utilities for academic environments.",
-      "techUsed": ["Python"],
-      "githubLink": "https://github.com/Darkguyaiman/Modular-Student-Utility-System-MSUS-"
-    },
-    {
-      "projectName": "DDOS-easy",
-      "description": "A Python-based script created for educational and authorized network stress testing purposes.",
-      "techUsed": ["Python"],
-      "githubLink": "https://github.com/Darkguyaiman/DDOS-easy"
-    }
-  ]
-  
+  {
+    "projectName": "Backpack-Website",
+    "description": "The official Backpack Tech Work website, built as a server-rendered web application with dynamic pages and interactive user interfaces.",
+    "techUsed": [
+      "Node.js",
+      "Express.js",
+      "EJS",
+      "jQuery",
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ],
+    "images": [
+      "Public/Projects/Backpack Website 1.webp",
+      "Public/Projects/Backpack Website 2.webp",
+      "Public/Projects/Backpack Website 3.webp",
+      "Public/Projects/Backpack Website 4.webp",
+      "Public/Projects/Backpack Website 5.webp"
+    ],
+    "deployedLink": "https://backpack2u.com"
+  },
+  {
+    "projectName": "Al-Osmani-Pharmacy-ERP-system",
+    "description": "A full-featured pharmacy ERP system built for multi-branch operations with integrated e-commerce, inventory tracking, POS, order management, role-based access control, and sales reporting.",
+    "techUsed": [
+      "Node.js",
+      "Express.js",
+      "MySQL",
+      "EJS",
+      "JavaScript",
+      "CSS",
+      "HTML"
+    ],
+    "images": [
+      "Public/Projects/Al-Osmani Pharmacy 1.webp",
+      "Public/Projects/Al-Osmani Pharmacy 2.webp",
+      "Public/Projects/Al-Osmani Pharmacy 3.webp",
+      "Public/Projects/Al-Osmani Pharmacy 4.webp",
+      "Public/Projects/Al-Osmani Pharmacy 5.webp",
+      "Public/Projects/Al-Osmani Pharmacy 6.webp",
+      "Public/Projects/Al-Osmani Pharmacy 7.webp",
+      "Public/Projects/Al-Osmani Pharmacy 8.webp",
+      "Public/Projects/Al-Osmani Pharmacy 9.webp"
+    ]
+  },
+  {
+    "projectName": "Logistics and Fulfilment Client Analytics Dashboard",
+    "description": "A comprehensive logistics and fulfilment client management application built with Node.js, Express, EJS, and MySQL, designed to track client activity, operational data, and performance metrics through an analytics-driven dashboard.",
+    "techUsed": [
+      "Node.js",
+      "Express.js",
+      "EJS",
+      "MySQL",
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "Google Sheets API"
+    ],
+    "images": [
+      "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 1.webp",
+      "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 2.webp",
+      "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 3.webp",
+      "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 4.webp",
+      "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 5.webp",
+      "Public/Projects/Logistics and Fulfilment Client Analytics Dashboard 6.webp"
+    ]
+  },
+  {
+    "projectName": "Multimedia-Management-System",
+    "description": "A multimedia file management system that integrates with Google Drive and Google Sheets, allowing users to organize, search, and add remarks to files through a responsive web interface.",
+    "techUsed": [
+      "Google Apps Script",
+      "Google Drive API",
+      "Google Sheets API",
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ],
+    "githubLink": "https://github.com/BackpackTechWork/Multimedia-Management-System",
+    "images": [
+      "Public/Projects/Multimedia Management System 1.webp",
+      "Public/Projects/Multimedia Management System 2.webp",
+      "Public/Projects/Multimedia Management System 3.webp"
+    ]
+  },
+  {
+    "projectName": "Credit-System",
+    "description": "A web-based credit management system for tracking medical device credits, built using Google Apps Script and Google Sheets.",
+    "techUsed": [
+      "Google Apps Script",
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "Google Sheets"
+    ],
+    "githubLink": "https://github.com/Darkguyaiman/Credit-System",
+    "images": [
+      "Public/Projects/Credit System 1.webp",
+      "Public/Projects/Credit System 2.webp",
+      "Public/Projects/Credit System 3.webp",
+      "Public/Projects/Credit System 4.webp",
+      "Public/Projects/Credit System 5.webp"
+    ]
+  },
+  {
+    "projectName": "Staf-Claim-System",
+    "description": "A staff claim and expense management system that simplifies claim submissions and tracking.",
+    "techUsed": [
+      "Google Apps Script",
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "Google Sheets",
+      "Tailwind CSS",
+      "Gmail API"
+    ],
+    "githubLink": "https://github.com/Darkguyaiman/Staf-Claim-System_PR",
+    "images": [
+      "Public/Projects/Claim System 1.webp",
+      "Public/Projects/Claim System 2.webp",
+      "Public/Projects/Claim System 3.webp",
+      "Public/Projects/Claim System 4.webp",
+      "Public/Projects/Claim System 5.webp"
+    ]
+  },
+  {
+    "projectName": "Roster-System",
+    "description": "A staff roster management web application that simplifies scheduling and shift organization.",
+    "techUsed": [
+      "Google Apps Script",
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "Google Sheets",
+      "Bootstrap",
+      "jQuery"
+    ],
+    "githubLink": "https://github.com/Darkguyaiman/Roster-System-PR",
+    "images": [
+      "Public/Projects/Rooster System 1.webp",
+      "Public/Projects/Rooster System 2.webp",
+      "Public/Projects/Rooster System 3.webp"
+    ]
+  },
+  {
+    "projectName": "Consent-Forms",
+    "description": "A digital consent form system for collecting and managing user acknowledgements.",
+    "techUsed": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "Google Apps Script",
+      "Google Sheets",
+      "Gmail API"
+    ],
+    "githubLink": "https://github.com/Darkguyaiman/Consent-Forms",
+    "images": [
+      "Public/Projects/Consent Form 1.webp",
+      "Public/Projects/Consent Form 2.webp",
+      "Public/Projects/Consent Form 3.webp",
+      "Public/Projects/Consent Form 4.webp",
+      "Public/Projects/Consent Form 5.webp",
+      "Public/Projects/Consent Form 6.webp"
+    ]
+  },
+  {
+    "projectName": "LMS-Starter-Kit",
+    "description": "A learning management system starter kit intended as a foundation for training and education platforms.",
+    "techUsed": [
+      "Google Apps Script",
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "Google Sheets",
+      "Tailwind CSS",
+      "Gmail API"
+    ],
+    "githubLink": "https://github.com/Darkguyaiman/LMS-Starter-Kit"
+  },
+  {
+    "projectName": "LexiLogos-Clone",
+    "description": "A near-identical clone of the LexiLogos Arabic keyboard, created for Quran class usage and learning purposes.",
+    "techUsed": [
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ],
+    "githubLink": "https://github.com/Darkguyaiman/LexiLogos-Clone",
+    "images": [
+      "Public/Projects/Lexilogos.webp"
+    ]
+  },
+  {
+    "projectName": "Football-Fixtures-Database-Project",
+    "description": "A database project developed for academic purposes, focused on managing football fixtures and related data.",
+    "techUsed": [
+      "MySQL"
+    ],
+    "githubLink": "https://github.com/Darkguyaiman/Football-Fixtures-Database-Project"
+  },
+  {
+    "projectName": "Library-Book-Borrowing-System",
+    "description": "A comprehensive command-line application for managing library books and their borrowing status, enabling librarians to handle inventory, member borrowing, and return processes efficiently.",
+    "techUsed": [
+      "Python"
+    ],
+    "githubLink": "https://github.com/Darkguyaiman/Library-Book-Borrowing-System"
+  },
+  {
+    "projectName": "Modular-Student-Utility-System-MSUS",
+    "description": "A modular Python application designed to manage student data and utilities for academic environments.",
+    "techUsed": [
+      "Python"
+    ],
+    "githubLink": "https://github.com/Darkguyaiman/Modular-Student-Utility-System-MSUS-"
+  },
+  {
+    "projectName": "DDOS-easy",
+    "description": "A Python-based script created for educational and authorized network stress testing purposes.",
+    "techUsed": [
+      "Python"
+    ],
+    "githubLink": "https://github.com/Darkguyaiman/DDOS-easy"
+  }
+]

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +15,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
     <script>
 
-        (function() {
+        (function () {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
         })();
@@ -25,53 +26,58 @@
             max-width: 800px;
             margin: 0 auto;
         }
-        
+
         .privacy-header {
             margin-bottom: 3rem;
         }
-        
+
         .privacy-title {
             font-size: 2.5rem;
             font-weight: 600;
             color: var(--dark-gray);
             margin-bottom: 1rem;
+            text-align: left;
+            text-transform: capitalize;
         }
-        
+
         .privacy-last-updated {
             font-size: 0.9rem;
             color: var(--gray);
             font-style: italic;
+            text-align: left;
         }
-        
+
         .privacy-section {
             margin-bottom: 2.5rem;
         }
-        
+
         .privacy-section h2 {
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--dark-gray);
             margin-bottom: 1rem;
             margin-top: 2rem;
+            text-align: left;
+            text-transform: capitalize;
         }
-        
+
         .privacy-section h2:first-of-type {
             margin-top: 0;
         }
-        
+
         .privacy-section p {
             font-size: 1rem;
             color: var(--gray);
             line-height: 1.8;
             margin-bottom: 1.2rem;
         }
-        
+
         .privacy-section ul {
             list-style: none;
             padding-left: 0;
             margin-bottom: 1.2rem;
         }
-        
+
         .privacy-section li {
             font-size: 1rem;
             color: var(--gray);
@@ -80,7 +86,7 @@
             padding-left: 1.5rem;
             position: relative;
         }
-        
+
         .privacy-section li::before {
             content: '•';
             position: absolute;
@@ -88,17 +94,17 @@
             color: var(--red);
             font-weight: bold;
         }
-        
+
         .privacy-section a {
             color: var(--red);
             text-decoration: none;
             transition: all 0.3s ease;
         }
-        
+
         .privacy-section a:hover {
             text-decoration: underline;
         }
-        
+
         .back-link {
             display: inline-flex;
             align-items: center;
@@ -114,12 +120,12 @@
             font-weight: 500;
             margin-bottom: 2.5rem;
         }
-        
+
         .back-link i {
             font-size: 0.8rem;
             transition: transform 0.3s ease;
         }
-        
+
         .back-link:hover {
             color: var(--red);
             background: var(--light-gray);
@@ -127,25 +133,26 @@
             transform: translateY(-2px);
             box-shadow: 0 2px 8px rgba(197, 29, 52, 0.1);
         }
-        
+
         .back-link:hover i.fa-chevron-left {
             transform: translateX(-3px);
         }
-        
+
         [data-theme="dark"] .back-link:hover {
             background: var(--light-gray);
             border-color: var(--red);
         }
-        
+
         [data-theme="dark"] .privacy-title {
             color: var(--dark-gray);
         }
-        
+
         [data-theme="dark"] .privacy-section h2 {
             color: var(--dark-gray);
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar">
@@ -182,7 +189,8 @@
                         </div>
                         <div class="nav-image-content">
                             <div class="nav-image-glow"></div>
-                            <img src="Public/Assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning" class="nav-leaning-image">
+                            <img src="Public/Assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning"
+                                class="nav-leaning-image">
                             <div class="nav-name">darkguyaiman</div>
                         </div>
                     </div>
@@ -208,25 +216,30 @@
                 <i class="fas fa-chevron-left"></i>
                 <span>back to home</span>
             </a>
-            
+
             <div class="privacy-header">
                 <h1 class="privacy-title">privacy policy</h1>
                 <p class="privacy-last-updated">Last Updated: <span id="lastUpdatedDate">Sep 2024</span></p>
             </div>
-            
+
             <div class="privacy-section">
                 <h2>Hellow, Welcome!</h2>
-                <p>Thanks for stopping by! This Privacy Policy is just here to let you know how things work around here. My website is mainly about showcasing my work, and I'm all about respecting your privacy.</p>
+                <p>Thanks for stopping by! This Privacy Policy is just here to let you know how things work around here.
+                    My website is mainly about showcasing my work, and I'm all about respecting your privacy.</p>
             </div>
-            
+
             <div class="privacy-section">
                 <h2>What Information I Collect (Hint: Not Much)</h2>
-                <p>Honestly, this is just a static portfolio site, so I don't actively collect any personal information. There's no account creation, no tracking cookies, and definitely no sneaky data gathering.</p>
-                
-                <h3 style="font-size: 1.2rem; font-weight: 600; color: var(--dark-gray); margin-top: 1.5rem; margin-bottom: 0.8rem;">1. Contact Info</h3>
-                <p>If you reach out via email or through my other socials, the info you provide is entirely up to you. I'll only use it to reply and have a conversation with you-no funny business.</p>
+                <p>Honestly, this is just a static portfolio site, so I don't actively collect any personal information.
+                    There's no account creation, no tracking cookies, and definitely no sneaky data gathering.</p>
+
+                <h3
+                    style="font-size: 1.2rem; font-weight: 600; color: var(--dark-gray); margin-top: 1.5rem; margin-bottom: 0.8rem;">
+                    1. Contact Info</h3>
+                <p>If you reach out via email or through my other socials, the info you provide is entirely up to you.
+                    I'll only use it to reply and have a conversation with you-no funny business.</p>
             </div>
-            
+
             <div class="privacy-section">
                 <h2>How I Use the Info</h2>
                 <p>Here's what I might do with any information I collect:</p>
@@ -236,25 +249,31 @@
                     <li>Respond to your questions or feedback</li>
                 </ul>
             </div>
-            
+
             <div class="privacy-section">
                 <h2>Sharing Your Info (Spoiler: I Don't)</h2>
-                <p>I don't sell, trade, or rent your personal info. If you shared something sensitive by accident, feel free to reach out, and I'll help you remove it.</p>
+                <p>I don't sell, trade, or rent your personal info. If you shared something sensitive by accident, feel
+                    free to reach out, and I'll help you remove it.</p>
             </div>
-            
+
             <div class="privacy-section">
                 <h2>Security (The Internet Isn't Perfect)</h2>
-                <p>I'll do my best to keep any info you share safe, but let's be real-no system is foolproof. While I'll take reasonable steps to protect your info, I can't promise 100% security.</p>
+                <p>I'll do my best to keep any info you share safe, but let's be real-no system is foolproof. While I'll
+                    take reasonable steps to protect your info, I can't promise 100% security.</p>
             </div>
-            
+
             <div class="privacy-section">
                 <h2>Policy Updates (No Surprises)</h2>
-                <p>This policy is current as of <span id="policyCurrentDate">Sep 2024</span>. If I make any changes, I'll update it here, so you're always in the loop. Feel free to check back occasionally, but don't worry-I'm not making any big changes without letting you know.</p>
+                <p>This policy is current as of <span id="policyCurrentDate">Sep 2024</span>. If I make any changes,
+                    I'll update it here, so you're always in the loop. Feel free to check back occasionally, but don't
+                    worry-I'm not making any big changes without letting you know.</p>
             </div>
-            
+
             <div class="privacy-section">
                 <h2>Got Questions?</h2>
-                <p>If you have any questions, concerns, or just want to say hi, drop me an email at <a href="mailto:mohamedaiman103@gmail.com">mohamedaiman103@gmail.com</a> or use the contact form. I'd love to hear from you!</p>
+                <p>If you have any questions, concerns, or just want to say hi, drop me an email at <a
+                        href="mailto:mohamedaiman103@gmail.com">mohamedaiman103@gmail.com</a> or use the contact form.
+                    I'd love to hear from you!</p>
             </div>
         </div>
     </section>
@@ -262,7 +281,8 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; <span class="footer-year">2025</span> Mohamed Aiman | <a href="privacy.html" class="footer-link">privacy?</a></p>
+            <p>&copy; <span class="footer-year">2025</span> Mohamed Aiman | <a href="privacy.html"
+                    class="footer-link">privacy?</a></p>
         </div>
     </footer>
 
@@ -275,10 +295,10 @@
             const month = months[now.getMonth()];
             const year = now.getFullYear();
             const dateString = `${month} ${year}`;
-            
+
             const lastUpdatedElement = document.getElementById('lastUpdatedDate');
             const policyCurrentElement = document.getElementById('policyCurrentDate');
-            
+
             if (lastUpdatedElement) {
                 lastUpdatedElement.textContent = dateString;
             }
@@ -286,11 +306,11 @@
                 policyCurrentElement.textContent = dateString;
             }
         }
-        
+
         document.addEventListener('DOMContentLoaded', () => {
             updateLastUpdatedDate();
         });
     </script>
 </body>
-</html>
 
+</html>

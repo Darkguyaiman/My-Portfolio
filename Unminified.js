@@ -11,7 +11,7 @@ function typeWriterNav(text, element) {
     element.textContent = '';
     element.classList.add('typing');
     navTypewriterIndex = 0;
-    
+
     function type() {
         if (navTypewriterIndex < text.length) {
             element.textContent = text.substring(0, navTypewriterIndex + 1);
@@ -21,7 +21,7 @@ function typeWriterNav(text, element) {
             element.classList.remove('typing');
         }
     }
-    
+
     type();
 }
 
@@ -41,7 +41,7 @@ if (hamburger && navMenu) {
     hamburger.addEventListener('click', () => {
         navMenu.classList.toggle('active');
         hamburger.classList.toggle('active');
-        
+
 
         if (navMenu.classList.contains('active') && navGreeting) {
             setTimeout(() => {
@@ -104,11 +104,11 @@ function calculateAge(birthdate) {
     const birth = new Date(birthdate);
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
         age--;
     }
-    
+
     return age;
 }
 
@@ -116,7 +116,7 @@ function calculateAge(birthdate) {
 function updateAge() {
     const ageElement = document.getElementById('age');
     if (ageElement) {
-        const birthdate = '2008-01-01'; 
+        const birthdate = '2008-01-01';
         const age = calculateAge(birthdate);
         ageElement.textContent = age;
     }
@@ -126,16 +126,16 @@ function updateAge() {
 document.addEventListener('DOMContentLoaded', () => {
 
     updateAge();
-    
+
     const fadeElements = document.querySelectorAll('.timeline-item, .project-card, .skill-item, .language-item');
     fadeElements.forEach(el => {
         el.classList.add('fade-in');
         observer.observe(el);
     });
-    
+
 
     initSkillsSelection();
-    
+
 
     const calculateContactLayout = () => {
         requestAnimationFrame(() => {
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(calculateContactLayout, 50);
     setTimeout(calculateContactLayout, 200);
     setTimeout(calculateContactLayout, 500);
-    
+
 
     let contactResizeTimeout;
     window.addEventListener('resize', () => {
@@ -155,33 +155,44 @@ document.addEventListener('DOMContentLoaded', () => {
             requestAnimationFrame(calculateOptimalContactColumns);
         }, 100);
     });
-    
+
     window.addEventListener('orientationchange', () => {
         setTimeout(calculateContactLayout, 200);
     });
-    
 
-    loadWorkExperience();
-    
 
-    loadFeaturedProjects();
-    
+    // Load all dynamic content first, then handle initial hash scrolling
+    Promise.all([
+        loadWorkExperience(),
+        loadFeaturedProjects(),
+        loadEducation(),
+        loadLanguages()
+    ]).then(() => {
+        // Handle hash scrolling after content is loaded
+        if (window.location.hash) {
+            setTimeout(() => {
+                const target = document.querySelector(window.location.hash);
+                if (target) {
+                    const offsetTop = target.offsetTop - 80; // Adjust for fixed header
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 150);
+        }
+    });
 
-    loadEducation();
-    
-
-    loadLanguages();
-    
 
     const resumeLink = document.getElementById('resumeLink');
     const toast = document.getElementById('toast');
-    
+
     if (resumeLink && toast) {
         resumeLink.addEventListener('click', (e) => {
 
             setTimeout(() => {
                 toast.classList.add('show');
-                
+
 
                 setTimeout(() => {
                     toast.classList.remove('show');
@@ -189,12 +200,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 100);
         });
     }
-    
+
 
     const logoLink = document.querySelector('.logo-link');
     const easterEgg = document.getElementById('easterEgg');
     const easterEggMessage = document.getElementById('easterEggMessage');
-    
+
     const easterEggMessages = [
 
         "Hey, is life treating you well today?",
@@ -203,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "If no one uses it, did you really build it?",
         "Is success measured or felt?",
         "Are you busy or just distracted?",
-    
+
 
         "JS or PHP on the backend?",
         "ChatGPT or Gemini?",
@@ -211,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Tabs or spaces?",
         "Ship fast or ship right?",
         "Frontend done, but backend ready?",
-    
+
 
         "It worked yesterday, I swear.",
         "One last change, right?",
@@ -220,53 +231,53 @@ document.addEventListener('DOMContentLoaded', () => {
         "Works on my machine.",
         "How did this even compile?"
     ];
-    
-    
+
+
     let easterEggTimeout;
     let typewriterTimeout;
     let currentTypewriterIndex = 0;
-    
+
     function typeWriter(text, element, callback) {
         element.textContent = '';
         element.classList.add('typing');
         currentTypewriterIndex = 0;
-        
+
         function type() {
             if (currentTypewriterIndex < text.length) {
                 element.textContent = text.substring(0, currentTypewriterIndex + 1);
                 currentTypewriterIndex++;
-                typewriterTimeout = setTimeout(type, 50); 
+                typewriterTimeout = setTimeout(type, 50);
             } else {
                 element.classList.remove('typing');
                 if (callback) callback();
             }
         }
-        
+
         type();
     }
-    
+
     if (logoLink && easterEgg && easterEggMessage) {
         logoLink.addEventListener('mouseenter', () => {
 
             clearTimeout(easterEggTimeout);
             clearTimeout(typewriterTimeout);
-            
+
 
             const randomMessage = easterEggMessages[Math.floor(Math.random() * easterEggMessages.length)];
-            
+
 
             easterEggMessage.textContent = '';
             easterEggMessage.classList.remove('typing');
-            
+
 
             easterEgg.classList.add('show');
-            
+
 
             setTimeout(() => {
                 typeWriter(randomMessage, easterEggMessage);
             }, 300);
         });
-        
+
         logoLink.addEventListener('mouseleave', () => {
 
             clearTimeout(typewriterTimeout);
@@ -275,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
             easterEggMessage.textContent = '';
             easterEggMessage.classList.remove('typing');
         });
-        
+
 
         easterEgg.addEventListener('mouseleave', () => {
             clearTimeout(typewriterTimeout);
@@ -284,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
             easterEggMessage.textContent = '';
             easterEggMessage.classList.remove('typing');
         });
-        
+
 
         easterEgg.addEventListener('mouseenter', () => {
             clearTimeout(easterEggTimeout);
@@ -298,29 +309,29 @@ const navLinks = document.querySelectorAll('.nav-link');
 
 window.addEventListener('scroll', () => {
     let current = '';
-    const scrollPosition = window.scrollY + 200; 
+    const scrollPosition = window.scrollY + 200;
     const viewportHeight = window.innerHeight;
-    
+
 
     let maxVisible = 0;
-    
+
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
         const sectionHeight = section.clientHeight;
         const sectionBottom = sectionTop + sectionHeight;
-        
+
 
         const visibleTop = Math.max(scrollPosition - 200, sectionTop);
         const visibleBottom = Math.min(scrollPosition + viewportHeight - 200, sectionBottom);
         const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-        
+
 
         if (visibleHeight > maxVisible && scrollPosition >= sectionTop - 100) {
             maxVisible = visibleHeight;
             current = section.getAttribute('id');
         }
     });
-    
+
 
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
         const contactSection = document.getElementById('contact');
@@ -328,7 +339,7 @@ window.addEventListener('scroll', () => {
             current = 'contact';
         }
     }
-    
+
     navLinks.forEach(link => {
         link.classList.remove('active');
         if (link.getAttribute('href') === `#${current}`) {
@@ -351,7 +362,7 @@ function getTheme() {
 function setTheme(theme) {
     html.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
-    
+
 
     if (theme === 'dark') {
         themeIcon.classList.remove('fa-moon');
@@ -373,15 +384,15 @@ if (themeToggle) {
     themeToggle.addEventListener('click', () => {
         const currentTheme = html.getAttribute('data-theme') || 'light';
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        
+
 
         themeToggle.classList.add('animating', 'clicked');
-        
+
 
         requestAnimationFrame(() => {
             setTheme(newTheme);
         });
-        
+
 
         setTimeout(() => {
             themeToggle.classList.remove('animating', 'clicked');
@@ -398,7 +409,7 @@ function updateSkillNumbers() {
     skillItems.forEach((item, index) => {
         const numberSpan = item.querySelector('.skill-number');
         const orderIndex = selectionOrder.indexOf(item);
-        
+
         if (orderIndex !== -1) {
             numberSpan.textContent = orderIndex + 1;
         } else {
@@ -409,16 +420,16 @@ function updateSkillNumbers() {
 
 function handleSkillClick(event) {
     event.stopPropagation();
-    
+
 
     if (isDeselecting) {
         isDeselecting = false;
     }
-    
+
     const skillItem = event.currentTarget;
     const icon = skillItem.querySelector('i');
     const ejsIcon = skillItem.querySelector('.ejs-icon');
-    
+
     if (skillItem.classList.contains('selected')) {
 
         skillItem.classList.remove('selected');
@@ -437,7 +448,7 @@ function handleSkillClick(event) {
         selectionOrder.push(skillItem);
         selectionCounter++;
     }
-    
+
     updateSkillNumbers();
 }
 
@@ -456,18 +467,18 @@ function deselectAllInReverse() {
         isDeselecting = false;
         return;
     }
-    
+
 
     const lastSelected = selectionOrder.pop();
     const icon = lastSelected.querySelector('i');
     const ejsIcon = lastSelected.querySelector('.ejs-icon');
-    
+
     lastSelected.classList.remove('selected');
     if (icon) icon.classList.remove('show-true-color');
     if (ejsIcon) ejsIcon.classList.remove('show-true-color');
     selectionCounter--;
     updateSkillNumbers();
-    
+
 
     if (selectionOrder.length > 0) {
         setTimeout(() => {
@@ -482,32 +493,32 @@ function deselectAllInReverse() {
 function calculateOptimalColumns() {
     const skillsGrid = document.querySelector('.skills-grid');
     if (!skillsGrid) return;
-    
+
     const skillItems = skillsGrid.querySelectorAll('.skill-item');
     const totalItems = skillItems.length;
     if (totalItems === 0) return;
-    
+
 
     const container = skillsGrid.closest('.container');
     let availableWidth = window.innerWidth;
-    
+
     if (container) {
         const containerRect = container.getBoundingClientRect();
         availableWidth = containerRect.width;
     }
-    
 
-    const containerPadding = availableWidth <= 400 ? 32 : 40; 
+
+    const containerPadding = availableWidth <= 400 ? 32 : 40;
     availableWidth = Math.max(0, availableWidth - containerPadding);
-    
+
 
     const minItemWidth = availableWidth <= 320 ? 60 : 70;
     const preferredItemWidth = availableWidth <= 320 ? 70 : 85;
-    const gap = availableWidth <= 400 ? 16 : 24; 
-    
+    const gap = availableWidth <= 400 ? 16 : 24;
+
 
     const maxColumns = Math.floor((availableWidth + gap) / (minItemWidth + gap));
-    
+
 
     const divisors = [];
     for (let i = 1; i <= totalItems; i++) {
@@ -515,16 +526,14 @@ function calculateOptimalColumns() {
             divisors.push(i);
         }
     }
-    
+
 
 
     let bestColumns = 1;
-    
 
-    if (availableWidth <= 360 && divisors.includes(1)) {
-        bestColumns = 1;
+    if (availableWidth <= 600) {
+        bestColumns = 5;
     } else {
-
         for (let i = divisors.length - 1; i >= 0; i--) {
             const cols = divisors[i];
             if (cols <= maxColumns) {
@@ -533,7 +542,7 @@ function calculateOptimalColumns() {
             }
         }
     }
-    
+
 
     const itemWidthWithBest = (availableWidth - (bestColumns - 1) * gap) / bestColumns;
     if (itemWidthWithBest < preferredItemWidth && bestColumns > 1) {
@@ -549,10 +558,10 @@ function calculateOptimalColumns() {
             }
         }
     }
-    
+
 
     bestColumns = Math.max(1, Math.min(bestColumns, totalItems));
-    
+
 
     skillsGrid.style.setProperty('--skills-columns', bestColumns);
 }
@@ -561,32 +570,32 @@ function calculateOptimalColumns() {
 function calculateOptimalContactColumns() {
     const contactLinks = document.querySelector('.contact-links');
     if (!contactLinks) return;
-    
+
     const contactLinkItems = contactLinks.querySelectorAll('.contact-link');
     const totalItems = contactLinkItems.length;
     if (totalItems === 0) return;
-    
+
 
     const container = contactLinks.closest('.container');
     let availableWidth = window.innerWidth;
-    
+
     if (container) {
         const containerRect = container.getBoundingClientRect();
         availableWidth = containerRect.width;
     }
-    
+
 
     const containerPadding = availableWidth <= 400 ? 32 : 40;
     availableWidth = Math.max(0, availableWidth - containerPadding);
-    
 
-    const minItemWidth = 48; 
-    const preferredItemWidth = 52; 
-    const gap = availableWidth <= 400 ? 10 : (availableWidth <= 768 ? 6.4 : 16); 
-    
+
+    const minItemWidth = 48;
+    const preferredItemWidth = 52;
+    const gap = availableWidth <= 400 ? 10 : (availableWidth <= 768 ? 6.4 : 16);
+
 
     const maxColumns = Math.floor((availableWidth + gap) / (minItemWidth + gap));
-    
+
 
     const divisors = [];
     for (let i = 1; i <= totalItems; i++) {
@@ -594,14 +603,14 @@ function calculateOptimalContactColumns() {
             divisors.push(i);
         }
     }
-    
+
 
 
     let bestColumns = 2;
-    
+
 
     const validDivisors = divisors.filter(d => d >= 2);
-    
+
     if (validDivisors.length === 0) {
 
         bestColumns = 2;
@@ -614,13 +623,13 @@ function calculateOptimalContactColumns() {
                 break;
             }
         }
-        
+
 
         if (bestColumns < 2) {
             bestColumns = Math.min(2, maxColumns);
         }
     }
-    
+
 
     const itemWidthWithBest = (availableWidth - (bestColumns - 1) * gap) / bestColumns;
     if (itemWidthWithBest < preferredItemWidth && bestColumns > 2) {
@@ -636,10 +645,10 @@ function calculateOptimalContactColumns() {
             }
         }
     }
-    
+
 
     bestColumns = Math.max(2, Math.min(bestColumns, Math.min(maxColumns, totalItems)));
-    
+
 
     contactLinks.style.setProperty('--contact-columns', bestColumns);
 }
@@ -649,20 +658,20 @@ function initSkillsSelection() {
     skillItems = document.querySelectorAll('.skill-item');
     selectionOrder = [];
     selectionCounter = 0;
-    
+
 
     const calculateLayout = () => {
         requestAnimationFrame(() => {
             calculateOptimalColumns();
         });
     };
-    
+
 
     calculateLayout();
     setTimeout(calculateLayout, 50);
     setTimeout(calculateLayout, 200);
     setTimeout(calculateLayout, 500);
-    
+
 
     let resizeTimeout;
     const handleResize = () => {
@@ -671,16 +680,16 @@ function initSkillsSelection() {
             calculateLayout();
         }, 100);
     };
-    
+
     window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', () => {
         setTimeout(calculateLayout, 200);
     });
-    
+
 
     skillItems.forEach(item => {
         item.addEventListener('click', handleSkillClick);
-        
+
 
         const icon = item.querySelector('i');
         const ejsIcon = item.querySelector('.ejs-icon');
@@ -695,7 +704,7 @@ function initSkillsSelection() {
             }
         });
     });
-    
+
 
     document.addEventListener('click', (event) => {
         const clickedSkill = event.target.closest('.skill-item');
@@ -708,28 +717,28 @@ function initSkillsSelection() {
 
 function calculateWorkDurations() {
     const timelineItems = document.querySelectorAll('.timeline-item[data-start]');
-    
+
     timelineItems.forEach(item => {
         const startDate = item.getAttribute('data-start');
         const endDate = item.getAttribute('data-end');
         const durationElement = item.querySelector('.timeline-duration');
-        
+
         if (!durationElement) return;
-        
+
         const start = new Date(startDate + '-01');
         const end = endDate === 'present' ? new Date() : new Date(endDate + '-01');
-        
+
         const years = end.getFullYear() - start.getFullYear();
         const months = end.getMonth() - start.getMonth();
-        
+
         let totalMonths = years * 12 + months;
         if (end.getDate() < start.getDate()) {
             totalMonths--;
         }
-        
+
 
         if (totalMonths < 0) totalMonths = 0;
-        
+
         let durationText = '';
         if (totalMonths < 12) {
             durationText = `${totalMonths} ${totalMonths === 1 ? 'mo' : 'mos'}`;
@@ -742,7 +751,7 @@ function calculateWorkDurations() {
                 durationText = `${yearsOnly} ${yearsOnly === 1 ? 'yr' : 'yrs'} ${remainingMonths} ${remainingMonths === 1 ? 'mo' : 'mos'}`;
             }
         }
-        
+
         durationElement.textContent = `· ${durationText}`;
     });
 }
@@ -754,29 +763,29 @@ async function loadWorkExperience() {
         const workJsonPath = window.location.pathname.includes('/projects/') ? '../work.json' : 'work.json';
         const response = await fetch(workJsonPath);
         const workData = await response.json();
-        
+
 
         workData.sort((a, b) => {
             const dateA = new Date(a.startDate + '-01');
             const dateB = new Date(b.startDate + '-01');
             return dateB - dateA;
         });
-        
+
         const timeline = document.getElementById('workTimeline');
         if (!timeline) return;
-        
+
         timeline.innerHTML = '';
-        
+
         workData.forEach(job => {
             const timelineItem = document.createElement('div');
             timelineItem.className = 'timeline-item';
             timelineItem.setAttribute('data-start', job.startDate);
             timelineItem.setAttribute('data-end', job.endDate);
-            
+
             const isCurrent = job.endDate === 'present';
             const startDate = formatDate(job.startDate);
             const endDate = isCurrent ? 'Present' : formatDate(job.endDate);
-            
+
             timelineItem.innerHTML = `
                 <div class="timeline-marker">
                     <img src="${job.logo}" alt="${job.company}" class="timeline-logo">
@@ -794,13 +803,13 @@ async function loadWorkExperience() {
                     </ul>
                 </div>
             `;
-            
+
             timeline.appendChild(timelineItem);
         });
-        
+
 
         calculateWorkDurations();
-        
+
 
         const newItems = timeline.querySelectorAll('.timeline-item');
         newItems.forEach(item => {
@@ -815,7 +824,7 @@ async function loadWorkExperience() {
 
 function formatDate(dateString) {
     if (dateString === 'present') return 'Present';
-    
+
     const date = new Date(dateString + '-01');
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return `${months[date.getMonth()]} ${date.getFullYear()}`;
@@ -849,15 +858,15 @@ function getSmallTechIcon(tech) {
     if (!iconData) {
         return `<span class="project-tech-icon-fallback" title="${tech}" data-tooltip="${tech}">${tech}</span>`;
     }
-    
+
     if (iconData.type === 'ejs') {
         return `<span class="project-tech-icon ejs-icon-small" title="${tech}" data-tooltip="${tech}">EJS</span>`;
     }
-    
+
     if (iconData.type === 'fa') {
         return `<i class="project-tech-icon ${iconData.class}" title="${tech}" data-tooltip="${tech}"></i>`;
     }
-    
+
     return `<i class="project-tech-icon ${iconData.class}" title="${tech}" data-tooltip="${tech}"></i>`;
 }
 
@@ -868,22 +877,22 @@ async function loadFeaturedProjects() {
         const projectsJsonPath = window.location.pathname.includes('/projects/') ? '../projects.json' : 'projects.json';
         const response = await fetch(projectsJsonPath);
         const projects = await response.json();
-        
+
         const projectsGrid = document.getElementById('projectsGrid');
         if (!projectsGrid) return;
-        
+
 
         const featuredProjects = projects.slice(0, 3);
-        
+
         projectsGrid.innerHTML = '';
-        
+
         featuredProjects.forEach(project => {
             const projectCard = document.createElement('div');
             projectCard.className = 'project-card';
-            
+
 
             const projectSlug = project.projectName.toLowerCase().replace(/\s+/g, '-');
-            
+
 
             const displayImages = project.images ? project.images.slice(0, 3) : [];
             const hasMoreImages = project.images && project.images.length > 3;
@@ -891,7 +900,7 @@ async function loadFeaturedProjects() {
             const isInProjectsDir = window.location.pathname.includes('/projects/');
             const detailLink = isInProjectsDir ? `detail.html?project=${encodeURIComponent(project.projectName)}` : `projects/detail.html?project=${encodeURIComponent(project.projectName)}`;
             const imageBasePath = isInProjectsDir ? '../' : '';
-            
+
             projectCard.innerHTML = `
                 ${displayImages.length > 0 ? `
                 <a href="${detailLink}" class="project-card-images-link">
@@ -912,10 +921,10 @@ async function loadFeaturedProjects() {
                     <a href="projects/detail.html?project=${encodeURIComponent(project.projectName)}" class="project-link" aria-label="View ${project.projectName} details">Details</a>
                 </div>
             `;
-            
+
             projectsGrid.appendChild(projectCard);
         });
-        
+
 
         const newItems = projectsGrid.querySelectorAll('.project-card');
         newItems.forEach(item => {
@@ -948,42 +957,42 @@ async function loadEducation() {
         const response = await fetch(educationJsonPath);
         const data = await response.json();
         const educationData = data.education || [];
-        
+
 
         educationData.sort((a, b) => {
             const dateA = new Date(a.duration.start);
             const dateB = new Date(b.duration.start);
             return dateB - dateA;
         });
-        
+
         const timeline = document.getElementById('educationTimeline');
         if (!timeline) return;
-        
+
         timeline.innerHTML = '';
-        
+
 
         const isInProjectsDir = window.location.pathname.includes('/projects/');
         const imageBasePath = isInProjectsDir ? '../' : '';
-        
+
         educationData.forEach(edu => {
             const timelineItem = document.createElement('div');
             timelineItem.className = 'timeline-item';
             timelineItem.setAttribute('data-start', edu.duration.start);
             timelineItem.setAttribute('data-end', edu.duration.end);
-            
+
             const startDate = formatEducationDate(edu.duration.start);
             const endDate = formatEducationDate(edu.duration.end);
-            
+
 
             const logoPath = getInstitutionLogo(edu.institution);
-            const logoHTML = logoPath 
+            const logoHTML = logoPath
                 ? `<img src="${imageBasePath}${logoPath}" alt="${edu.institution}" class="timeline-logo">`
                 : `<i class="fas fa-graduation-cap"></i>`;
-            
+
             let resultsHTML = '';
             if (edu.results) {
                 const grades = edu.results.grades;
-                const gradeEntries = Object.entries(grades).map(([grade, count]) => 
+                const gradeEntries = Object.entries(grades).map(([grade, count]) =>
                     `${count} ${grade}${count > 1 ? 's' : ''}`
                 ).join(', ');
                 resultsHTML = `
@@ -992,7 +1001,7 @@ async function loadEducation() {
                     </div>
                 `;
             }
-            
+
             timelineItem.innerHTML = `
                 <div class="timeline-marker">
                     ${logoHTML}
@@ -1008,10 +1017,10 @@ async function loadEducation() {
                     <p class="timeline-description-text">${edu.description}</p>
                 </div>
             `;
-            
+
             timeline.appendChild(timelineItem);
         });
-        
+
 
         const newItems = timeline.querySelectorAll('.timeline-item');
         newItems.forEach(item => {
@@ -1042,27 +1051,27 @@ async function loadLanguages() {
         const response = await fetch(languagesJsonPath);
         const data = await response.json();
         const languagesData = data.languages || [];
-        
+
         const languagesGrid = document.getElementById('languagesGrid');
         if (!languagesGrid) return;
-        
+
         languagesGrid.innerHTML = '';
-        
+
         languagesData.forEach(lang => {
             const languageItem = document.createElement('div');
             languageItem.className = 'language-item';
-            
+
 
             const levelClass = lang.level.toLowerCase().replace(' ', '-');
-            
+
             languageItem.innerHTML = `
                 <div class="language-name">${lang.name}</div>
                 <div class="language-level ${levelClass}">${lang.level}</div>
             `;
-            
+
             languagesGrid.appendChild(languageItem);
         });
-        
+
 
         const newItems = languagesGrid.querySelectorAll('.language-item');
         newItems.forEach(item => {
@@ -1078,12 +1087,12 @@ async function loadLanguages() {
 function initCursorTrail() {
     const skillsGrid = document.querySelector('.skills-grid');
     if (!skillsGrid) return;
-    
+
     const trail = [];
     const trailLength = 8;
     const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
     const trailColor = isDarkMode ? '#e63946' : '#c51d34';
-    
+
 
     for (let i = 0; i < trailLength; i++) {
         const dot = document.createElement('div');
@@ -1108,36 +1117,36 @@ function initCursorTrail() {
             opacity: 0
         });
     }
-    
+
     let mouseX = 0;
     let mouseY = 0;
     let isInside = false;
-    
+
 
     function updateTrail() {
         if (!isInside) return;
-        
+
         trail.forEach((dot, index) => {
             const delay = index * 0.05;
             const targetX = mouseX;
             const targetY = mouseY;
-            
+
 
             dot.x += (targetX - dot.x) * (0.15 + index * 0.05);
             dot.y += (targetY - dot.y) * (0.15 + index * 0.05);
-            
+
             const opacity = Math.max(0, 0.6 - (index / trailLength) * 0.6);
             const scale = Math.max(0.3, 1 - (index / trailLength) * 0.7);
-            
+
             dot.element.style.left = dot.x + 'px';
             dot.element.style.top = dot.y + 'px';
             dot.element.style.opacity = opacity;
             dot.element.style.transform = `translate(-50%, -50%) scale(${scale})`;
         });
-        
+
         requestAnimationFrame(updateTrail);
     }
-    
+
 
     skillsGrid.addEventListener('mouseenter', (e) => {
         isInside = true;
@@ -1145,13 +1154,13 @@ function initCursorTrail() {
         mouseY = e.clientY;
         updateTrail();
     });
-    
+
 
     skillsGrid.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
     });
-    
+
 
     skillsGrid.addEventListener('mouseleave', () => {
         isInside = false;
@@ -1160,7 +1169,7 @@ function initCursorTrail() {
             dot.element.style.transform = 'translate(-50%, -50%) scale(0)';
         });
     });
-    
+
 
     const observer = new MutationObserver(() => {
         const newIsDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -1169,7 +1178,7 @@ function initCursorTrail() {
             dot.element.style.background = newColor;
         });
     });
-    
+
     observer.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ['data-theme']
@@ -1182,7 +1191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         initCursorTrail();
     }, 100);
-    
+
 
     updateCopyrightYear();
 });
