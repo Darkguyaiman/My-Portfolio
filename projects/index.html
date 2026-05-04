@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Mohamed Aiman Portfolio</title>
+    <meta name="description" content="Explore all projects by Mohamed Aiman, including web applications, ERP systems, management tools, and more. Built with Node.js, Express, MySQL, and modern web technologies.">
+    <meta name="keywords" content="Mohamed Aiman projects, web development projects, Node.js projects, Express.js projects, portfolio projects, backend development">
+    <meta name="author" content="Mohamed Aiman">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://darkguyaiman.github.io/projects/">
+    <meta property="og:title" content="Projects - Mohamed Aiman Portfolio">
+    <meta property="og:description" content="Explore all projects by Mohamed Aiman, including web applications, ERP systems, management tools, and more.">
+    <meta property="og:image" content="https://darkguyaiman.github.io/Public/Assets/Mohamed Aiman.webp">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://darkguyaiman.github.io/projects/">
+    <meta name="twitter:title" content="Projects - Mohamed Aiman Portfolio">
+    <meta name="twitter:description" content="Explore all projects by Mohamed Aiman, including web applications, ERP systems, management tools, and more.">
+    <meta name="twitter:image" content="https://darkguyaiman.github.io/Public/Assets/Mohamed Aiman.webp">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://darkguyaiman.github.io/projects/">
+    
+    <link rel="icon" type="image/x-icon" href="../Public/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+    <script>
+
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="../index.html" class="logo-link">Darkguyaiman</a>
+                <!-- Easter Egg Modal -->
+                <div class="easter-egg" id="easterEgg">
+                    <div class="easter-egg-content">
+                        <div class="easter-egg-image-container">
+                            <img src="../Public/Assets/2D Mohamed.webp" alt="2D Mohamed" class="easter-egg-image">
+                        </div>
+                        <div class="easter-egg-name">darkguyaiman</div>
+                        <div class="easter-egg-message" id="easterEggMessage"></div>
+                    </div>
+                </div>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-close-container">
+                    <button class="nav-close-btn" id="navCloseBtn" aria-label="Close menu">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+                <li><a href="../index.html#home" class="nav-link">home</a></li>
+                <li><a href="../index.html#projects" class="nav-link">projects</a></li>
+                <li><a href="../index.html#work" class="nav-link">work</a></li>
+                <li><a href="../index.html#education" class="nav-link">education</a></li>
+                <li><a href="../index.html#languages" class="nav-link">languages</a></li>
+                <li><a href="../index.html#contact" class="nav-link">contact</a></li>
+                <li class="nav-image-container">
+                    <div class="nav-image-wrapper">
+                        <div class="nav-greeting-wrapper">
+                            <span class="nav-greeting" id="navGreeting"></span>
+                        </div>
+                        <div class="nav-image-content">
+                            <div class="nav-image-glow"></div>
+                            <img src="../Public/Assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning" class="nav-leaning-image">
+                            <div class="nav-name">darkguyaiman</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+    <!-- Projects Index Section -->
+    <section class="projects" style="padding-top: 120px;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">all projects</h2>
+                <a href="../index.html" class="view-more"><i class="fas fa-chevron-left"></i> back to home</a>
+            </div>
+            <div class="projects-grid" id="allProjectsGrid">
+                <!-- All projects will be dynamically loaded from projects.json -->
+            </div>
+        </div>
+    </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span class="footer-year">2025</span> Mohamed Aiman | <a href="../privacy.html" class="footer-link">privacy?</a></p>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+    <script>
+
+        function getSmallTechIcon(tech) {
+
+            const iconData = window.techIconMap ? window.techIconMap[tech] : null;
+            if (!iconData) {
+                return `<span class="project-tech-icon-fallback" title="${tech}" data-tooltip="${tech}">${tech}</span>`;
+            }
+            
+            if (iconData.type === 'ejs') {
+                return `<span class="project-tech-icon ejs-icon-small" title="${tech}" data-tooltip="${tech}">EJS</span>`;
+            }
+            
+            if (iconData.type === 'fa') {
+                return `<i class="project-tech-icon ${iconData.class}" title="${tech}" data-tooltip="${tech}"></i>`;
+            }
+            
+            return `<i class="project-tech-icon ${iconData.class}" title="${tech}" data-tooltip="${tech}"></i>`;
+        }
+        
+
+        async function loadAllProjects() {
+            try {
+                const response = await fetch('../projects.json');
+                const projects = await response.json();
+                
+                const projectsGrid = document.getElementById('allProjectsGrid');
+                if (!projectsGrid) return;
+                
+                projectsGrid.innerHTML = '';
+                
+                projects.forEach(project => {
+                    const projectCard = document.createElement('div');
+                    projectCard.className = 'project-card';
+                    
+
+                    const projectSlug = project.projectName.toLowerCase().replace(/\s+/g, '-');
+                    
+
+                    const displayImages = project.images ? project.images.slice(0, 3) : [];
+                    const hasMoreImages = project.images && project.images.length > 3;
+                    const detailLink = `detail.html?project=${encodeURIComponent(project.projectName)}`;
+                    
+                    projectCard.innerHTML = `
+                        ${displayImages.length > 0 ? `
+                        <a href="${detailLink}" class="project-card-images-link">
+                            <div class="project-card-images">
+                                ${displayImages.map(img => `<img src="../${img}" alt="${project.projectName}" class="project-card-image">`).join('')}
+                                ${hasMoreImages ? `<div class="project-card-image-more">+${project.images.length - 3}</div>` : ''}
+                            </div>
+                        </a>
+                        ` : ''}
+                        <h3 class="project-title">${project.projectName}</h3>
+                        <p class="project-description">${project.description}</p>
+                        <div class="project-tags">
+                            ${project.techUsed.map(tech => getSmallTechIcon(tech)).join('')}
+                        </div>
+                        <div class="project-links">
+                            ${project.deployedLink ? `<a href="${project.deployedLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} website">Website</a>` : ''}
+                            ${project.githubLink ? `<a href="${project.githubLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} source code">Source</a>` : ''}
+                            <a href="detail.html?project=${encodeURIComponent(project.projectName)}" class="project-link" aria-label="View ${project.projectName} details">Details</a>
+                        </div>
+                    `;
+                    
+                    projectsGrid.appendChild(projectCard);
+                });
+                
+
+                const newItems = projectsGrid.querySelectorAll('.project-card');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                        }
+                    });
+                }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+                
+                newItems.forEach(item => {
+                    item.classList.add('fade-in');
+                    observer.observe(item);
+                });
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAllProjects();
+        });
+    </script>
+</body>
+</html>
+
