@@ -1,0 +1,20 @@
+<%~ include('partials/header', { title, active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Languages</p>
+        <h1><%= title %></h1>
+        <p>Use clear levels like Advanced, Intermediate, Native, or Beginner.</p>
+    </div>
+    <a href="/admin/languages" class="cms-button secondary"><i class="fas fa-chevron-left"></i><span>Back</span></a>
+</section>
+
+<form method="post" action="<%= action %>" class="cms-panel cms-form">
+    <div class="cms-form-grid two">
+        <label><span>Language name</span><input name="name" value="<%= language.name %>" required></label>
+        <label><span>Level</span><input name="level" value="<%= language.level %>" required></label>
+    </div>
+    <div class="cms-form-actions">
+        <button type="submit" class="cms-button primary"><i class="fas fa-floppy-disk"></i><span>Save Language</span></button>
+    </div>
+</form>
+<%~ include('partials/footer') %>

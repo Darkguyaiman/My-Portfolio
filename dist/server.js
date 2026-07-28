@@ -1,0 +1,98 @@
+import express from 'express';
+import { Eta } from 'eta';
+import path from 'path';
+import adminRoutes from './routes/adminRoutes.js';
+import educationRoutes from './routes/educationRoutes.js';
+import languageRoutes from './routes/languageRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
+import workRoutes from './routes/workRoutes.js';
+import { getSiteContent } from './models/adminModel.js';
+import { getProjectByName, getProjectBySlug } from './models/projectModel.js';
+const app = express();
+const PORT = process.env.PORT || 3000;
+const appRoot = process.cwd();
+const publicRoot = path.join(appRoot, 'public');
+const viewsRoot = path.join(appRoot, 'views');
+const templateCacheEnabled = process.env.NODE_ENV === 'production';
+const assetVersion = Date.now().toString(36);
+const eta = new Eta({
+    views: viewsRoot,
+    cache: templateCacheEnabled,
+    useWith: true,
+});
+const cachedAssetPattern = /\.(?:css|woff2?|ttf|otf|eot)$/i;
+const setStaticCacheHeaders = (res, filePath) => {
+    if (cachedAssetPattern.test(filePath)) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+};
+app.engine('eta', (filePath, options, callback) => {
+    try {
+        const templatePath = path.relative(viewsRoot, filePath);
+        callback(null, eta.render(templatePath, options));
+    }
+    catch (error) {
+        callback(error);
+    }
+});
+app.set('view engine', 'eta');
+app.set('views', viewsRoot);
+app.set('view cache', templateCacheEnabled);
+app.locals.assetVersion = assetVersion;
+app.use('/Public', express.static(publicRoot, {
+    etag: true,
+    lastModified: true,
+    setHeaders: setStaticCacheHeaders,
+}));
+app.use('/public', express.static(publicRoot, {
+    etag: true,
+    lastModified: true,
+    setHeaders: setStaticCacheHeaders,
+}));
+app.use(express.static(publicRoot, {
+    extensions: ['css', 'js', 'pdf', 'webp', 'ico', 'png', 'jpg', 'svg'],
+    etag: true,
+    lastModified: true,
+    setHeaders: setStaticCacheHeaders,
+}));
+app.use((_req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store');
+    next();
+});
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use('/admin', adminRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/work', workRoutes);
+app.use('/api/education', educationRoutes);
+app.use('/api/languages', languageRoutes);
+app.get('/', async (req, res) => {
+    res.render('index', { content: await getSiteContent() });
+});
+app.get('/projects', (req, res) => {
+    res.render('projects');
+});
+app.get('/projects/', (req, res) => {
+    res.render('projects');
+});
+app.get('/privacy', (req, res) => {
+    res.render('privacy');
+});
+app.get('/projects/detail', async (req, res) => {
+    const projectName = req.query.project;
+    const project = projectName ? await getProjectByName(projectName).catch(() => null) : null;
+    if (project) {
+        return res.redirect(301, `/projects/${project.slug}`);
+    }
+    res.redirect(302, '/projects');
+});
+app.get('/projects/:slug', async (req, res) => {
+    const project = await getProjectBySlug(req.params.slug).catch(() => null);
+    if (!project) {
+        return res.status(404).render('detail', { projectName: null, project: null });
+    }
+    res.render('detail', { projectName: project.projectName, project });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});

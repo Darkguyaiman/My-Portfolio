@@ -1,0 +1,38 @@
+<%~ include('partials/header', { title: 'Education', active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Education</p>
+        <h1>Manage education</h1>
+        <p>Edit institutions, durations, results JSON, and descriptions. Drag rows to change display order.</p>
+    </div>
+    <a href="/admin/education/new" class="cms-button primary"><i class="fas fa-plus"></i><span>New Education</span></a>
+</section>
+
+<section class="cms-panel">
+    <div class="cms-table-wrap" data-selectable="false" data-searchable="false" data-reorderable="true" data-reorder-url="/admin/education/reorder" data-sortable="false" data-paginated="false">
+        <table class="cms-table">
+            <thead><tr><th class="cms-drag-col" aria-label="Reorder"></th><th>Qualification</th><th>Institution</th><th>Duration</th><th></th></tr></thead>
+            <tbody>
+                <% rows.forEach((row) => { %>
+                    <tr data-row-id="<%= row.id %>">
+                        <td class="cms-drag-cell">
+                            <button type="button" class="cms-drag-handle" aria-label="Drag to reorder <%= row.qualification %>" draggable="true">
+                                <i class="fas fa-grip-vertical" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                        <td><strong><%= row.qualification %></strong><span><%= row.field %></span></td>
+                        <td><%= row.institution %></td>
+                        <td><%= row.duration_start %> - <%= row.duration_end %></td>
+                        <td class="cms-table-actions">
+                            <a href="/admin/education/<%= row.id %>/edit" class="cms-icon-button" aria-label="Edit <%= row.qualification %>"><i class="fas fa-pen"></i></a>
+                            <form method="post" action="/admin/education/<%= row.id %>/delete" onsubmit="return confirm('Delete this education item?')">
+                                <button class="cms-icon-button danger" type="submit" aria-label="Delete <%= row.qualification %>"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</section>
+<%~ include('partials/footer') %>

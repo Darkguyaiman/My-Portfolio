@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details - Darkguyaiman</title>
+    <meta name="description" id="metaDescription" content="Project details by Mohamed Aiman - Web Developer Portfolio">
+    <meta name="keywords" id="metaKeywords" content="Mohamed Aiman, web development, project">
+    <meta name="author" content="Mohamed Aiman">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" id="ogType">
+    <meta property="og:url" id="ogUrl" content="">
+    <meta property="og:title" id="ogTitle" content="Project Details - Darkguyaiman">
+    <meta property="og:description" id="ogDescription" content="Project details by Mohamed Aiman">
+    <meta property="og:image" id="ogImage" content="https://darkguyaiman.github.io/assets/Mohamed Aiman.webp">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" id="twitterUrl" content="">
+    <meta name="twitter:title" id="twitterTitle" content="Project Details - Darkguyaiman">
+    <meta name="twitter:description" id="twitterDescription" content="Project details by Mohamed Aiman">
+    <meta name="twitter:image" id="twitterImage"
+        content="https://darkguyaiman.github.io/assets/Mohamed Aiman.webp">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" id="canonicalUrl" href="">
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <style>html{background:#fdfbf7}html[data-theme="dark"]{background:#1a1a1c}</style>
+    <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2?v=<%= assetVersion %>" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/css/app.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/css/detail.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/vendor/devicon/devicon.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/vendor/lenis/lenis.css?v=<%= assetVersion %>">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/" class="logo-link">Darkguyaiman</a>
+                <!-- Easter Egg Modal -->
+                <div class="easter-egg" id="easterEgg">
+                    <div class="easter-egg-content">
+                        <div class="easter-egg-image-container">
+                            <img src="/assets/2D Mohamed.webp" alt="2D Mohamed" class="easter-egg-image">
+                        </div>
+                        <div class="easter-egg-name">darkguyaiman</div>
+                        <div class="easter-egg-message" id="easterEggMessage"></div>
+                    </div>
+                </div>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-close-container">
+                    <button class="nav-close-btn" id="navCloseBtn" aria-label="Close menu">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+                <li><a href="/#home" class="nav-link">home</a></li>
+                <li><a href="/#projects" class="nav-link">projects</a></li>
+                <li><a href="/#work" class="nav-link">work</a></li>
+                <li><a href="/#education" class="nav-link">education</a></li>
+                <li><a href="/#languages" class="nav-link">languages</a></li>
+                <li><a href="/#contact" class="nav-link">contact</a></li>
+                <li class="nav-image-container">
+                    <div class="nav-image-wrapper">
+                        <div class="nav-greeting-wrapper">
+                            <span class="nav-greeting" id="navGreeting"></span>
+                        </div>
+                        <div class="nav-image-content">
+                            <div class="nav-image-glow"></div>
+                            <img src="/assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning"
+                                class="nav-leaning-image">
+                            <div class="nav-name">darkguyaiman</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-sun" id="themeIcon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Project Detail Section -->
+        <section class="project-detail">
+            <div class="container">
+                <a href="/projects" class="back-link">
+                    <i class="fas fa-chevron-left"></i>
+                    <span>back to projects</span>
+                </a>
+
+                <div class="project-detail-header">
+                    <h1 class="project-detail-title" id="projectTitle"></h1>
+                    <p class="project-detail-description" id="projectDescription"></p>
+                </div>
+
+                <div class="project-detail-images" id="projectImages"></div>
+
+                <div class="project-detail-tech">
+                    <h3 class="section-title" style="margin-bottom: 1rem;">technologies used</h3>
+                    <div class="project-tech-icons" id="projectTech"></div>
+                </div>
+
+                <div class="project-detail-links" id="projectLinks"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span class="footer-year">2025</span> Mohamed Aiman | <a href="/privacy"
+                    class="footer-link">privacy?</a></p>
+        </div>
+    </footer>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="imageModal">
+        <span class="image-modal-close" id="modalClose">&times;</span>
+        <span class="image-modal-nav image-modal-prev" id="modalPrev">
+            <i class="fas fa-chevron-left"></i>
+        </span>
+        <span class="image-modal-nav image-modal-next" id="modalNext">
+            <i class="fas fa-chevron-right"></i>
+        </span>
+        <div class="image-modal-content">
+            <img class="image-modal-img" id="modalImage" src="" alt="">
+        </div>
+        <div class="image-modal-counter" id="modalCounter"></div>
+    </div>
+
+    <script src="/vendor/lenis/lenis.min.js"></script>
+    <script src="/js/app.min.js"></script>
+    <script>
+
+        function getTechIcon(tech) {
+
+            const iconData = window.techIconMap ? window.techIconMap[tech] : null;
+            if (!iconData) {
+
+                return `<div class="tech-icon-item" data-tech="${tech.toLowerCase()}" title="${tech}">
+                    <span class="tech-icon-name">${tech}</span>
+                </div>`;
+            }
+
+
+            const techKey = tech.toLowerCase().replace(/\s+/g, '').replace('.', '');
+
+            if (iconData.type === 'ejs') {
+                return `<div class="tech-icon-item" data-tech="ejs" title="${tech}">
+                    <span class="ejs-icon">EJS</span>
+                    <span class="tech-icon-name">EJS</span>
+                </div>`;
+            }
+
+            if (iconData.type === 'fa') {
+                return `<div class="tech-icon-item" data-tech="${techKey}" title="${tech}">
+                    <i class="${iconData.class}"></i>
+                    <span class="tech-icon-name">${tech}</span>
+                </div>`;
+            }
+
+            return `<div class="tech-icon-item" data-tech="${techKey}" title="${tech}">
+                <i class="${iconData.class}"></i>
+                <span class="tech-icon-name">${tech}</span>
+            </div>`;
+        }
+
+
+        let currentImageIndex = 0;
+        let projectImages = [];
+
+        function openImageModal(index, images) {
+            projectImages = images;
+            currentImageIndex = index;
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalCounter = document.getElementById('modalCounter');
+
+            modalImg.src = `/${images[index]}`;
+            modalImg.classList.remove('zoomed');
+            modal.classList.add('active');
+            updateModalCounter();
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
+        }
+
+        function nextImage() {
+            if (projectImages.length === 0) return;
+            currentImageIndex = (currentImageIndex + 1) % projectImages.length;
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = `/${projectImages[currentImageIndex]}`;
+            modalImg.classList.remove('zoomed');
+            updateModalCounter();
+        }
+
+        function prevImage() {
+            if (projectImages.length === 0) return;
+            currentImageIndex = (currentImageIndex - 1 + projectImages.length) % projectImages.length;
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = `/${projectImages[currentImageIndex]}`;
+            modalImg.classList.remove('zoomed');
+            updateModalCounter();
+        }
+
+        function updateModalCounter() {
+            const modalCounter = document.getElementById('modalCounter');
+            modalCounter.textContent = `${currentImageIndex + 1} / ${projectImages.length}`;
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalClose = document.getElementById('modalClose');
+            const modalPrev = document.getElementById('modalPrev');
+            const modalNext = document.getElementById('modalNext');
+
+            modalClose.addEventListener('click', closeImageModal);
+            modalPrev.addEventListener('click', prevImage);
+            modalNext.addEventListener('click', nextImage);
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeImageModal();
+                }
+            });
+
+            modalImg.addEventListener('click', () => {
+                modalImg.classList.toggle('zoomed');
+            });
+
+
+            document.addEventListener('keydown', (e) => {
+                if (!modal.classList.contains('active')) return;
+
+                if (e.key === 'Escape') {
+                    closeImageModal();
+                } else if (e.key === 'ArrowLeft') {
+                    prevImage();
+                } else if (e.key === 'ArrowRight') {
+                    nextImage();
+                }
+            });
+        });
+
+        function getProjectSlug() {
+            const slug = window.location.pathname.split('/').filter(Boolean).pop();
+            return slug === 'projects' ? null : slug;
+        }
+
+
+        async function loadProjectDetail() {
+            try {
+                const projectSlug = getProjectSlug();
+
+                if (!projectSlug) {
+                    document.body.innerHTML = '<div class="container" style="padding-top: 120px;"><h1>Project not specified</h1><a href="/projects">Back to Projects</a></div>';
+                    return;
+                }
+
+                const response = await fetch(`/api/projects/${encodeURIComponent(projectSlug)}`);
+                const project = response.ok ? await response.json() : null;
+
+                if (!project) {
+                    document.body.innerHTML = '<div class="container" style="padding-top: 120px;"><h1>Project not found</h1><a href="/projects">Back to Projects</a></div>';
+                    return;
+                }
+
+
+                const baseUrl = 'https://darkguyaiman.github.io';
+                const currentUrl = `${baseUrl}/projects/${project.slug}`;
+                const projectImage = project.images && project.images.length > 0
+                    ? `${baseUrl}/${project.images[0]}`
+                    : `${baseUrl}/assets/Mohamed Aiman.webp`;
+                const techKeywords = project.techUsed.join(', ');
+
+
+                const truncateDescription = (text, maxLength = 155) => {
+                    if (text.length <= maxLength) return text;
+                    return text.substring(0, maxLength).trim() + '...';
+                };
+
+                const seoDescription = truncateDescription(project.description);
+                const fullDescription = `${seoDescription} Built with: ${techKeywords}`;
+
+
+                document.title = `${project.projectName} - Mohamed Aiman Portfolio`;
+
+
+                document.getElementById('metaDescription').setAttribute('content', truncateDescription(fullDescription, 160));
+
+
+                document.getElementById('metaKeywords').setAttribute('content', `${project.projectName}, ${techKeywords}, Mohamed Aiman, web development, project`);
+
+
+                document.getElementById('ogUrl').setAttribute('content', currentUrl);
+                document.getElementById('ogTitle').setAttribute('content', `${project.projectName} - Mohamed Aiman Portfolio`);
+                document.getElementById('ogDescription').setAttribute('content', seoDescription);
+                document.getElementById('ogImage').setAttribute('content', projectImage);
+
+
+                document.getElementById('twitterUrl').setAttribute('content', currentUrl);
+                document.getElementById('twitterTitle').setAttribute('content', `${project.projectName} - Mohamed Aiman Portfolio`);
+                document.getElementById('twitterDescription').setAttribute('content', seoDescription);
+                document.getElementById('twitterImage').setAttribute('content', projectImage);
+
+
+                document.getElementById('canonicalUrl').setAttribute('href', currentUrl);
+
+
+                document.getElementById('projectTitle').textContent = project.projectName;
+                document.getElementById('projectDescription').textContent = project.description;
+
+
+                const techContainer = document.getElementById('projectTech');
+                techContainer.innerHTML = project.techUsed.map(tech => getTechIcon(tech)).join('');
+
+
+                const imagesContainer = document.getElementById('projectImages');
+                if (project.images && project.images.length > 0) {
+                    imagesContainer.innerHTML = project.images.map((img, index) =>
+                        `<img src="/${img}" alt="${project.projectName}" class="project-detail-image" data-image-index="${index}">`
+                    ).join('');
+
+
+                    const images = imagesContainer.querySelectorAll('.project-detail-image');
+                    images.forEach((img, index) => {
+                        img.addEventListener('click', () => {
+                            openImageModal(index, project.images);
+                        });
+                    });
+                } else {
+                    imagesContainer.style.display = 'none';
+                }
+
+
+                const linksContainer = document.getElementById('projectLinks');
+                const links = [];
+                if (project.deployedLink) {
+                    links.push(`<a href="${project.deployedLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} website">Website</a>`);
+                }
+                if (project.githubLink) {
+                    links.push(`<a href="${project.githubLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} source code">Source</a>`);
+                }
+                linksContainer.innerHTML = links.join('');
+            } catch (error) {
+                console.error('Error loading project details:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjectDetail();
+        });
+    </script>
+</body>
+
+</html>

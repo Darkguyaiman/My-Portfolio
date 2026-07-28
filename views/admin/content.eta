@@ -1,0 +1,78 @@
+<%~ include('partials/header', { title: 'Homepage Content', active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Homepage</p>
+        <h1>Edit public copy</h1>
+        <p>Update the hero, resume link, contact copy, and social links shown on the portfolio homepage.</p>
+    </div>
+    <a href="/" class="cms-button secondary"><i class="fas fa-arrow-up-right-from-square"></i><span>Preview Site</span></a>
+</section>
+
+<% if (message) { %><div class="cms-alert success"><%= message %></div><% } %>
+
+<form method="post" action="/admin/content" class="cms-panel cms-form" enctype="multipart/form-data">
+    <div class="cms-form-grid two">
+        <label>
+            <span>Hero intro</span>
+            <input name="heroTitlePrefix" value="<%= content.heroTitlePrefix %>" required>
+        </label>
+        <label>
+            <span>Name highlight</span>
+            <input name="heroName" value="<%= content.heroName %>" required>
+        </label>
+    </div>
+    <label>
+        <span>Hero subtitle</span>
+        <textarea name="heroSubtitle" rows="3" required><%= content.heroSubtitle %></textarea>
+    </label>
+    <label>
+        <span>Hero description</span>
+        <textarea name="heroDescription" rows="4" required><%= content.heroDescription %></textarea>
+    </label>
+    <div class="cms-upload-group" data-upload-zone>
+        <div class="cms-field-heading">
+            <div>
+                <span>Resume document</span>
+                <p>Upload a PDF or Word document. The saved public path stays editable for manual fixes.</p>
+            </div>
+            <label class="cms-button secondary cms-file-button">
+                <i class="fas fa-file-arrow-up"></i>
+                <span>Choose file</span>
+                <input type="file" name="resumeFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" data-file-input>
+            </label>
+        </div>
+        <div class="cms-dropzone compact" tabindex="0" role="button" aria-label="Upload resume document">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <strong>Drop resume here</strong>
+            <small>PDF, DOC, or DOCX up to 12 MB</small>
+        </div>
+        <div class="cms-file-list" data-preview-list>
+            <% if (content.resumePath) { %>
+                <div class="cms-file-chip existing">
+                    <i class="fas fa-file-lines"></i>
+                    <span><%= content.resumePath %></span>
+                </div>
+            <% } %>
+        </div>
+        <label class="cms-path-editor">
+            <span>Saved resume path</span>
+            <input name="resumePath" value="<%= content.resumePath %>" required>
+        </label>
+    </div>
+    <label>
+        <span>Contact text</span>
+        <textarea name="contactText" rows="3" required><%= content.contactText %></textarea>
+    </label>
+    <div class="cms-form-grid two">
+        <label><span>LinkedIn URL</span><input name="linkedinUrl" value="<%= content.linkedinUrl %>"></label>
+        <label><span>GitHub URL</span><input name="githubUrl" value="<%= content.githubUrl %>"></label>
+        <label><span>X URL</span><input name="xUrl" value="<%= content.xUrl %>"></label>
+        <label><span>Instagram URL</span><input name="instagramUrl" value="<%= content.instagramUrl %>"></label>
+        <label><span>Facebook URL</span><input name="facebookUrl" value="<%= content.facebookUrl %>"></label>
+        <label><span>Email</span><input name="email" value="<%= content.email %>"></label>
+    </div>
+    <div class="cms-form-actions">
+        <button type="submit" class="cms-button primary"><i class="fas fa-floppy-disk"></i><span>Save Homepage</span></button>
+    </div>
+</form>
+<%~ include('partials/footer') %>

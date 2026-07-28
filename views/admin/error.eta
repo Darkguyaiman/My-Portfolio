@@ -1,0 +1,10 @@
+<%~ include('partials/header', { title: 'CMS Error', active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Error</p>
+        <h1>Something needs attention</h1>
+        <p><%= error.message %></p>
+    </div>
+    <a href="/admin" class="cms-button secondary"><i class="fas fa-chevron-left"></i><span>Back to CMS</span></a>
+</section>
+<%~ include('partials/footer') %>

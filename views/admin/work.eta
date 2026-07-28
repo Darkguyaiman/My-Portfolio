@@ -1,0 +1,38 @@
+<%~ include('partials/header', { title: 'Work', active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Work</p>
+        <h1>Manage work history</h1>
+        <p>Edit company roles, dates, logos, and timeline bullet points. Drag rows to change display order.</p>
+    </div>
+    <a href="/admin/work/new" class="cms-button primary"><i class="fas fa-plus"></i><span>New Work Item</span></a>
+</section>
+
+<section class="cms-panel">
+    <div class="cms-table-wrap" data-selectable="false" data-searchable="false" data-reorderable="true" data-reorder-url="/admin/work/reorder" data-sortable="false" data-paginated="false">
+        <table class="cms-table">
+            <thead><tr><th class="cms-drag-col" aria-label="Reorder"></th><th>Company</th><th>Role</th><th>Dates</th><th></th></tr></thead>
+            <tbody>
+                <% rows.forEach((row) => { %>
+                    <tr data-row-id="<%= row.id %>">
+                        <td class="cms-drag-cell">
+                            <button type="button" class="cms-drag-handle" aria-label="Drag to reorder <%= row.company %>" draggable="true">
+                                <i class="fas fa-grip-vertical" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                        <td><strong><%= row.company %></strong><span><%= row.logo || 'No logo' %></span></td>
+                        <td><%= row.role %></td>
+                        <td><%= row.start_date %> - <%= row.end_date %></td>
+                        <td class="cms-table-actions">
+                            <a href="/admin/work/<%= row.id %>/edit" class="cms-icon-button" aria-label="Edit <%= row.company %>"><i class="fas fa-pen"></i></a>
+                            <form method="post" action="/admin/work/<%= row.id %>/delete" onsubmit="return confirm('Delete this work item?')">
+                                <button class="cms-icon-button danger" type="submit" aria-label="Delete <%= row.company %>"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</section>
+<%~ include('partials/footer') %>

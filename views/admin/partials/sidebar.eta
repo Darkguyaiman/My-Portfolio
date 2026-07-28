@@ -1,0 +1,29 @@
+<aside class="cms-sidebar">
+    <a href="/admin" class="cms-brand">
+        <div class="cms-brand-avatar-container">
+            <img src="/assets/Mohamed Aiman Alter Ego.webp" alt="Avatar" class="cms-brand-avatar" />
+            <span class="cms-avatar-glow"></span>
+        </div>
+        <div class="cms-brand-info">
+            <strong class="cms-brand-title">Portfolio CMS</strong>
+            <small class="cms-brand-status">
+                <span class="cms-status-dot"></span>
+                <span>darkguyaiman</span>
+            </small>
+        </div>
+    </a>
+    <nav class="cms-nav" aria-label="CMS navigation">
+        <a class="<%= active === 'dashboard' ? 'active' : '' %>" href="/admin"><i class="fas fa-chart-line"></i><span>Overview</span></a>
+        <a class="<%= active === 'content' ? 'active' : '' %>" href="/admin/content"><i class="fas fa-pen-nib"></i><span>Homepage</span></a>
+        <a class="<%= active === 'projects' ? 'active' : '' %>" href="/admin/projects"><i class="fas fa-layer-group"></i><span>Projects</span></a>
+        <a class="<%= active === 'work' ? 'active' : '' %>" href="/admin/work"><i class="fas fa-briefcase"></i><span>Work</span></a>
+        <a class="<%= active === 'education' ? 'active' : '' %>" href="/admin/education"><i class="fas fa-graduation-cap"></i><span>Education</span></a>
+        <a class="<%= active === 'languages' ? 'active' : '' %>" href="/admin/languages"><i class="fas fa-language"></i><span>Languages</span></a>
+    </nav>
+    <div class="cms-sidebar-actions">
+        <a href="/" class="cms-secondary-link"><i class="fas fa-arrow-up-right-from-square"></i><span>View site</span></a>
+        <form method="post" action="/admin/logout" class="cms-logout-form">
+            <button type="submit" class="cms-secondary-link cms-logout"><i class="fas fa-right-from-bracket"></i><span>Log out</span></button>
+        </form>
+    </div>
+</aside>

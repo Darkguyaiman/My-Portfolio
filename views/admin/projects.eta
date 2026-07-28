@@ -1,0 +1,46 @@
+<%~ include('partials/header', { title: 'Projects', active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Projects</p>
+        <h1>Manage portfolio projects</h1>
+        <p>Edit descriptions, links, stack labels, screenshots, and ordering. Drag rows to change display order.</p>
+    </div>
+    <a href="/admin/projects/new" class="cms-button primary"><i class="fas fa-plus"></i><span>New Project</span></a>
+</section>
+
+<section class="cms-panel">
+    <div class="cms-table-wrap" data-selectable="false" data-searchable="false" data-reorderable="true" data-reorder-url="/admin/projects/reorder" data-sortable="false" data-paginated="false">
+        <table class="cms-table">
+            <thead>
+                <tr><th class="cms-drag-col" aria-label="Reorder"></th><th>Project</th><th>Links</th><th>Updated</th><th></th></tr>
+            </thead>
+            <tbody>
+                <% projects.forEach((project) => { %>
+                    <tr data-row-id="<%= project.id %>">
+                        <td class="cms-drag-cell">
+                            <button type="button" class="cms-drag-handle" aria-label="Drag to reorder <%= project.project_name %>" draggable="true">
+                                <i class="fas fa-grip-vertical" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                        <td>
+                            <strong><%= project.project_name %></strong>
+                            <span>/projects/<%= project.slug %></span>
+                        </td>
+                        <td>
+                            <%= project.deployed_link ? 'Website' : '' %>
+                            <%= project.github_link ? (project.deployed_link ? ' / Source' : 'Source') : '' %>
+                        </td>
+                        <td><%= new Date(project.updated_at).toLocaleDateString('en-US') %></td>
+                        <td class="cms-table-actions">
+                            <a href="/admin/projects/<%= project.id %>/edit" class="cms-icon-button" aria-label="Edit <%= project.project_name %>"><i class="fas fa-pen"></i></a>
+                            <form method="post" action="/admin/projects/<%= project.id %>/delete" onsubmit="return confirm('Delete this project?')">
+                                <button class="cms-icon-button danger" type="submit" aria-label="Delete <%= project.project_name %>"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</section>
+<%~ include('partials/footer') %>

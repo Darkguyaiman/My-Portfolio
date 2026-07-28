@@ -1,0 +1,59 @@
+<%~ include('partials/header', { title: 'Overview', active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Overview</p>
+        <h1>Content command center</h1>
+        <p>Keep your portfolio fresh without touching code. Start with homepage copy or jump into a content collection.</p>
+    </div>
+    <a href="/admin/content" class="cms-button primary"><i class="fas fa-pen"></i><span>Edit Homepage</span></a>
+</section>
+
+<section class="cms-stats-grid" aria-label="CMS stats">
+    <a href="/admin/projects" class="cms-stat">
+        <span class="cms-stat-icon"><i class="fas fa-layer-group"></i></span>
+        <strong><%= stats.projects %></strong>
+        <span>Projects</span>
+    </a>
+    <a href="/admin/work" class="cms-stat">
+        <span class="cms-stat-icon"><i class="fas fa-briefcase"></i></span>
+        <strong><%= stats.work %></strong>
+        <span>Work items</span>
+    </a>
+    <a href="/admin/education" class="cms-stat">
+        <span class="cms-stat-icon"><i class="fas fa-graduation-cap"></i></span>
+        <strong><%= stats.education %></strong>
+        <span>Education</span>
+    </a>
+    <a href="/admin/languages" class="cms-stat">
+        <span class="cms-stat-icon"><i class="fas fa-language"></i></span>
+        <strong><%= stats.languages %></strong>
+        <span>Languages</span>
+    </a>
+</section>
+
+<section class="cms-panel">
+    <div class="cms-panel-header">
+        <div>
+            <h2>Publishing notes</h2>
+            <p>Use one item per line for repeatable lists like technologies, images, and work descriptions.</p>
+        </div>
+    </div>
+    <div class="cms-note-grid">
+        <div>
+            <i class="fas fa-image"></i>
+            <h3>Image paths</h3>
+            <p>Reference existing files under <code>public</code>, for example <code>projects/Tuitix 1.webp</code>.</p>
+        </div>
+        <div>
+            <i class="fas fa-sort"></i>
+            <h3>Display order</h3>
+            <p>Lower numbers appear first. This controls featured projects and timeline order.</p>
+        </div>
+        <div>
+            <i class="fas fa-code"></i>
+            <h3>Homepage subtitle</h3>
+            <p>The subtitle field accepts the existing small HTML spans used by the live hero.</p>
+        </div>
+    </div>
+</section>
+<%~ include('partials/footer') %>

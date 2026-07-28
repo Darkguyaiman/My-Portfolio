@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Darkguyaiman</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <style>html{background:#fdfbf7}html[data-theme="dark"]{background:#1a1a1c}</style>
+    <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2?v=<%= assetVersion %>" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/css/app.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/css/privacy.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/vendor/lenis/lenis.css?v=<%= assetVersion %>">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/" class="logo-link">Darkguyaiman</a>
+                <!-- Easter Egg Modal -->
+                <div class="easter-egg" id="easterEgg">
+                    <div class="easter-egg-content">
+                        <div class="easter-egg-image-container">
+                            <img src="/assets/2D Mohamed.webp" alt="2D Mohamed" class="easter-egg-image">
+                        </div>
+                        <div class="easter-egg-name">darkguyaiman</div>
+                        <div class="easter-egg-message" id="easterEggMessage"></div>
+                    </div>
+                </div>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-close-container">
+                    <button class="nav-close-btn" id="navCloseBtn" aria-label="Close menu">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+                <li><a href="/#home" class="nav-link">home</a></li>
+                <li><a href="/#projects" class="nav-link">projects</a></li>
+                <li><a href="/#work" class="nav-link">work</a></li>
+                <li><a href="/#education" class="nav-link">education</a></li>
+                <li><a href="/#languages" class="nav-link">languages</a></li>
+                <li><a href="/#contact" class="nav-link">contact</a></li>
+                <li class="nav-image-container">
+                    <div class="nav-image-wrapper">
+                        <div class="nav-greeting-wrapper">
+                            <span class="nav-greeting" id="navGreeting"></span>
+                        </div>
+                        <div class="nav-image-content">
+                            <div class="nav-image-glow"></div>
+                            <img src="/assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning"
+                                class="nav-leaning-image">
+                            <div class="nav-name">darkguyaiman</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-sun" id="themeIcon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Privacy Content Section -->
+    <section class="privacy-content">
+        <div class="container">
+            <a href="/" class="back-link">
+                <i class="fas fa-chevron-left"></i>
+                <span>back to home</span>
+            </a>
+
+            <div class="privacy-header">
+                <h1 class="privacy-title">privacy policy</h1>
+                <p class="privacy-last-updated">Last Updated: <span id="lastUpdatedDate">Sep 2024</span></p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>Hellow, Welcome!</h2>
+                <p>Thanks for stopping by! This Privacy Policy is just here to let you know how things work around here.
+                    My website is mainly about showcasing my work, and I'm all about respecting your privacy.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>What Information I Collect (Hint: Not Much)</h2>
+                <p>Honestly, this is just a static portfolio site, so I don't actively collect any personal information.
+                    There's no account creation, no tracking cookies, and definitely no sneaky data gathering.</p>
+
+                <h3
+                    style="font-size: 1.2rem; font-weight: 600; color: var(--dark-gray); margin-top: 1.5rem; margin-bottom: 0.8rem;">
+                    1. Contact Info</h3>
+                <p>If you reach out via email or through my other socials, the info you provide is entirely up to you.
+                    I'll only use it to reply and have a conversation with you-no funny business.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>How I Use the Info</h2>
+                <p>Here's what I might do with any information I collect:</p>
+                <ul>
+                    <li>Make sure the site is running smoothly</li>
+                    <li>Improve the website based on feedback you might share</li>
+                    <li>Respond to your questions or feedback</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2>Sharing Your Info (Spoiler: I Don't)</h2>
+                <p>I don't sell, trade, or rent your personal info. If you shared something sensitive by accident, feel
+                    free to reach out, and I'll help you remove it.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>Security (The Internet Isn't Perfect)</h2>
+                <p>I'll do my best to keep any info you share safe, but let's be real-no system is foolproof. While I'll
+                    take reasonable steps to protect your info, I can't promise 100% security.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>Policy Updates (No Surprises)</h2>
+                <p>This policy is current as of <span id="policyCurrentDate">Sep 2024</span>. If I make any changes,
+                    I'll update it here, so you're always in the loop. Feel free to check back occasionally, but don't
+                    worry-I'm not making any big changes without letting you know.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>Got Questions?</h2>
+                <p>If you have any questions, concerns, or just want to say hi, drop me an email at <a
+                        href="mailto:mohamedaiman103@gmail.com">mohamedaiman103@gmail.com</a> or use the contact form.
+                    I'd love to hear from you!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span class="footer-year">2025</span> Mohamed Aiman | <a href="/privacy"
+                    class="footer-link">privacy?</a></p>
+        </div>
+    </footer>
+
+    <script src="/vendor/lenis/lenis.min.js"></script>
+    <script src="/js/app.min.js"></script>
+    <script>
+
+        function updateLastUpdatedDate() {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const now = new Date();
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
+            const dateString = `${month} ${year}`;
+
+            const lastUpdatedElement = document.getElementById('lastUpdatedDate');
+            const policyCurrentElement = document.getElementById('policyCurrentDate');
+
+            if (lastUpdatedElement) {
+                lastUpdatedElement.textContent = dateString;
+            }
+            if (policyCurrentElement) {
+                policyCurrentElement.textContent = dateString;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLastUpdatedDate();
+        });
+    </script>
+</body>
+
+</html>

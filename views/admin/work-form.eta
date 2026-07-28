@@ -1,0 +1,53 @@
+<%~ include('partials/header', { title, active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Work</p>
+        <h1><%= title %></h1>
+        <p>Write one description bullet per line.</p>
+    </div>
+    <a href="/admin/work" class="cms-button secondary"><i class="fas fa-chevron-left"></i><span>Back</span></a>
+</section>
+
+<form method="post" action="<%= action %>" class="cms-panel cms-form" enctype="multipart/form-data">
+    <div class="cms-form-grid two">
+        <label><span>Company</span><input name="company" value="<%= work.company %>" required></label>
+        <label><span>Role</span><input name="role" value="<%= work.role %>" required></label>
+        <label><span>Start date</span><input name="startDate" value="<%= work.startDate %>" placeholder="2025-01" required></label>
+        <label><span>End date</span><input name="endDate" value="<%= work.endDate %>" placeholder="present or 2025-09" required></label>
+    </div>
+    <div class="cms-upload-group" data-upload-zone>
+        <div class="cms-field-heading">
+            <div>
+                <span>Company logo</span>
+                <p>Drop a logo image here or keep the current path.</p>
+            </div>
+            <label class="cms-button secondary cms-file-button">
+                <i class="fas fa-image"></i>
+                <span>Choose logo</span>
+                <input type="file" name="workLogo" accept="image/*" data-file-input>
+            </label>
+        </div>
+        <div class="cms-dropzone compact" tabindex="0" role="button" aria-label="Upload company logo">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <strong>Drop logo to upload</strong>
+            <small>PNG, JPG, WebP, SVG, GIF, or AVIF up to 12 MB</small>
+        </div>
+        <div class="cms-preview-grid compact" data-preview-list>
+            <% if (work.logo) { %>
+                <figure class="cms-preview-card existing">
+                    <img src="<%= work.logo.startsWith('/') ? work.logo : '/' + work.logo %>" alt="">
+                    <figcaption><%= work.logo %></figcaption>
+                </figure>
+            <% } %>
+        </div>
+        <label class="cms-path-editor">
+            <span>Saved logo path</span>
+            <input name="logo" value="<%= work.logo %>" placeholder="/uploads/images/company-logo.webp">
+        </label>
+    </div>
+    <label><span>Description bullets</span><textarea name="descriptions" rows="8"><%= work.descriptions.join('\n') %></textarea></label>
+    <div class="cms-form-actions">
+        <button type="submit" class="cms-button primary"><i class="fas fa-floppy-disk"></i><span>Save Work Item</span></button>
+    </div>
+</form>
+<%~ include('partials/footer') %>

@@ -1,0 +1,17 @@
+import { pool } from '../config/db.js';
+export async function getEducation() {
+    const [rows] = await pool.query('SELECT qualification, institution, field, duration_start, duration_end, results, description FROM education ORDER BY display_order ASC, id ASC');
+    return {
+        education: rows.map((row) => ({
+            qualification: row.qualification,
+            institution: row.institution,
+            field: row.field,
+            duration: {
+                start: row.duration_start,
+                end: row.duration_end,
+            },
+            results: typeof row.results === 'string' ? JSON.parse(row.results) : row.results,
+            description: row.description,
+        })),
+    };
+}

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Login - Portfolio CMS</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script>
+        document.documentElement.setAttribute('data-theme', 'light');
+    </script>
+    <style>html{background:#f6f4f0}</style>
+    <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2?v=<%= assetVersion %>" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/css/app.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/css/admin-login.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>">
+</head>
+<body class="cms-login-body">
+    <main class="cms-login-panel" aria-labelledby="cmsLoginTitle">
+        <section class="login-art" aria-label="Portfolio CMS overview">
+            <div class="logo-container">
+                <div class="logo-wordmark">
+                    <img src="/assets/Mohamed Aiman Alter Ego.webp" alt="Mohamed Aiman Alter Ego" class="logo-wordmark-img">
+                    <div class="logo-text">
+                        <strong>Mohamed Aiman</strong>
+                        <span>Portfolio Control Room</span>
+                    </div>
+                </div>
+            </div>
+            <div class="art-copy">
+                <div class="art-title">Welcome back to the Portfolio CMS</div>
+                <p>Sign in to refine projects, update experience, and keep the public portfolio sharp without touching the code.</p>
+            </div>
+            <div class="cms-quote">
+                <span class="quote-icon" aria-hidden="true"><i class="fas fa-quote-left"></i></span>
+                <blockquote>
+                    <p id="cmsQuoteText">“Great portfolios are maintained, not just launched.”</p>
+                    <cite id="cmsQuoteAuthor">— Portfolio CMS</cite>
+                </blockquote>
+            </div>
+        </section>
+
+        <section class="login-form-side">
+            <div class="form-header">
+                <span class="form-logo" aria-hidden="true">
+                    <img src="/assets/Mohamed Aiman Alter Ego.webp" alt="Mohamed Aiman Alter Ego" class="form-logo-img">
+                </span>
+                <div>
+                    <h1 id="cmsLoginTitle">Sign In</h1>
+                    <p class="cms-login-desc">Authenticate to access your CMS dashboard.</p>
+                </div>
+            </div>
+
+            <% if (typeof setupMessage !== 'undefined') { %>
+                <div class="error-alert">
+                    <div class="error-alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="error-alert-content">
+                        <strong>Configuration Required</strong>
+                        <p><%= setupMessage %></p>
+                    </div>
+                </div>
+            <% } else if (error) { %>
+                <div class="error-alert">
+                    <div class="error-alert-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="error-alert-content">
+                        <strong>Access Denied</strong>
+                        <p>Incorrect credentials. Access unauthorized.</p>
+                    </div>
+                </div>
+            <% } %>
+
+            <form method="post" action="/admin/login" class="cms-form">
+                <label class="input-group">
+                    <span class="input-label">Username</span>
+                    <div class="field-wrapper">
+                        <span class="input-icon"><i class="fas fa-user"></i></span>
+                        <input type="text" name="username" id="usernameInput" placeholder="Enter username" required autofocus>
+                    </div>
+                </label>
+
+                <label class="input-group">
+                    <span class="input-label">Password Key</span>
+                    <div class="field-wrapper">
+                        <span class="input-icon"><i class="fas fa-lock"></i></span>
+                        <input type="password" name="password" id="passwordInput" autocomplete="current-password" placeholder="Enter key code" required>
+                        <button type="button" class="password-toggle-btn" id="togglePasswordBtn" title="Toggle visibility" aria-label="Toggle Password Visibility">
+                            <i class="far fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </label>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span class="btn-icon"><i class="fas fa-arrow-right-to-bracket"></i></span>
+                    <span class="btn-text">Sign In</span>
+                </button>
+            </form>
+
+            <a href="/" class="secondary-action">
+                <i class="fas fa-arrow-left"></i>
+                <span>Open portfolio</span>
+            </a>
+
+            <div class="back-link-container">
+                <span>Need access?</span>
+                <a href="https://wa.me/601121194948" target="_blank" class="back-to-site-link">Contact site owner</a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Random portfolio/design quote rotation
+        const quotes = [
+            { text: "“Great portfolios are maintained, not just launched.”", author: "— Portfolio CMS" },
+            { text: "“Design is not just what it looks like and feels like. Design is how it works.”", author: "— Steve Jobs" },
+            { text: "“Simplicity is the ultimate sophistication.”", author: "— Leonardo da Vinci" },
+            { text: "“Good design is obvious. Great design is transparent.”", author: "— Joe Sparano" },
+            { text: "“Make it simple, but significant.”", author: "— Don Draper" },
+            { text: "“First, solve the problem. Then, write the code.”", author: "— John Johnson" },
+            { text: "“Digital design is like painting, except the paint never dries.”", author: "— Neville Brody" },
+            { text: "“Simplicity is about subtracting the obvious and adding the meaningful.”", author: "— John Maeda" }
+        ];
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        document.getElementById('cmsQuoteText').textContent = randomQuote.text;
+        document.getElementById('cmsQuoteAuthor').textContent = randomQuote.author;
+
+        // Password visibility toggler
+        const passwordInput = document.getElementById('passwordInput');
+        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        togglePasswordBtn.addEventListener('click', () => {
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            toggleIcon.className = isPassword ? 'far fa-eye-slash' : 'far fa-eye';
+        });
+
+        // Form submit loading visual response
+        const form = document.querySelector('.cms-form');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnIcon = submitBtn.querySelector('.btn-icon i');
+
+        form.addEventListener('submit', () => {
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            btnText.textContent = 'Decrypting key...';
+            btnIcon.className = 'fas fa-circle-notch fa-spin';
+        });
+    </script>
+</body>
+</html>

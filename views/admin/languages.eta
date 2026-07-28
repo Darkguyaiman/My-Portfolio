@@ -1,0 +1,37 @@
+<%~ include('partials/header', { title: 'Languages', active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Languages</p>
+        <h1>Manage languages</h1>
+        <p>Edit the human languages section shown near the bottom of the homepage. Drag rows to change display order.</p>
+    </div>
+    <a href="/admin/languages/new" class="cms-button primary"><i class="fas fa-plus"></i><span>New Language</span></a>
+</section>
+
+<section class="cms-panel">
+    <div class="cms-table-wrap" data-selectable="false" data-searchable="false" data-reorderable="true" data-reorder-url="/admin/languages/reorder" data-sortable="false" data-paginated="false">
+        <table class="cms-table">
+            <thead><tr><th class="cms-drag-col" aria-label="Reorder"></th><th>Name</th><th>Level</th><th></th></tr></thead>
+            <tbody>
+                <% rows.forEach((row) => { %>
+                    <tr data-row-id="<%= row.id %>">
+                        <td class="cms-drag-cell">
+                            <button type="button" class="cms-drag-handle" aria-label="Drag to reorder <%= row.name %>" draggable="true">
+                                <i class="fas fa-grip-vertical" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                        <td><strong><%= row.name %></strong></td>
+                        <td><%= row.level %></td>
+                        <td class="cms-table-actions">
+                            <a href="/admin/languages/<%= row.id %>/edit" class="cms-icon-button" aria-label="Edit <%= row.name %>"><i class="fas fa-pen"></i></a>
+                            <form method="post" action="/admin/languages/<%= row.id %>/delete" onsubmit="return confirm('Delete this language?')">
+                                <button class="cms-icon-button danger" type="submit" aria-label="Delete <%= row.name %>"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</section>
+<%~ include('partials/footer') %>

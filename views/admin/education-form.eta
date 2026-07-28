@@ -1,0 +1,25 @@
+<%~ include('partials/header', { title, active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Education</p>
+        <h1><%= title %></h1>
+        <p>Results must be valid JSON, for example <code>{"semester":4,"gpa":4}</code>.</p>
+    </div>
+    <a href="/admin/education" class="cms-button secondary"><i class="fas fa-chevron-left"></i><span>Back</span></a>
+</section>
+
+<form method="post" action="<%= action %>" class="cms-panel cms-form">
+    <div class="cms-form-grid two">
+        <label><span>Qualification</span><input name="qualification" value="<%= education.qualification %>" required></label>
+        <label><span>Institution</span><input name="institution" value="<%= education.institution %>" required></label>
+        <label><span>Field</span><input name="field" value="<%= education.field %>" required></label>
+        <label><span>Duration start</span><input name="durationStart" value="<%= education.durationStart %>" required></label>
+        <label><span>Duration end</span><input name="durationEnd" value="<%= education.durationEnd %>" required></label>
+    </div>
+    <label><span>Results JSON</span><textarea name="results" rows="5"><%= education.results %></textarea></label>
+    <label><span>Description</span><textarea name="description" rows="7" required><%= education.description %></textarea></label>
+    <div class="cms-form-actions">
+        <button type="submit" class="cms-button primary"><i class="fas fa-floppy-disk"></i><span>Save Education</span></button>
+    </div>
+</form>
+<%~ include('partials/footer') %>

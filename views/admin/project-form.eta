@@ -1,0 +1,55 @@
+<%~ include('partials/header', { title, active }) %>
+<section class="cms-page-heading">
+    <div>
+        <p class="cms-kicker">Projects</p>
+        <h1><%= title %></h1>
+        <p>Add project details, technologies, and screenshots. You can upload images directly or keep existing paths.</p>
+    </div>
+    <a href="/admin/projects" class="cms-button secondary"><i class="fas fa-chevron-left"></i><span>Back</span></a>
+</section>
+
+<form method="post" action="<%= action %>" class="cms-panel cms-form" enctype="multipart/form-data">
+    <div class="cms-form-grid two">
+        <label><span>Project name</span><input name="projectName" value="<%= project.projectName %>" required></label>
+    </div>
+    <label><span>Description</span><textarea name="description" rows="6" required><%= project.description %></textarea></label>
+    <div class="cms-form-grid two">
+        <label><span>Deployed link</span><input name="deployedLink" value="<%= project.deployedLink %>"></label>
+        <label><span>GitHub link</span><input name="githubLink" value="<%= project.githubLink %>"></label>
+    </div>
+    <label><span>Technologies</span><textarea name="technologies" rows="8" placeholder="Next.js&#10;Express&#10;MySQL"><%= project.technologies.join('\n') %></textarea></label>
+    <div class="cms-upload-group" data-upload-zone>
+        <div class="cms-field-heading">
+            <div>
+                <span>Project images</span>
+                <p>Drop screenshots here or choose files. Existing saved paths stay editable below.</p>
+            </div>
+            <label class="cms-button secondary cms-file-button">
+                <i class="fas fa-images"></i>
+                <span>Choose images</span>
+                <input type="file" name="projectImages" accept="image/*" multiple data-file-input>
+            </label>
+        </div>
+        <div class="cms-dropzone" tabindex="0" role="button" aria-label="Upload project images">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <strong>Drop images to upload</strong>
+            <small>PNG, JPG, WebP, SVG, GIF, or AVIF up to 12 MB each</small>
+        </div>
+        <div class="cms-preview-grid" data-preview-list>
+            <% project.images.forEach((image) => { %>
+                <figure class="cms-preview-card existing">
+                    <img src="<%= image.startsWith('/') ? image : '/' + image %>" alt="">
+                    <figcaption><%= image %></figcaption>
+                </figure>
+            <% }) %>
+        </div>
+        <label class="cms-path-editor">
+            <span>Saved image paths</span>
+            <textarea name="images" rows="6" placeholder="/uploads/images/project-shot.webp"><%= project.images.join('\n') %></textarea>
+        </label>
+    </div>
+    <div class="cms-form-actions">
+        <button type="submit" class="cms-button primary"><i class="fas fa-floppy-disk"></i><span>Save Project</span></button>
+    </div>
+</form>
+<%~ include('partials/footer') %>

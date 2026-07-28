@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title><%= title %> - Portfolio CMS</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <style>html{background:#f6f4f0}</style>
+    <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2?v=<%= assetVersion %>" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/css/app.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/css/admin.min.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>">
+</head>
+<body class="cms-body">
+    <div class="cms-shell">
+        <%~ include('sidebar') %>
+        <main class="cms-main">
