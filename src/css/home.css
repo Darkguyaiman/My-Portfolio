@@ -678,7 +678,7 @@
 }
 
 [data-theme="dark"] .skill-item[data-skill="nextjs"] i.colored.show-true-color {
-    color: #ffffff !important;
+    color: var(--red) !important;
 }
 
 [data-theme="dark"] .skill-item[data-skill="react"] i.colored.show-true-color {
