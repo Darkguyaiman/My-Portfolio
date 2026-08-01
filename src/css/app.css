@@ -530,6 +530,60 @@ section {
     color: var(--dark-gray);
     text-transform: capitalize;
     text-align: left;
+    overflow: visible;
+}
+
+/* Shared character slide-in (hero + section titles) */
+.text-animate-pending {
+    opacity: 0;
+}
+
+.text-char {
+    display: inline-block;
+    white-space: pre;
+    will-change: transform, opacity;
+}
+
+/* Must beat page-level title rules (e.g. .project-detail-title { text-transform: capitalize }) */
+.hero-title.text-animate,
+.section-title.text-animate,
+.project-detail-title.text-animate,
+.privacy-title.text-animate,
+.text-animate .text-char {
+    text-transform: none;
+}
+
+.text-animate .text-char {
+    opacity: 0;
+    transform: translateY(30px) rotate(45deg) scale(0.5);
+    animation: text-char-in 0.35s cubic-bezier(0.22, 1.35, 0.36, 1) forwards;
+    animation-delay: calc(var(--char-index, 0) * 0.035s);
+}
+
+@keyframes text-char-in {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) rotate(45deg) scale(0.5);
+    }
+    60% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .text-animate-pending {
+        opacity: 1;
+    }
+
+    .text-animate .text-char {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
 }
 
 /* Easter Egg */

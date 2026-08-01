@@ -103,9 +103,9 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <h1 class="hero-title"><%= content.heroTitlePrefix %> <span class="name-highlight"><%= content.heroName %></span>.</h1>
-                    <p class="hero-subtitle"><%~ content.heroSubtitle %></p>
-                    <p class="hero-description">
+                    <h1 class="hero-title"><%= content.heroTitlePrefix %> <span class="name-highlight"><%= content.heroName %>.</span></h1>
+                    <p class="hero-subtitle hero-line"><%~ content.heroSubtitle %></p>
+                    <p class="hero-description hero-line">
                         <%= content.heroDescription %>
                     </p>
                     <div class="hero-links">
@@ -113,13 +113,13 @@
                             <i class="fas fa-file-pdf"></i>
                             Resume
                         </a>
-                        <div class="social-links">
-                            <a href="<%= content.linkedinUrl %>" target="_blank" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                            <a href="<%= content.githubUrl %>" target="_blank" class="social-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                            <a href="<%= content.xUrl %>" target="_blank" class="social-link" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                            <a href="<%= content.instagramUrl %>" target="_blank" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                            <a href="<%= content.facebookUrl %>" target="_blank" class="social-link" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                            <a href="mailto:<%= content.email %>" class="social-link" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                        <div class="icon-dock social-links" role="navigation" aria-label="Social links">
+                            <a href="<%= content.linkedinUrl %>" target="_blank" class="dock-icon" data-label="LinkedIn" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                            <a href="<%= content.githubUrl %>" target="_blank" class="dock-icon" data-label="GitHub" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                            <a href="<%= content.xUrl %>" target="_blank" class="dock-icon" data-label="X" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                            <a href="<%= content.instagramUrl %>" target="_blank" class="dock-icon" data-label="Instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="<%= content.facebookUrl %>" target="_blank" class="dock-icon" data-label="Facebook" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                            <a href="mailto:<%= content.email %>" class="dock-icon" data-label="Email" aria-label="Email"><i class="fas fa-envelope"></i></a>
                         </div>
                     </div>
                 </div>
@@ -269,13 +269,13 @@
                     <p class="contact-text">
                         <%= content.contactText %>
                     </p>
-                    <div class="contact-links">
-                        <a href="<%= content.linkedinUrl %>" target="_blank" class="contact-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                        <a href="<%= content.githubUrl %>" target="_blank" class="contact-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="<%= content.xUrl %>" target="_blank" class="contact-link" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                        <a href="<%= content.instagramUrl %>" target="_blank" class="contact-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="<%= content.facebookUrl %>" target="_blank" class="contact-link" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                        <a href="mailto:<%= content.email %>" class="contact-link" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                    <div class="icon-dock contact-links" role="navigation" aria-label="Contact links">
+                        <a href="<%= content.linkedinUrl %>" target="_blank" class="dock-icon" data-label="LinkedIn" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="<%= content.githubUrl %>" target="_blank" class="dock-icon" data-label="GitHub" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="<%= content.xUrl %>" target="_blank" class="dock-icon" data-label="X" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                        <a href="<%= content.instagramUrl %>" target="_blank" class="dock-icon" data-label="Instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="<%= content.facebookUrl %>" target="_blank" class="dock-icon" data-label="Facebook" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="mailto:<%= content.email %>" class="dock-icon" data-label="Email" aria-label="Email"><i class="fas fa-envelope"></i></a>
                     </div>
                 </div>
             </div>

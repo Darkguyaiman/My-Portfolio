@@ -170,30 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     initSkillsSelection();
-
-
-    const calculateContactLayout = () => {
-        requestAnimationFrame(() => {
-            calculateOptimalContactColumns();
-        });
-    };
-    calculateContactLayout();
-    setTimeout(calculateContactLayout, 50);
-    setTimeout(calculateContactLayout, 200);
-    setTimeout(calculateContactLayout, 500);
-
-
-    let contactResizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(contactResizeTimeout);
-        contactResizeTimeout = setTimeout(() => {
-            requestAnimationFrame(calculateOptimalContactColumns);
-        }, 100);
-    });
-
-    window.addEventListener('orientationchange', () => {
-        setTimeout(calculateContactLayout, 200);
-    });
+    initIconDocks();
+    initHeroTitleAnimate();
+    initHeroLinesAnimate();
+    initTextAnimateTitles();
 
 
     // Load all dynamic content first, then handle initial hash scrolling
@@ -579,90 +559,241 @@ function calculateOptimalColumns() {
 }
 
 
-function calculateOptimalContactColumns() {
-    const contactLinks = document.querySelector('.contact-links');
-    if (!contactLinks) return;
-
-    const contactLinkItems = contactLinks.querySelectorAll('.contact-link');
-    const totalItems = contactLinkItems.length;
-    if (totalItems === 0) return;
+function capitalizeWords(text) {
+    return text.replace(/(^|\s)(\S)/g, (_, space, char) => space + char.toUpperCase());
+}
 
 
-    const container = contactLinks.closest('.container');
-    let availableWidth = window.innerWidth;
+function animateTextByCharacter(element) {
+    if (!element || element.dataset.textAnimated === 'true') return false;
 
-    if (container) {
-        const containerRect = container.getBoundingClientRect();
-        availableWidth = containerRect.width;
+    const accessibleText = (element.textContent || '').replace(/\s+/g, ' ').trim();
+    if (!accessibleText) return false;
+
+    element.classList.remove('text-animate-pending');
+    element.setAttribute('aria-label', accessibleText);
+    element.dataset.textAnimated = 'true';
+
+    if (prefersReducedMotion()) {
+        return false;
     }
 
+    // Bake capitalize into the text before wrapping — CSS capitalize
+    // treats each inline-block character as its own word (ALL CAPS).
+    const shouldCapitalize = getComputedStyle(element).textTransform === 'capitalize';
 
-    const containerPadding = availableWidth <= 400 ? 32 : 40;
-    availableWidth = Math.max(0, availableWidth - containerPadding);
-
-
-    const minItemWidth = 48;
-    const preferredItemWidth = 52;
-    const gap = availableWidth <= 400 ? 10 : (availableWidth <= 768 ? 6.4 : 16);
-
-
-    const maxColumns = Math.floor((availableWidth + gap) / (minItemWidth + gap));
-
-
-    const divisors = [];
-    for (let i = 1; i <= totalItems; i++) {
-        if (totalItems % i === 0) {
-            divisors.push(i);
-        }
-    }
-
-
-
-    let bestColumns = 2;
-
-
-    const validDivisors = divisors.filter(d => d >= 2);
-
-    if (validDivisors.length === 0) {
-
-        bestColumns = 2;
-    } else {
-
-        for (let i = validDivisors.length - 1; i >= 0; i--) {
-            const cols = validDivisors[i];
-            if (cols <= maxColumns) {
-                bestColumns = cols;
-                break;
+    const wrapCharacters = (node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const fragment = document.createDocumentFragment();
+            const text = shouldCapitalize
+                ? capitalizeWords(node.textContent || '')
+                : (node.textContent || '');
+            for (const char of text) {
+                const span = document.createElement('span');
+                span.className = 'text-char';
+                span.setAttribute('aria-hidden', 'true');
+                span.textContent = char;
+                fragment.appendChild(span);
             }
+            return fragment;
         }
 
-
-        if (bestColumns < 2) {
-            bestColumns = Math.min(2, maxColumns);
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            const clone = node.cloneNode(false);
+            Array.from(node.childNodes).forEach((child) => {
+                clone.appendChild(wrapCharacters(child));
+            });
+            return clone;
         }
+
+        return node.cloneNode(true);
+    };
+
+    const fragment = document.createDocumentFragment();
+    Array.from(element.childNodes).forEach((child) => {
+        fragment.appendChild(wrapCharacters(child));
+    });
+
+    element.replaceChildren(fragment);
+    element.querySelectorAll('.text-char').forEach((char, index) => {
+        char.style.setProperty('--char-index', String(index));
+    });
+    element.classList.add('text-animate');
+    return true;
+}
+
+window.animateTextByCharacter = animateTextByCharacter;
+
+
+function initHeroTitleAnimate() {
+    const title = document.querySelector('.hero-title');
+    if (!title) return;
+    animateTextByCharacter(title);
+}
+
+
+function initTextAnimateTitles() {
+    const titles = Array.from(document.querySelectorAll(
+        '.section-title, .project-detail-title, .privacy-title'
+    ));
+    if (!titles.length) return;
+
+    const titleObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            animateTextByCharacter(entry.target);
+            titleObserver.unobserve(entry.target);
+        });
+    }, {
+        threshold: 0.35,
+        rootMargin: '0px 0px -8% 0px'
+    });
+
+    titles.forEach((title) => {
+        if (title.dataset.textAnimated === 'true') return;
+        if (!(title.textContent || '').trim()) return;
+        title.classList.add('text-animate-pending');
+        titleObserver.observe(title);
+    });
+}
+
+
+function initHeroLinesAnimate() {
+    const lines = Array.from(document.querySelectorAll('.hero-text .hero-line'));
+    if (!lines.length) return;
+
+    const title = document.querySelector('.hero-title');
+    const charCount = title ? title.querySelectorAll('.text-char').length : 0;
+    const titleDurationMs = prefersReducedMotion()
+        ? 0
+        : Math.max(400, charCount * 35 + 350);
+    const lineStaggerMs = 220;
+
+    lines.forEach((line, index) => {
+        line.style.setProperty(
+            '--hero-line-delay',
+            `${(titleDurationMs + index * lineStaggerMs) / 1000}s`
+        );
+    });
+
+    const heroText = document.querySelector('.hero-text');
+    if (heroText) {
+        heroText.classList.add('hero-lines-animate');
     }
+}
 
 
-    const itemWidthWithBest = (availableWidth - (bestColumns - 1) * gap) / bestColumns;
-    if (itemWidthWithBest < preferredItemWidth && bestColumns > 2) {
+function initIconDocks() {
+    const docks = document.querySelectorAll('.icon-dock');
+    if (!docks.length) return;
 
-        for (let i = validDivisors.length - 1; i >= 0; i--) {
-            const cols = validDivisors[i];
-            if (cols < bestColumns && cols >= 2 && cols <= maxColumns) {
-                const itemWidth = (availableWidth - (cols - 1) * gap) / cols;
-                if (itemWidth >= preferredItemWidth) {
-                    bestColumns = cols;
-                    break;
+    docks.forEach((dock) => {
+        const icons = Array.from(dock.querySelectorAll('.dock-icon'));
+        if (!icons.length) return;
+
+        let hovered = -1;
+        let frameId = 0;
+        let padExtra = 0;
+        let gapExtra = 0;
+        const state = icons.map(() => ({ x: 0, y: 0, scale: 1 }));
+
+        const lerp = (current, target, amount) => current + (target - current) * amount;
+
+        const apply = () => {
+            dock.style.setProperty('--dock-pad-extra', `${padExtra.toFixed(2)}px`);
+            dock.style.setProperty('--dock-gap-extra', `${gapExtra.toFixed(2)}px`);
+            icons.forEach((icon, index) => {
+                const item = state[index];
+                icon.style.setProperty('--dock-x', `${item.x.toFixed(2)}px`);
+                icon.style.setProperty('--dock-y', `${item.y.toFixed(2)}px`);
+                icon.style.setProperty('--dock-scale', item.scale.toFixed(3));
+                icon.classList.toggle('is-active', index === hovered);
+            });
+        };
+
+        const tick = () => {
+            frameId = 0;
+
+            if (prefersReducedMotion()) {
+                padExtra = 0;
+                gapExtra = 0;
+                state.forEach((item) => {
+                    item.x = 0;
+                    item.y = 0;
+                    item.scale = 1;
+                });
+                apply();
+                return;
+            }
+
+            const targetPad = hovered >= 0 ? 8 : 0;
+            const targetGap = hovered >= 0 ? 6 : 0;
+            let animating = false;
+
+            padExtra = lerp(padExtra, targetPad, 0.16);
+            gapExtra = lerp(gapExtra, targetGap, 0.16);
+            if (Math.abs(padExtra - targetPad) > 0.08) animating = true;
+            else padExtra = targetPad;
+            if (Math.abs(gapExtra - targetGap) > 0.08) animating = true;
+            else gapExtra = targetGap;
+
+            state.forEach((item, index) => {
+                const active = index === hovered;
+                const targetScale = active ? 1.14 : 1;
+                const targetY = active ? -3 : 0;
+                let targetX = 0;
+                if (hovered >= 0 && !active) {
+                    targetX = index < hovered ? -7 : 7;
                 }
+
+                item.scale = lerp(item.scale, targetScale, 0.18);
+                item.y = lerp(item.y, targetY, 0.18);
+                item.x = lerp(item.x, targetX, 0.18);
+
+                if (
+                    Math.abs(item.scale - targetScale) > 0.004 ||
+                    Math.abs(item.y - targetY) > 0.08 ||
+                    Math.abs(item.x - targetX) > 0.08
+                ) {
+                    animating = true;
+                } else {
+                    item.scale = targetScale;
+                    item.y = targetY;
+                    item.x = targetX;
+                }
+            });
+
+            apply();
+            if (animating) frameId = requestAnimationFrame(tick);
+        };
+
+        const queueTick = () => {
+            if (!frameId) frameId = requestAnimationFrame(tick);
+        };
+
+        icons.forEach((icon, index) => {
+            icon.addEventListener('pointerenter', () => {
+                hovered = index;
+                queueTick();
+            });
+            icon.addEventListener('focus', () => {
+                hovered = index;
+                queueTick();
+            });
+        });
+
+        dock.addEventListener('pointerleave', () => {
+            hovered = -1;
+            queueTick();
+        });
+
+        dock.addEventListener('focusout', (event) => {
+            if (!dock.contains(event.relatedTarget)) {
+                hovered = -1;
+                queueTick();
             }
-        }
-    }
-
-
-    bestColumns = Math.max(2, Math.min(bestColumns, Math.min(maxColumns, totalItems)));
-
-
-    contactLinks.style.setProperty('--contact-columns', bestColumns);
+        });
+    });
 }
 
 
@@ -848,12 +979,12 @@ window.techIconMap = {
     'React': { type: 'devicon', class: 'devicon-react-original colored' },
     'TypeScript': { type: 'devicon', class: 'devicon-typescript-plain colored' },
     'Nginx': { type: 'devicon', class: 'devicon-nginx-original colored' },
-    'Ubuntu': { type: 'fa', class: 'fa-brands fa-ubuntu' },
+    'Ubuntu': { type: 'fa', class: 'fa-brands fa-ubuntu colored' },
     'Google Cloud': { type: 'devicon', class: 'devicon-googlecloud-plain colored' },
     'Google Cloud Platform': { type: 'devicon', class: 'devicon-googlecloud-plain colored' },
     'GCP': { type: 'devicon', class: 'devicon-googlecloud-plain colored' },
-    'Node.js': { type: 'fa', class: 'fa-brands fa-node-js' },
-    'Node': { type: 'fa', class: 'fa-brands fa-node-js' },
+    'Node.js': { type: 'fa', class: 'fa-brands fa-node-js colored' },
+    'Node': { type: 'fa', class: 'fa-brands fa-node-js colored' },
     'Express.js': { type: 'devicon', class: 'devicon-express-original colored' },
     'Express': { type: 'devicon', class: 'devicon-express-original colored' },
     'EJS': { type: 'ejs', class: 'ejs-icon' },
@@ -876,20 +1007,19 @@ window.techIconMap = {
 
 function getSmallTechIcon(tech) {
     const iconData = window.techIconMap[tech] || null;
+    const label = String(tech).replace(/"/g, '&quot;');
     if (!iconData) {
-        return `<span class="project-tech-icon-fallback" title="${tech}" data-tooltip="${tech}">${tech}</span>`;
+        return `<span class="project-tech-icon-fallback" data-tooltip="${label}">${tech}</span>`;
     }
 
     if (iconData.type === 'ejs') {
-        return `<span class="project-tech-icon ejs-icon-small" title="${tech}" data-tooltip="${tech}">EJS</span>`;
+        return `<span class="project-tech-icon ejs-icon-small" data-tooltip="${label}">EJS</span>`;
     }
 
-    if (iconData.type === 'fa') {
-        return `<i class="project-tech-icon ${iconData.class}" title="${tech}" data-tooltip="${tech}"></i>`;
-    }
-
-    return `<i class="project-tech-icon ${iconData.class}" title="${tech}" data-tooltip="${tech}"></i>`;
+    return `<i class="project-tech-icon ${iconData.class}" data-tooltip="${label}"></i>`;
 }
+
+window.getSmallTechIcon = getSmallTechIcon;
 
 
 async function loadFeaturedProjects() {
@@ -918,13 +1048,12 @@ async function loadFeaturedProjects() {
             const detailLink = `/projects/${project.slug}`;
 
             projectCard.innerHTML = `
+                <a href="${detailLink}" class="project-card-main-link">View ${project.projectName} details</a>
                 ${displayImages.length > 0 ? `
-                <a href="${detailLink}" class="project-card-images-link">
-                    <div class="project-card-images">
-                        ${displayImages.map(img => `<img src="/${img}" alt="${project.projectName}" class="project-card-image">`).join('')}
-                        ${hasMoreImages ? `<div class="project-card-image-more">+${project.images.length - 3}</div>` : ''}
-                    </div>
-                </a>
+                <div class="project-card-images">
+                    ${displayImages.map(img => `<img src="/${img}" alt="${project.projectName}" class="project-card-image">`).join('')}
+                    ${hasMoreImages ? `<div class="project-card-image-more">+${project.images.length - 3}</div>` : ''}
+                </div>
                 ` : ''}
                 <h3 class="project-title">${project.projectName}</h3>
                 <p class="project-description">${project.description}</p>
@@ -932,9 +1061,9 @@ async function loadFeaturedProjects() {
                     ${project.techUsed.map(tech => getSmallTechIcon(tech)).join('')}
                 </div>
                 <div class="project-links">
-                    ${project.deployedLink ? `<a href="${project.deployedLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} website">Website</a>` : ''}
-                    ${project.githubLink ? `<a href="${project.githubLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} source code">Source</a>` : ''}
-                    <a href="${detailLink}" class="project-link" aria-label="View ${project.projectName} details">Details</a>
+                    ${project.deployedLink ? `<a href="${project.deployedLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Website</span></a>` : ''}
+                    ${project.githubLink ? `<a href="${project.githubLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} source code"><i class="fab fa-github" aria-hidden="true"></i><span>Source</span></a>` : ''}
+                    <a href="${detailLink}" class="project-link" aria-label="View ${project.projectName} details"><i class="fas fa-arrow-right" aria-hidden="true"></i><span>Details</span></a>
                 </div>
             `;
 

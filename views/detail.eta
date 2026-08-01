@@ -332,7 +332,11 @@
                 document.getElementById('canonicalUrl').setAttribute('href', currentUrl);
 
 
-                document.getElementById('projectTitle').textContent = project.projectName;
+                const projectTitle = document.getElementById('projectTitle');
+                projectTitle.textContent = project.projectName;
+                if (typeof window.animateTextByCharacter === 'function') {
+                    window.animateTextByCharacter(projectTitle);
+                }
                 document.getElementById('projectDescription').textContent = project.description;
 
 
@@ -361,12 +365,13 @@
                 const linksContainer = document.getElementById('projectLinks');
                 const links = [];
                 if (project.deployedLink) {
-                    links.push(`<a href="${project.deployedLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} website">Website</a>`);
+                    links.push(`<a href="${project.deployedLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Website</span></a>`);
                 }
                 if (project.githubLink) {
-                    links.push(`<a href="${project.githubLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} source code">Source</a>`);
+                    links.push(`<a href="${project.githubLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} source code"><i class="fab fa-github" aria-hidden="true"></i><span>Source</span></a>`);
                 }
                 linksContainer.innerHTML = links.join('');
+                linksContainer.hidden = links.length === 0;
             } catch (error) {
                 console.error('Error loading project details:', error);
             }

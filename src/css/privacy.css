@@ -15,6 +15,12 @@
             margin-bottom: 1rem;
             text-align: left;
             text-transform: capitalize;
+            overflow: visible;
+        }
+
+        .privacy-title.text-animate,
+        .privacy-title.text-animate .text-char {
+            text-transform: none;
         }
 
         .privacy-last-updated {

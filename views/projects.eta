@@ -122,25 +122,6 @@
     <script src="/js/app.min.js"></script>
     <script>
 
-        function getSmallTechIcon(tech) {
-
-            const iconData = window.techIconMap ? window.techIconMap[tech] : null;
-            if (!iconData) {
-                return `<span class="project-tech-icon-fallback" title="${tech}" data-tooltip="${tech}">${tech}</span>`;
-            }
-            
-            if (iconData.type === 'ejs') {
-                return `<span class="project-tech-icon ejs-icon-small" title="${tech}" data-tooltip="${tech}">EJS</span>`;
-            }
-            
-            if (iconData.type === 'fa') {
-                return `<i class="project-tech-icon ${iconData.class}" title="${tech}" data-tooltip="${tech}"></i>`;
-            }
-            
-            return `<i class="project-tech-icon ${iconData.class}" title="${tech}" data-tooltip="${tech}"></i>`;
-        }
-        
-
         async function loadAllProjects() {
             try {
                 const response = await fetch('/api/projects');
@@ -160,23 +141,22 @@
                     const detailLink = `/projects/${project.slug}`;
                     
                     projectCard.innerHTML = `
+                        <a href="${detailLink}" class="project-card-main-link">View ${project.projectName} details</a>
                         ${displayImages.length > 0 ? `
-                        <a href="${detailLink}" class="project-card-images-link">
-                            <div class="project-card-images">
-                                ${displayImages.map(img => `<img src="/${img}" alt="${project.projectName}" class="project-card-image">`).join('')}
-                                ${hasMoreImages ? `<div class="project-card-image-more">+${project.images.length - 3}</div>` : ''}
-                            </div>
-                        </a>
+                        <div class="project-card-images">
+                            ${displayImages.map(img => `<img src="/${img}" alt="${project.projectName}" class="project-card-image">`).join('')}
+                            ${hasMoreImages ? `<div class="project-card-image-more">+${project.images.length - 3}</div>` : ''}
+                        </div>
                         ` : ''}
                         <h3 class="project-title">${project.projectName}</h3>
                         <p class="project-description">${project.description}</p>
                         <div class="project-tags">
-                            ${project.techUsed.map(tech => getSmallTechIcon(tech)).join('')}
+                            ${project.techUsed.map(tech => window.getSmallTechIcon(tech)).join('')}
                         </div>
                         <div class="project-links">
-                            ${project.deployedLink ? `<a href="${project.deployedLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} website">Website</a>` : ''}
-                            ${project.githubLink ? `<a href="${project.githubLink}" target="_blank" class="project-link" aria-label="View ${project.projectName} source code">Source</a>` : ''}
-                            <a href="${detailLink}" class="project-link" aria-label="View ${project.projectName} details">Details</a>
+                            ${project.deployedLink ? `<a href="${project.deployedLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Website</span></a>` : ''}
+                            ${project.githubLink ? `<a href="${project.githubLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} source code"><i class="fab fa-github" aria-hidden="true"></i><span>Source</span></a>` : ''}
+                            <a href="${detailLink}" class="project-link" aria-label="View ${project.projectName} details"><i class="fas fa-arrow-right" aria-hidden="true"></i><span>Details</span></a>
                         </div>
                     `;
                     
