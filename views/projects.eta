@@ -154,9 +154,9 @@
                             ${project.techUsed.map(tech => window.getSmallTechIcon(tech)).join('')}
                         </div>
                         <div class="project-links">
-                            ${project.deployedLink ? `<a href="${project.deployedLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Website</span></a>` : ''}
-                            ${project.githubLink ? `<a href="${project.githubLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} source code"><i class="fab fa-github" aria-hidden="true"></i><span>Source</span></a>` : ''}
-                            <a href="${detailLink}" class="project-link" aria-label="View ${project.projectName} details"><i class="fas fa-arrow-right" aria-hidden="true"></i><span>Details</span></a>
+                            ${project.deployedLink ? `<a href="${project.deployedLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} website">Website</a>` : ''}
+                            ${project.githubLink ? `<a href="${project.githubLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} source code">Source</a>` : ''}
+                            <a href="${detailLink}" class="project-link" aria-label="View ${project.projectName} details">Details</a>
                         </div>
                     `;
                     

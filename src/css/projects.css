@@ -415,68 +415,20 @@
 
 .project-links {
     display: flex;
-    gap: 0.75rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
 }
 
 .project-links .project-link {
     color: var(--red);
-    text-decoration: none;
-    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
     font-size: 0.9rem;
-    padding: 0.6rem 1.15rem;
-    border: 2px solid var(--red);
-    border-radius: 8px;
-    transition: color 1.4s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    background: transparent;
-    position: relative;
-    overflow: hidden;
-    z-index: 0;
-    isolation: isolate;
-}
-
-.project-links .project-link::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    width: 220%;
-    aspect-ratio: 1;
-    background: var(--red);
-    border-radius: 50%;
-    transform: translate(-50%, 100%) scale(0.35);
-    transition: transform 1.8s cubic-bezier(0.25, 0.7, 0.3, 1);
-    z-index: -1;
-    pointer-events: none;
-}
-
-.project-links .project-link i,
-.project-links .project-link span {
-    position: relative;
-    z-index: 1;
+    transition: color 0.2s ease;
 }
 
 .project-links .project-link:hover {
-    color: var(--cream-white);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
-}
-
-.project-links .project-link:hover::before {
-    transform: translate(-50%, 20%) scale(1);
-}
-
-[data-theme="dark"] .project-links .project-link {
-    color: var(--red);
-    border-color: var(--red);
-}
-
-[data-theme="dark"] .project-links .project-link:hover {
-    color: var(--cream-white);
-    box-shadow: 0 6px 20px rgba(230, 57, 70, 0.5);
+    color: var(--dark-gray);
 }
 
 @media (max-width: 768px) {
