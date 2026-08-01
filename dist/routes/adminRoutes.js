@@ -6,7 +6,16 @@ import multer from 'multer';
 import { createEducation, createLanguage, createProject, createWork, deleteEducation, deleteLanguage, deleteProject, deleteWork, getAdminEducation, getAdminLanguage, getAdminProject, getAdminWork, getDashboardStats, getNextEducationDisplayOrder, getNextLanguageDisplayOrder, getNextProjectDisplayOrder, getNextWorkDisplayOrder, getSiteContent, listAdminEducation, listAdminLanguages, listAdminProjects, listAdminWork, reorderEducation, reorderLanguages, reorderProjects, reorderWork, saveSiteContent, updateEducation, updateLanguage, updateProject, updateWork, } from '../models/adminModel.js';
 const router = Router();
 const cookieName = 'portfolio_cms';
-const uploadRoot = path.join(process.cwd(), 'public', 'uploads');
+const resolvePublicRoot = () => {
+    const lower = path.join(process.cwd(), 'public');
+    const upper = path.join(process.cwd(), 'Public');
+    if (fs.existsSync(lower))
+        return lower;
+    if (fs.existsSync(upper))
+        return upper;
+    return lower;
+};
+const uploadRoot = path.join(resolvePublicRoot(), 'uploads');
 const upload = multer({
     storage: multer.diskStorage({
         destination: (_req, file, callback) => {

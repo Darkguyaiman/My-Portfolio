@@ -1,5 +1,6 @@
 import express from 'express';
 import { Eta } from 'eta';
+import fs from 'fs';
 import path from 'path';
 import adminRoutes from './routes/adminRoutes.js';
 import educationRoutes from './routes/educationRoutes.js';
@@ -9,9 +10,9 @@ import workRoutes from './routes/workRoutes.js';
 import { getSiteContent } from './models/adminModel.js';
 import { getProjectByName, getProjectBySlug } from './models/projectModel.js';
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
 const appRoot = process.cwd();
-const publicRoot = path.join(appRoot, 'public');
 const viewsRoot = path.join(appRoot, 'views');
 const templateCacheEnabled = process.env.NODE_ENV === 'production';
 const assetVersion = Date.now().toString(36);
@@ -21,6 +22,25 @@ const eta = new Eta({
     useWith: true,
 });
 const cachedAssetPattern = /\.(?:css|woff2?|ttf|otf|eot)$/i;
+// Linux is case-sensitive: git may have `Public/` while builds write to `public/`.
+function resolvePublicRoots(root) {
+    const candidates = [path.join(root, 'public'), path.join(root, 'Public')];
+    const seen = new Set();
+    const dirs = [];
+    for (const candidate of candidates) {
+        if (!fs.existsSync(candidate))
+            continue;
+        const resolved = fs.realpathSync(candidate);
+        const key = process.platform === 'win32' ? resolved.toLowerCase() : resolved;
+        if (seen.has(key))
+            continue;
+        seen.add(key);
+        dirs.push(resolved);
+    }
+    return dirs.length > 0 ? dirs : [path.join(root, 'public')];
+}
+const publicRoots = resolvePublicRoots(appRoot);
+const publicRoot = publicRoots[0];
 const setStaticCacheHeaders = (res, filePath) => {
     if (cachedAssetPattern.test(filePath)) {
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
@@ -39,22 +59,19 @@ app.set('view engine', 'eta');
 app.set('views', viewsRoot);
 app.set('view cache', templateCacheEnabled);
 app.locals.assetVersion = assetVersion;
-app.use('/Public', express.static(publicRoot, {
+const staticOptions = {
     etag: true,
     lastModified: true,
     setHeaders: setStaticCacheHeaders,
-}));
-app.use('/public', express.static(publicRoot, {
-    etag: true,
-    lastModified: true,
-    setHeaders: setStaticCacheHeaders,
-}));
-app.use(express.static(publicRoot, {
-    extensions: ['css', 'js', 'pdf', 'webp', 'ico', 'png', 'jpg', 'svg'],
-    etag: true,
-    lastModified: true,
-    setHeaders: setStaticCacheHeaders,
-}));
+};
+for (const root of publicRoots) {
+    app.use('/Public', express.static(root, staticOptions));
+    app.use('/public', express.static(root, staticOptions));
+    app.use(express.static(root, {
+        ...staticOptions,
+        extensions: ['css', 'js', 'pdf', 'webp', 'ico', 'png', 'jpg', 'svg'],
+    }));
+}
 app.use((_req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
     next();
@@ -93,6 +110,9 @@ app.get('/projects/:slug', async (req, res) => {
     }
     res.render('detail', { projectName: project.projectName, project });
 });
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+    console.log(`Serving static files from: ${publicRoots.join(', ')}`);
+    console.log(`Server running on http://${HOST}:${PORT}`);
+    console.log(`Tailscale MagicDNS: http://server1:${PORT}`);
+    console.log(`Local: http://localhost:${PORT}`);
 });

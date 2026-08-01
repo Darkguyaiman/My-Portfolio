@@ -40,7 +40,14 @@ import {
 
 const router = Router();
 const cookieName = 'portfolio_cms';
-const uploadRoot = path.join(process.cwd(), 'public', 'uploads');
+const resolvePublicRoot = () => {
+  const lower = path.join(process.cwd(), 'public');
+  const upper = path.join(process.cwd(), 'Public');
+  if (fs.existsSync(lower)) return lower;
+  if (fs.existsSync(upper)) return upper;
+  return lower;
+};
+const uploadRoot = path.join(resolvePublicRoot(), 'uploads');
 const upload = multer({
   storage: multer.diskStorage({
     destination: (_req, file, callback) => {
