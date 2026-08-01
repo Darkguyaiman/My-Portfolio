@@ -3,23 +3,27 @@
     <div>
         <p class="cms-kicker">Work</p>
         <h1>Manage work history</h1>
-        <p>Edit company roles, dates, logos, and timeline bullet points. Drag rows to change display order.</p>
+        <p>Edit company roles, dates, logos, and timeline bullet points.</p>
     </div>
-    <a href="/admin/work/new" class="cms-button primary"><i class="fas fa-plus"></i><span>New Work Item</span></a>
+    <div class="cms-page-heading-actions">
+        <% if (rows.length) { %>
+            <script type="application/json" class="cms-sort-modal-data"><%~ JSON.stringify(rows.map((row) => ({ id: row.id, label: row.company, meta: row.role }))) %></script>
+            <button type="button" class="cms-button secondary cms-sort-modal-trigger" data-reorder-url="/admin/work/reorder" data-modal-title="Sort work history">
+                <i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i><span>Sort order</span>
+            </button>
+        <% } %>
+        <a href="/admin/work/new" class="cms-button primary"><i class="fas fa-plus"></i><span>New Work Item</span></a>
+    </div>
 </section>
 
 <section class="cms-panel">
-    <div class="cms-table-wrap" data-selectable="false" data-searchable="false" data-reorderable="true" data-reorder-url="/admin/work/reorder" data-sortable="false" data-paginated="false">
+    <div class="cms-table-wrap">
         <table class="cms-table">
-            <thead><tr><th class="cms-drag-col" aria-label="Reorder"></th><th>Company</th><th>Role</th><th>Dates</th><th></th></tr></thead>
+            <thead><tr><th>Order</th><th>Company</th><th>Role</th><th>Dates</th><th></th></tr></thead>
             <tbody>
                 <% rows.forEach((row) => { %>
-                    <tr data-row-id="<%= row.id %>">
-                        <td class="cms-drag-cell">
-                            <button type="button" class="cms-drag-handle" aria-label="Drag to reorder <%= row.company %>" draggable="true">
-                                <i class="fas fa-grip-vertical" aria-hidden="true"></i>
-                            </button>
-                        </td>
+                    <tr>
+                        <td><%= row.display_order %></td>
                         <td><strong><%= row.company %></strong><span><%= row.logo || 'No logo' %></span></td>
                         <td><%= row.role %></td>
                         <td><%= row.start_date %> - <%= row.end_date %></td>

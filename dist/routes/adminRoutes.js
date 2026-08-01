@@ -238,8 +238,10 @@ router.post('/work/:id', cmsUploads, async (req, res, next) => {
         const existing = await getAdminWork(id);
         if (!existing)
             return res.redirect('/admin/work');
+        const parsed = parseWork(req.body, getUploadedPaths(req));
         await updateWork(id, {
-            ...parseWork(req.body, getUploadedPaths(req)),
+            ...parsed,
+            logo: parsed.logo ?? existing.logo,
             displayOrder: existing.displayOrder,
         });
         res.redirect('/admin/work');
@@ -466,17 +468,46 @@ function parseWork(body, uploads = {}) {
     };
 }
 function parseEducation(body) {
-    const results = nullable(body.results) || '{}';
-    JSON.parse(results);
     return {
         qualification: String(body.qualification || '').trim(),
         institution: String(body.institution || '').trim(),
         field: String(body.field || '').trim(),
         durationStart: String(body.durationStart || '').trim(),
         durationEnd: String(body.durationEnd || '').trim(),
-        results,
+        results: buildEducationResults(body),
         description: String(body.description || '').trim(),
     };
+}
+function buildEducationResults(body) {
+    const semester = numberField(body.semester);
+    const gpa = numberField(body.gpa);
+    const totalSubjects = numberField(body.totalSubjects);
+    const grades = {
+        'A*': numberField(body.gradeAStar),
+        A: numberField(body.gradeA),
+        B: numberField(body.gradeB),
+        C: numberField(body.gradeC),
+        D: numberField(body.gradeD),
+        F: numberField(body.gradeF),
+    };
+    const filteredGrades = Object.fromEntries(Object.entries(grades).filter(([, value]) => value !== null));
+    const results = {};
+    if (semester !== null)
+        results.semester = semester;
+    if (gpa !== null)
+        results.gpa = gpa;
+    if (totalSubjects !== null || Object.keys(filteredGrades).length > 0) {
+        results.total_subjects = totalSubjects ?? Object.values(filteredGrades).reduce((total, count) => total + Number(count), 0);
+        results.grades = filteredGrades;
+    }
+    return JSON.stringify(results);
+}
+function numberField(value) {
+    const text = String(value ?? '').trim();
+    if (!text)
+        return null;
+    const parsed = Number(text);
+    return Number.isFinite(parsed) ? parsed : null;
 }
 function parseLanguage(body) {
     return {
@@ -516,7 +547,7 @@ function emptyWork() {
     return { id: null, company: '', role: '', startDate: '', endDate: 'present', logo: '', displayOrder: 0, descriptions: [] };
 }
 function emptyEducation() {
-    return { id: null, qualification: '', institution: '', field: '', durationStart: '', durationEnd: '', results: '{}', description: '', displayOrder: 0 };
+    return { id: null, qualification: '', institution: '', field: '', durationStart: '', durationEnd: '', results: '{}', resultFields: {}, description: '', displayOrder: 0 };
 }
 function emptyLanguage() {
     return { id: null, name: '', level: '', displayOrder: 0 };

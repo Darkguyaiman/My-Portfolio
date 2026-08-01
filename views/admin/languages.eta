@@ -3,23 +3,27 @@
     <div>
         <p class="cms-kicker">Languages</p>
         <h1>Manage languages</h1>
-        <p>Edit the human languages section shown near the bottom of the homepage. Drag rows to change display order.</p>
+        <p>Edit the human languages section shown near the bottom of the homepage.</p>
     </div>
-    <a href="/admin/languages/new" class="cms-button primary"><i class="fas fa-plus"></i><span>New Language</span></a>
+    <div class="cms-page-heading-actions">
+        <% if (rows.length) { %>
+            <script type="application/json" class="cms-sort-modal-data"><%~ JSON.stringify(rows.map((row) => ({ id: row.id, label: row.name, meta: row.level }))) %></script>
+            <button type="button" class="cms-button secondary cms-sort-modal-trigger" data-reorder-url="/admin/languages/reorder" data-modal-title="Sort languages">
+                <i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i><span>Sort order</span>
+            </button>
+        <% } %>
+        <a href="/admin/languages/new" class="cms-button primary"><i class="fas fa-plus"></i><span>New Language</span></a>
+    </div>
 </section>
 
 <section class="cms-panel">
-    <div class="cms-table-wrap" data-selectable="false" data-searchable="false" data-reorderable="true" data-reorder-url="/admin/languages/reorder" data-sortable="false" data-paginated="false">
+    <div class="cms-table-wrap" data-selectable="false">
         <table class="cms-table">
-            <thead><tr><th class="cms-drag-col" aria-label="Reorder"></th><th>Name</th><th>Level</th><th></th></tr></thead>
+            <thead><tr><th>Order</th><th>Name</th><th>Level</th><th></th></tr></thead>
             <tbody>
                 <% rows.forEach((row) => { %>
-                    <tr data-row-id="<%= row.id %>">
-                        <td class="cms-drag-cell">
-                            <button type="button" class="cms-drag-handle" aria-label="Drag to reorder <%= row.name %>" draggable="true">
-                                <i class="fas fa-grip-vertical" aria-hidden="true"></i>
-                            </button>
-                        </td>
+                    <tr>
+                        <td><%= row.display_order %></td>
                         <td><strong><%= row.name %></strong></td>
                         <td><%= row.level %></td>
                         <td class="cms-table-actions">

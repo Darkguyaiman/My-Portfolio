@@ -420,6 +420,7 @@
     }
 
     .skill-item i,
+    .skill-item .skill-svg,
     .ejs-icon {
         font-size: 1.8rem;
         width: 45px;
@@ -493,7 +494,8 @@
     transform: translateY(-3px);
 }
 
-.skill-item i {
+.skill-item i,
+.skill-item .skill-svg {
     font-size: 2.5rem;
     transition: all 0.3s ease;
     display: flex;
@@ -503,13 +505,20 @@
     height: 60px;
 }
 
+.skill-item .skill-svg {
+    flex-shrink: 0;
+    overflow: visible;
+}
+
 /* Default state - red in light mode, override Devicon colors */
-.skill-item i.colored {
+.skill-item i.colored,
+.skill-item .skill-svg.colored {
     color: var(--red) !important;
 }
 
 /* Ensure icons are visible in dark mode by default - use filter for SVG icons */
-[data-theme="dark"] .skill-item i {
+[data-theme="dark"] .skill-item i,
+[data-theme="dark"] .skill-item .skill-svg {
     color: var(--cream-white) !important;
 }
 
@@ -518,13 +527,20 @@
     filter: brightness(0) saturate(100%) invert(1);
 }
 
+[data-theme="dark"] .skill-item .skill-svg.colored {
+    color: var(--cream-white) !important;
+    filter: none !important;
+}
+
 /* Show true colors when show-true-color class is added - remove color override */
-.skill-item i.colored.show-true-color {
+.skill-item i.colored.show-true-color,
+.skill-item .skill-svg.colored.show-true-color {
     color: inherit !important;
     filter: none !important;
 }
 
-[data-theme="dark"] .skill-item i.colored.show-true-color {
+[data-theme="dark"] .skill-item i.colored.show-true-color,
+[data-theme="dark"] .skill-item .skill-svg.colored.show-true-color {
     filter: none !important;
 }
 
@@ -541,8 +557,9 @@
     color: #F7DF1E !important;
 }
 
-.skill-item[data-skill="node"] i.colored.show-true-color {
-    color: #339933 !important;
+.skill-item[data-skill="node"] i.colored.show-true-color,
+.skill-item[data-skill="node"] .skill-svg.colored.show-true-color {
+    color: #5fa04e !important;
 }
 
 .skill-item[data-skill="express"] i.colored.show-true-color {
@@ -635,8 +652,9 @@
     color: #F7DF1E !important;
 }
 
-[data-theme="dark"] .skill-item[data-skill="node"] i.colored.show-true-color {
-    color: #339933 !important;
+[data-theme="dark"] .skill-item[data-skill="node"] i.colored.show-true-color,
+[data-theme="dark"] .skill-item[data-skill="node"] .skill-svg.colored.show-true-color {
+    color: #5fa04e !important;
 }
 
 [data-theme="dark"] .skill-item[data-skill="express"] i.colored.show-true-color {
@@ -1198,6 +1216,7 @@
     }
 
     .skill-item i,
+    .skill-item .skill-svg,
     .ejs-icon {
         font-size: 1.8rem;
         width: 45px;
@@ -1474,6 +1493,7 @@
     }
 
     .skill-item i,
+    .skill-item .skill-svg,
     .ejs-icon {
         font-size: 1.5rem !important;
         width: 32px !important;

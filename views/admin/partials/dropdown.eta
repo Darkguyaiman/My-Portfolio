@@ -1,0 +1,94 @@
+<%
+
+  const dropdownName = typeof name === 'string' ? name : '';
+
+  const dropdownLabel = typeof label === 'string' ? label : '';
+
+  const dropdownPlaceholder = typeof placeholder === 'string' ? placeholder : '';
+
+  const isRequired = typeof required === 'boolean' ? required : false;
+
+  const isCompact = typeof compact === 'boolean' ? compact : false;
+
+  const opensUp = typeof menuUp === 'boolean' ? menuUp : false;
+
+  const isBare = typeof bare === 'boolean' ? bare : false;
+
+  const dropdownOptions = Array.isArray(options) ? options : [];
+
+  const normalizedOptions = dropdownOptions.map((opt) =>
+
+    typeof opt === 'object' && opt !== null
+
+      ? { value: String(opt.value), label: String(opt.label ?? opt.value) }
+
+      : { value: String(opt), label: String(opt) }
+
+  );
+
+  const selectedValue = typeof value === 'string' ? value : '';
+
+  const selectedOption = normalizedOptions.find((opt) => opt.value === selectedValue);
+
+  const displayLabel = selectedOption
+
+    ? selectedOption.label
+
+    : (selectedValue ? selectedValue : (dropdownPlaceholder || 'Select...'));
+
+  const isPlaceholder = !selectedOption && !selectedValue;
+
+  const fieldId = typeof id === 'string' && id ? id : (dropdownName ? `cms-dropdown-${dropdownName}` : 'cms-dropdown-field');
+
+  const triggerLabel = typeof ariaLabel === 'string' && ariaLabel ? ariaLabel : (dropdownLabel || dropdownName || 'Select option');
+
+  const dropdownClass = [
+
+    'cms-dropdown',
+
+    isCompact ? 'cms-dropdown--compact' : '',
+
+    opensUp ? 'cms-dropdown--up' : '',
+
+  ].filter(Boolean).join(' ');
+
+%>
+
+<% if (!isBare) { %><label><% } %>
+
+  <% if (!isBare && dropdownLabel) { %>
+
+    <span><%= dropdownLabel %></span>
+
+  <% } %>
+
+  <div class="<%= dropdownClass %>" data-cms-dropdown<% if (dropdownPlaceholder) { %> data-placeholder="<%= dropdownPlaceholder %>"<% } %>>
+
+    <input type="hidden"<% if (dropdownName) { %> name="<%= dropdownName %>"<% } %> id="<%= fieldId %>-input" value="<%= selectedValue %>"<% if (isRequired) { %> required<% } %>>
+
+    <button type="button" class="cms-dropdown-trigger" id="<%= fieldId %>-trigger" aria-label="<%= triggerLabel %>" aria-haspopup="listbox" aria-expanded="false">
+
+      <span class="cms-dropdown-value<%= isPlaceholder ? ' is-placeholder' : '' %>"><%= displayLabel %></span>
+
+      <i class="fas fa-chevron-down" aria-hidden="true"></i>
+
+    </button>
+
+    <div class="cms-dropdown-menu hidden" role="listbox" aria-label="<%= triggerLabel %>">
+
+      <% normalizedOptions.forEach((opt) => {
+
+        const isActive = opt.value === selectedValue;
+
+      %>
+
+        <button type="button" class="cms-dropdown-option<%= isActive ? ' active' : '' %>" role="option" data-value="<%= opt.value %>" aria-selected="<%= isActive ? 'true' : 'false' %>"><%= opt.label %></button>
+
+      <% }) %>
+
+    </div>
+
+  </div>
+
+<% if (!isBare) { %></label><% } %>
+

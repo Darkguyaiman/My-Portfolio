@@ -458,7 +458,7 @@ function handleSkillClick(event) {
     }
 
     const skillItem = event.currentTarget;
-    const icon = skillItem.querySelector('i');
+    const icon = skillItem.querySelector('i, .skill-svg');
     const ejsIcon = skillItem.querySelector('.ejs-icon');
 
     if (skillItem.classList.contains('selected')) {
@@ -501,7 +501,7 @@ function deselectAllInReverse() {
 
 
     const lastSelected = selectionOrder.pop();
-    const icon = lastSelected.querySelector('i');
+    const icon = lastSelected.querySelector('i, .skill-svg');
     const ejsIcon = lastSelected.querySelector('.ejs-icon');
 
     lastSelected.classList.remove('selected');
@@ -703,7 +703,7 @@ function initSkillsSelection() {
         item.addEventListener('click', handleSkillClick);
 
 
-        const icon = item.querySelector('i');
+        const icon = item.querySelector('i, .skill-svg');
         const ejsIcon = item.querySelector('.ejs-icon');
         item.addEventListener('mouseenter', () => {
             if (icon) icon.classList.add('show-true-color');
@@ -844,15 +844,16 @@ function formatDate(dateString) {
 
 
 window.techIconMap = {
-    'Next.js': { type: 'devicon', class: 'devicon-nextjs-original colored' },
+    'Next.js': { type: 'devicon', class: 'devicon-nextjs-plain colored' },
     'React': { type: 'devicon', class: 'devicon-react-original colored' },
     'TypeScript': { type: 'devicon', class: 'devicon-typescript-plain colored' },
     'Nginx': { type: 'devicon', class: 'devicon-nginx-original colored' },
-    'Ubuntu': { type: 'devicon', class: 'devicon-ubuntu-plain colored' },
+    'Ubuntu': { type: 'fa', class: 'fa-brands fa-ubuntu' },
     'Google Cloud': { type: 'devicon', class: 'devicon-googlecloud-plain colored' },
     'Google Cloud Platform': { type: 'devicon', class: 'devicon-googlecloud-plain colored' },
     'GCP': { type: 'devicon', class: 'devicon-googlecloud-plain colored' },
-    'Node.js': { type: 'devicon', class: 'devicon-nodejs-plain colored' },
+    'Node.js': { type: 'fa', class: 'fa-brands fa-node-js' },
+    'Node': { type: 'fa', class: 'fa-brands fa-node-js' },
     'Express.js': { type: 'devicon', class: 'devicon-express-original colored' },
     'Express': { type: 'devicon', class: 'devicon-express-original colored' },
     'EJS': { type: 'ejs', class: 'ejs-icon' },

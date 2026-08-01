@@ -11,7 +11,15 @@
 <form method="post" action="<%= action %>" class="cms-panel cms-form">
     <div class="cms-form-grid two">
         <label><span>Language name</span><input name="name" value="<%= language.name %>" required></label>
-        <label><span>Level</span><input name="level" value="<%= language.level %>" required></label>
+        <%~ include('partials/dropdown', {
+            name: 'level',
+            label: 'Level',
+            value: language.level,
+            options: ['Native', 'Advanced', 'Intermediate', 'Beginner'],
+            placeholder: 'Select level',
+            required: true,
+            ariaLabel: 'Language level'
+        }) %>
     </div>
     <div class="cms-form-actions">
         <button type="submit" class="cms-button primary"><i class="fas fa-floppy-disk"></i><span>Save Language</span></button>

@@ -73,6 +73,256 @@
     });
   }
 
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  document.querySelectorAll('[data-result-toggle]').forEach((toggle) => {
+    const fields = document.querySelector(`[data-result-fields="${toggle.dataset.resultToggle}"]`);
+    const inputs = fields ? Array.from(fields.querySelectorAll('input, textarea, select')) : [];
+
+    const updateFields = () => {
+      if (!fields) return;
+      fields.classList.toggle('hidden', !toggle.checked);
+      inputs.forEach((input) => {
+        input.disabled = !toggle.checked;
+      });
+    };
+
+    toggle.addEventListener('change', updateFields);
+    updateFields();
+  });
+
+  document.querySelectorAll('[data-month-picker]').forEach((picker) => {
+    const valueInput = picker.querySelector('[data-month-value]');
+    const trigger = picker.querySelector('[data-month-trigger]');
+    const label = picker.querySelector('[data-month-label]');
+    const popover = picker.querySelector('[data-month-popover]');
+    const monthDropdownEl = picker.querySelector('[data-month-select] [data-cms-dropdown]');
+    const yearDropdownEl = picker.querySelector('[data-year-select] [data-cms-dropdown]');
+    const applyButton = picker.querySelector('[data-month-apply]');
+    if (!valueInput || !trigger || !label || !popover || !monthDropdownEl || !yearDropdownEl || !applyButton) return;
+
+    const now = new Date();
+    const monthDropdown = initCmsDropdown(monthDropdownEl);
+    const yearDropdown = initCmsDropdown(yearDropdownEl);
+
+    const syncPickersFromValue = () => {
+      const parsed = parseMonthYear(valueInput.value);
+      const defaultMonth = parsed.month ?? now.getMonth();
+      const defaultYear = parsed.year ?? now.getFullYear();
+      monthDropdown.cmsDropdown.syncUI(String(defaultMonth), { silent: true });
+      yearDropdown.cmsDropdown.syncUI(String(defaultYear), { silent: true });
+    };
+
+    syncPickersFromValue();
+
+    const close = () => {
+      picker.classList.remove('is-open');
+      popover.classList.add('hidden');
+      trigger.setAttribute('aria-expanded', 'false');
+      monthDropdown.cmsDropdown.closeMenu();
+      yearDropdown.cmsDropdown.closeMenu();
+    };
+
+    const open = () => {
+      document.querySelectorAll('[data-month-popover]:not(.hidden)').forEach((openPopover) => {
+        openPopover.classList.add('hidden');
+        openPopover.closest('[data-month-picker]')?.classList.remove('is-open');
+      });
+      picker.classList.add('is-open');
+      popover.classList.remove('hidden');
+      trigger.setAttribute('aria-expanded', 'true');
+      syncPickersFromValue();
+      monthDropdownEl.querySelector('.cms-dropdown-trigger')?.focus();
+    };
+
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (popover.classList.contains('hidden')) {
+        open();
+      } else {
+        close();
+      }
+    });
+
+    popover.addEventListener('click', (event) => event.stopPropagation());
+    applyButton.addEventListener('click', () => {
+      const monthValue = monthDropdownEl.querySelector('input[type="hidden"]')?.value ?? '';
+      const yearValue = yearDropdownEl.querySelector('input[type="hidden"]')?.value ?? '';
+      if (monthValue === '' || yearValue === '') return;
+      const value = `${monthNames[Number(monthValue)]} ${yearValue}`;
+      valueInput.value = value;
+      label.textContent = value;
+      close();
+    });
+  });
+
+  document.querySelectorAll('[data-duration-end-group]').forEach((group) => {
+    const presentToggle = group.querySelector('[data-present-toggle]');
+    const endPicker = group.querySelector('[data-end-picker]');
+    const endInput = endPicker ? endPicker.querySelector('[data-month-value]') : null;
+    const endLabel = endPicker ? endPicker.querySelector('[data-month-label]') : null;
+    if (!presentToggle || !endPicker || !endInput || !endLabel) return;
+
+    let lastEndValue = String(endInput.value || '').toLowerCase() === 'present' ? '' : endInput.value;
+
+    const updateEndPicker = () => {
+      if (presentToggle.checked) {
+        lastEndValue = String(endInput.value || '').toLowerCase() === 'present' ? lastEndValue : endInput.value;
+        endInput.value = 'present';
+        endPicker.classList.add('hidden');
+      } else {
+        endInput.value = lastEndValue;
+        endLabel.textContent = lastEndValue || 'Select end month';
+        endPicker.classList.remove('hidden');
+      }
+    };
+
+    presentToggle.addEventListener('change', updateEndPicker);
+    updateEndPicker();
+  });
+
+  document.querySelectorAll('form').forEach((form) => {
+    const monthPickers = Array.from(form.querySelectorAll('[data-month-picker]'));
+    if (!monthPickers.length) return;
+
+    form.addEventListener('submit', (event) => {
+      const invalidPicker = monthPickers.find((picker) => {
+        if (picker.classList.contains('hidden')) return false;
+        const input = picker.querySelector('[data-month-value]');
+        const isInvalid = !String(input?.value || '').trim();
+        picker.classList.toggle('is-invalid', isInvalid);
+        return isInvalid;
+      });
+
+      if (invalidPicker) {
+        event.preventDefault();
+        invalidPicker.querySelector('[data-month-trigger]')?.focus();
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-month-trigger]').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      trigger.closest('[data-month-picker]')?.classList.remove('is-invalid');
+    });
+  });
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('[data-month-popover]:not(.hidden)').forEach((popover) => {
+      popover.classList.add('hidden');
+      popover.closest('[data-month-picker]')?.classList.remove('is-open');
+      popover.querySelectorAll('[data-cms-dropdown]').forEach((dropdown) => {
+        dropdown.cmsDropdown?.closeMenu();
+      });
+    });
+  });
+
+  function parseMonthYear(value) {
+    const [monthName, yearText] = String(value || '').trim().split(/\s+/);
+    const month = monthNames.findIndex((item) => item.toLowerCase() === String(monthName || '').toLowerCase());
+    const year = Number(yearText);
+    return {
+      month: month >= 0 ? month : null,
+      year: Number.isFinite(year) ? year : null,
+    };
+  }
+
+  function initCmsDropdown(dropdown, { onChange } = {}) {
+    if (dropdown.dataset.cmsDropdownInit === 'true') {
+      return dropdown;
+    }
+    dropdown.dataset.cmsDropdownInit = 'true';
+
+    const trigger = dropdown.querySelector('.cms-dropdown-trigger');
+    const menu = dropdown.querySelector('.cms-dropdown-menu');
+    const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+    const valueEl = dropdown.querySelector('.cms-dropdown-value');
+    const options = Array.from(dropdown.querySelectorAll('.cms-dropdown-option'));
+    if (!trigger || !menu) {
+      return dropdown;
+    }
+
+    const placeholder = dropdown.dataset.placeholder || 'Select…';
+
+    function closeMenu() {
+      dropdown.classList.remove('is-open');
+      menu.classList.add('hidden');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    function syncUI(value, { silent = false } = {}) {
+      const match = options.find((option) => option.dataset.value === value);
+      if (hiddenInput) {
+        hiddenInput.value = value;
+      }
+      if (valueEl) {
+        valueEl.textContent = match ? match.textContent.trim() : placeholder;
+        valueEl.classList.toggle('is-placeholder', !match);
+      }
+      options.forEach((option) => {
+        const isActive = option.dataset.value === value;
+        option.classList.toggle('active', isActive);
+        option.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      if (!silent && typeof onChange === 'function') {
+        onChange(value, { dropdown, closeMenu });
+      }
+    }
+
+    trigger.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isOpen = !menu.classList.contains('hidden');
+      if (isOpen) {
+        closeMenu();
+      } else {
+        dropdown.classList.add('is-open');
+        menu.classList.remove('hidden');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    options.forEach((option) => {
+      option.addEventListener('click', (event) => {
+        event.stopPropagation();
+        syncUI(option.dataset.value || '');
+        closeMenu();
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!menu.classList.contains('hidden') && !dropdown.contains(event.target)) {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeMenu();
+      }
+    });
+
+    dropdown.cmsDropdown = { syncUI, closeMenu };
+    return dropdown;
+  }
+
+  document.querySelectorAll('[data-cms-dropdown]').forEach((dropdown) => {
+    initCmsDropdown(dropdown);
+  });
+
   // --- PREMIUM DATA TABLE ENHANCER ---
   const PER_PAGE_STORAGE_KEY = 'cms-admin-items-per-page';
   const VALID_PER_PAGE = [5, 10, 20, 50];
@@ -119,7 +369,7 @@
 
     // 1. Prepare Columns & Headers
     const headers = Array.from(thead.querySelectorAll('tr th'));
-    const isActionColumn = (th) => th.classList.contains('cms-table-actions') || th.classList.contains('cms-drag-col') || th.textContent.trim() === '';
+    const isActionColumn = (th) => th.classList.contains('cms-table-actions') || th.textContent.trim() === '';
 
     // Add checkbox column header if selectable is true
     if (selectable) {
@@ -163,8 +413,8 @@
       // Enhance text badges dynamically (Website, Source, No logo)
       const cells = Array.from(tr.querySelectorAll('td'));
       cells.forEach((td, index) => {
-        // Skip checkbox cell if selectable is true, drag cell, and actions cell
-        if ((selectable && index === 0) || td.classList.contains('cms-drag-cell') || index === cells.length - 1) return;
+        // Skip checkbox cell if selectable is true, and skip actions cell
+        if ((selectable && index === 0) || index === cells.length - 1) return;
 
         // Beautify deployed links / source links
         if (td.textContent.includes('Website') || td.textContent.includes('Source')) {
@@ -236,16 +486,16 @@
           ${perPageSelector ? `
             <div class="cms-per-page">
               <span class="cms-per-page-label">Per page</span>
-              <div class="cms-per-page-dropdown">
-                <button type="button" class="cms-per-page-trigger" aria-label="Rows per page" aria-haspopup="listbox" aria-expanded="false">
-                  <span class="cms-per-page-value">10</span>
+              <div class="cms-dropdown cms-dropdown--compact cms-dropdown--up" data-cms-dropdown>
+                <button type="button" class="cms-dropdown-trigger" aria-label="Rows per page" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="cms-dropdown-value">10</span>
                   <i class="fas fa-chevron-down" aria-hidden="true"></i>
                 </button>
-                <div class="cms-per-page-menu hidden" role="listbox" aria-label="Rows per page">
-                  <button type="button" class="cms-per-page-option" role="option" data-value="5">5</button>
-                  <button type="button" class="cms-per-page-option active" role="option" data-value="10" aria-selected="true">10</button>
-                  <button type="button" class="cms-per-page-option" role="option" data-value="20">20</button>
-                  <button type="button" class="cms-per-page-option" role="option" data-value="50">50</button>
+                <div class="cms-dropdown-menu hidden" role="listbox" aria-label="Rows per page">
+                  <button type="button" class="cms-dropdown-option" role="option" data-value="5">5</button>
+                  <button type="button" class="cms-dropdown-option active" role="option" data-value="10" aria-selected="true">10</button>
+                  <button type="button" class="cms-dropdown-option" role="option" data-value="20">20</button>
+                  <button type="button" class="cms-dropdown-option" role="option" data-value="50">50</button>
                 </div>
               </div>
             </div>
@@ -261,11 +511,7 @@
     const masterCheckbox = selectable ? wrap.querySelector('.cms-master-checkbox') : null;
     const columnToggleBtn = toolbar ? toolbar.querySelector('.cms-column-toggle-btn') : null;
     const columnMenu = toolbar ? toolbar.querySelector('.cms-column-menu') : null;
-    const perPageDropdown = footer ? footer.querySelector('.cms-per-page-dropdown') : null;
-    const perPageTrigger = footer ? footer.querySelector('.cms-per-page-trigger') : null;
-    const perPageValue = footer ? footer.querySelector('.cms-per-page-value') : null;
-    const perPageMenu = footer ? footer.querySelector('.cms-per-page-menu') : null;
-    const perPageOptions = footer ? Array.from(footer.querySelectorAll('.cms-per-page-option')) : [];
+    const perPageDropdown = footer ? footer.querySelector('[data-cms-dropdown]') : null;
     const paginationPages = footer ? footer.querySelector('.cms-pagination-pages') : null;
     const rangeStartSpan = footer ? footer.querySelector('.cms-range-start') : null;
     const rangeEndSpan = footer ? footer.querySelector('.cms-range-end') : null;
@@ -278,17 +524,22 @@
     let itemsPerPage = getStoredPerPage() ?? 10;
 
     function syncPerPageUI(value) {
-      if (perPageValue) {
-        perPageValue.textContent = String(value);
+      if (perPageDropdown?.cmsDropdown) {
+        perPageDropdown.cmsDropdown.syncUI(String(value), { silent: true });
       }
-      perPageOptions.forEach((option) => {
-        const isActive = parseInt(option.dataset.value, 10) === value;
-        option.classList.toggle('active', isActive);
-        option.setAttribute('aria-selected', isActive ? 'true' : 'false');
-      });
     }
 
-    if (perPageSelector) {
+    if (perPageSelector && perPageDropdown) {
+      initCmsDropdown(perPageDropdown, {
+        onChange(nextValue) {
+          const parsed = parseInt(nextValue, 10);
+          if (!VALID_PER_PAGE.includes(parsed)) return;
+          itemsPerPage = parsed;
+          storePerPage(parsed);
+          currentPage = 1;
+          renderTable();
+        },
+      });
       syncPerPageUI(itemsPerPage);
     }
 
@@ -508,56 +759,7 @@
       });
     }
 
-    // 9. Per Page selection (custom dropdown)
-    function closePerPageMenu() {
-      if (!perPageDropdown || !perPageMenu || !perPageTrigger) return;
-      perPageDropdown.classList.remove('is-open');
-      perPageMenu.classList.add('hidden');
-      perPageTrigger.setAttribute('aria-expanded', 'false');
-    }
-
-    function setPerPage(value) {
-      if (!VALID_PER_PAGE.includes(value)) return;
-      itemsPerPage = value;
-      syncPerPageUI(value);
-      storePerPage(value);
-      closePerPageMenu();
-      currentPage = 1;
-      renderTable();
-    }
-
-    if (perPageDropdown && perPageTrigger && perPageMenu) {
-      perPageTrigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = !perPageMenu.classList.contains('hidden');
-        if (isOpen) {
-          closePerPageMenu();
-        } else {
-          perPageDropdown.classList.add('is-open');
-          perPageMenu.classList.remove('hidden');
-          perPageTrigger.setAttribute('aria-expanded', 'true');
-        }
-      });
-
-      perPageOptions.forEach((option) => {
-        option.addEventListener('click', (e) => {
-          e.stopPropagation();
-          setPerPage(parseInt(option.dataset.value, 10));
-        });
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!perPageMenu.classList.contains('hidden') && !perPageDropdown.contains(e.target)) {
-          closePerPageMenu();
-        }
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          closePerPageMenu();
-        }
-      });
-    }
+    // 9. Per Page selection uses shared cms-dropdown component
 
     // 10. Render / Refresh Table View
     function renderTable() {
@@ -678,97 +880,180 @@
 
     // Initial render
     renderTable();
-
-    if (wrap.dataset.reorderable === 'true' && wrap.dataset.reorderUrl) {
-      initRowReorder(wrap, tbody, wrap.dataset.reorderUrl);
-    }
   });
 
-  function initRowReorder(wrap, tbody, reorderUrl) {
-    let draggedRow = null;
-    let dragSourceHandle = null;
+  const sortModal = document.getElementById('cmsSortModal');
+  const sortList = document.getElementById('cmsSortList');
+  const sortModalTitle = document.getElementById('cmsSortModalTitle');
+  const sortSaveButton = document.getElementById('cmsSortSave');
+
+  if (sortModal && sortList && sortModalTitle && sortSaveButton) {
+    let activeReorderUrl = '';
+    let originalItems = [];
+    let draggedItem = null;
+
+    function parseSortItems(dataNode) {
+      if (!dataNode) return [];
+      try {
+        const parsed = JSON.parse(dataNode.textContent || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function renderSortItems(items) {
+      sortList.innerHTML = '';
+      items.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.className = 'cms-sort-item';
+        li.dataset.rowId = String(item.id);
+
+        const handle = document.createElement('button');
+        handle.type = 'button';
+        handle.className = 'cms-drag-handle';
+        handle.draggable = true;
+        handle.setAttribute('aria-label', `Drag item ${index + 1}`);
+        handle.innerHTML = '<i class="fas fa-grip-vertical" aria-hidden="true"></i>';
+
+        const copy = document.createElement('div');
+        copy.className = 'cms-sort-item-copy';
+        const strong = document.createElement('strong');
+        strong.textContent = item.label || 'Untitled';
+        copy.appendChild(strong);
+        if (item.meta) {
+          const span = document.createElement('span');
+          span.textContent = item.meta;
+          copy.appendChild(span);
+        }
+
+        li.appendChild(handle);
+        li.appendChild(copy);
+        sortList.appendChild(li);
+      });
+    }
+
+    function getSortItemNodes() {
+      return Array.from(sortList.querySelectorAll('.cms-sort-item'));
+    }
 
     function getOrderedIds() {
-      return Array.from(tbody.querySelectorAll('tr[data-row-id]'))
-        .map((row) => Number(row.dataset.rowId))
+      return getSortItemNodes()
+        .map((item) => Number(item.dataset.rowId))
         .filter((id) => Number.isFinite(id) && id > 0);
     }
 
     function clearDropIndicators() {
-      tbody.querySelectorAll('tr.is-drop-target').forEach((row) => row.classList.remove('is-drop-target'));
+      getSortItemNodes().forEach((item) => item.classList.remove('is-drop-target'));
     }
 
-    async function persistOrder() {
-      const ids = getOrderedIds();
-      if (!ids.length) return;
+    function openSortModal(trigger) {
+      const dataNode = trigger.parentElement?.querySelector('.cms-sort-modal-data');
+      originalItems = parseSortItems(dataNode);
+      if (!originalItems.length) return;
 
-      wrap.classList.add('is-saving-order');
+      activeReorderUrl = trigger.dataset.reorderUrl || '';
+      sortModalTitle.textContent = trigger.dataset.modalTitle || 'Sort items';
+      renderSortItems(originalItems);
+
+      sortModal.hidden = false;
+      sortModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('cms-modal-open');
+      sortSaveButton.disabled = false;
+      sortSaveButton.classList.remove('is-saving');
+    }
+
+    function closeSortModal(restore = false) {
+      if (restore && originalItems.length) {
+        renderSortItems(originalItems);
+      }
+
+      sortModal.hidden = true;
+      sortModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('cms-modal-open');
+      draggedItem = null;
+      clearDropIndicators();
+    }
+
+    async function saveSortOrder() {
+      const ids = getOrderedIds();
+      if (!ids.length || !activeReorderUrl) return;
+
+      sortSaveButton.disabled = true;
+      sortSaveButton.classList.add('is-saving');
+
       try {
-        const response = await fetch(reorderUrl, {
+        const response = await fetch(activeReorderUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ids }),
         });
         if (!response.ok) throw new Error('Failed to save order');
-        wrap.classList.add('order-saved');
-        window.setTimeout(() => wrap.classList.remove('order-saved'), 1200);
+        window.location.reload();
       } catch {
-        wrap.classList.add('order-save-error');
-        window.setTimeout(() => wrap.classList.remove('order-save-error'), 2200);
-      } finally {
-        wrap.classList.remove('is-saving-order');
+        sortSaveButton.disabled = false;
+        sortSaveButton.classList.remove('is-saving');
+        sortModal.classList.add('order-save-error');
+        window.setTimeout(() => sortModal.classList.remove('order-save-error'), 2200);
       }
     }
 
-    tbody.addEventListener('dragstart', (event) => {
-      const handle = event.target.closest('.cms-drag-handle');
-      if (!handle) return;
-
-      draggedRow = handle.closest('tr[data-row-id]');
-      dragSourceHandle = handle;
-      if (!draggedRow) return;
-
-      draggedRow.classList.add('is-dragging');
-      event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('text/plain', draggedRow.dataset.rowId || '');
+    document.querySelectorAll('.cms-sort-modal-trigger').forEach((trigger) => {
+      trigger.addEventListener('click', () => openSortModal(trigger));
     });
 
-    tbody.addEventListener('dragend', () => {
-      if (draggedRow) draggedRow.classList.remove('is-dragging');
-      draggedRow = null;
-      dragSourceHandle = null;
-      clearDropIndicators();
+    sortModal.querySelectorAll('[data-close-sort-modal]').forEach((node) => {
+      node.addEventListener('click', () => closeSortModal(true));
     });
 
-    tbody.addEventListener('dragover', (event) => {
-      if (!draggedRow) return;
-      event.preventDefault();
+    sortSaveButton.addEventListener('click', saveSortOrder);
 
-      const targetRow = event.target.closest('tr[data-row-id]');
-      clearDropIndicators();
-      if (!targetRow || targetRow === draggedRow) return;
-
-      targetRow.classList.add('is-drop-target');
-      const targetRect = targetRow.getBoundingClientRect();
-      const insertBefore = event.clientY < targetRect.top + targetRect.height / 2;
-
-      if (insertBefore) {
-        tbody.insertBefore(draggedRow, targetRow);
-      } else {
-        tbody.insertBefore(draggedRow, targetRow.nextElementSibling);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !sortModal.hidden) {
+        closeSortModal(true);
       }
     });
 
-    tbody.addEventListener('drop', (event) => {
-      event.preventDefault();
-      clearDropIndicators();
-      if (!draggedRow) return;
-      persistOrder();
+    sortList.addEventListener('dragstart', (event) => {
+      const handle = event.target.closest('.cms-drag-handle');
+      if (!handle) return;
+
+      draggedItem = handle.closest('.cms-sort-item');
+      if (!draggedItem) return;
+
+      draggedItem.classList.add('is-dragging');
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', draggedItem.dataset.rowId || '');
     });
 
-    tbody.querySelectorAll('.cms-drag-handle').forEach((handle) => {
-      handle.addEventListener('mousedown', (event) => event.stopPropagation());
-      handle.addEventListener('click', (event) => event.preventDefault());
+    sortList.addEventListener('dragend', () => {
+      if (draggedItem) draggedItem.classList.remove('is-dragging');
+      draggedItem = null;
+      clearDropIndicators();
+    });
+
+    sortList.addEventListener('dragover', (event) => {
+      if (!draggedItem) return;
+      event.preventDefault();
+
+      const targetItem = event.target.closest('.cms-sort-item');
+      clearDropIndicators();
+      if (!targetItem || targetItem === draggedItem) return;
+
+      targetItem.classList.add('is-drop-target');
+      const targetRect = targetItem.getBoundingClientRect();
+      const insertBefore = event.clientY < targetRect.top + targetRect.height / 2;
+
+      if (insertBefore) {
+        sortList.insertBefore(draggedItem, targetItem);
+      } else {
+        sortList.insertBefore(draggedItem, targetItem.nextElementSibling);
+      }
+    });
+
+    sortList.addEventListener('drop', (event) => {
+      event.preventDefault();
+      clearDropIndicators();
     });
   }
 })();

@@ -207,9 +207,31 @@ export async function getAdminEducation(id) {
         durationStart: education.duration_start,
         durationEnd: education.duration_end,
         results: typeof education.results === 'string' ? education.results : JSON.stringify(education.results || {}, null, 2),
+        resultFields: parseEducationResultFields(education.results),
         description: education.description,
         displayOrder: education.display_order,
     };
+}
+function parseEducationResultFields(results) {
+    if (!results)
+        return {};
+    try {
+        const parsed = typeof results === 'string' ? JSON.parse(results) : results;
+        return {
+            semester: parsed.semester ?? '',
+            gpa: parsed.gpa ?? '',
+            totalSubjects: parsed.total_subjects ?? '',
+            gradeAStar: parsed.grades?.['A*'] ?? '',
+            gradeA: parsed.grades?.A ?? '',
+            gradeB: parsed.grades?.B ?? '',
+            gradeC: parsed.grades?.C ?? '',
+            gradeD: parsed.grades?.D ?? '',
+            gradeF: parsed.grades?.F ?? '',
+        };
+    }
+    catch {
+        return {};
+    }
 }
 export async function createEducation(input) {
     const [result] = await pool.query('INSERT INTO education (qualification, institution, field, duration_start, duration_end, results, description, display_order) VALUES (?, ?, ?, ?, ?, CAST(? AS JSON), ?, ?)', [input.qualification, input.institution, input.field, input.durationStart, input.durationEnd, input.results, input.description, input.displayOrder]);

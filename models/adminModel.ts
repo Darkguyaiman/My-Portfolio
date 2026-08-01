@@ -366,9 +366,31 @@ export async function getAdminEducation(id: number) {
     durationStart: education.duration_start,
     durationEnd: education.duration_end,
     results: typeof education.results === 'string' ? education.results : JSON.stringify(education.results || {}, null, 2),
+    resultFields: parseEducationResultFields(education.results),
     description: education.description,
     displayOrder: education.display_order,
   };
+}
+
+function parseEducationResultFields(results: string | null) {
+  if (!results) return {};
+
+  try {
+    const parsed = typeof results === 'string' ? JSON.parse(results) : results;
+    return {
+      semester: parsed.semester ?? '',
+      gpa: parsed.gpa ?? '',
+      totalSubjects: parsed.total_subjects ?? '',
+      gradeAStar: parsed.grades?.['A*'] ?? '',
+      gradeA: parsed.grades?.A ?? '',
+      gradeB: parsed.grades?.B ?? '',
+      gradeC: parsed.grades?.C ?? '',
+      gradeD: parsed.grades?.D ?? '',
+      gradeF: parsed.grades?.F ?? '',
+    };
+  } catch {
+    return {};
+  }
 }
 
 export async function createEducation(input: EducationInput) {

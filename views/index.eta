@@ -139,7 +139,7 @@
         <div class="container">
             <div class="skills-grid">
                 <div class="skill-item" data-skill="nextjs">
-                    <i class="devicon-nextjs-original colored"></i>
+                    <i class="devicon-nextjs-plain colored"></i>
                     <span class="skill-name">Next.js</span>
                     <span class="skill-number"></span>
                 </div>
@@ -154,7 +154,7 @@
                     <span class="skill-number"></span>
                 </div>
                 <div class="skill-item" data-skill="ubuntu">
-                    <i class="devicon-ubuntu-plain colored"></i>
+                    <i class="fa-brands fa-ubuntu colored"></i>
                     <span class="skill-name">Ubuntu</span>
                     <span class="skill-number"></span>
                 </div>
@@ -184,7 +184,7 @@
                     <span class="skill-number"></span>
                 </div>
                 <div class="skill-item" data-skill="node">
-                    <i class="devicon-nodejs-plain colored"></i>
+                    <i class="fa-brands fa-node-js colored"></i>
                     <span class="skill-name">Node</span>
                     <span class="skill-number"></span>
                 </div>

@@ -19,17 +19,13 @@
         <div class="cms-field-heading">
             <div>
                 <span>Company logo</span>
-                <p>Drop a logo image here or keep the current path.</p>
+                <p>Drop a logo image here or keep the current logo.</p>
             </div>
-            <label class="cms-button secondary cms-file-button">
-                <i class="fas fa-image"></i>
-                <span>Choose logo</span>
-                <input type="file" name="workLogo" accept="image/*" data-file-input>
-            </label>
         </div>
+        <input type="file" name="workLogo" accept="image/*" data-file-input>
         <div class="cms-dropzone compact" tabindex="0" role="button" aria-label="Upload company logo">
             <i class="fas fa-cloud-arrow-up"></i>
-            <strong>Drop logo to upload</strong>
+            <strong>Drop logo here or click to browse</strong>
             <small>PNG, JPG, WebP, SVG, GIF, or AVIF up to 12 MB</small>
         </div>
         <div class="cms-preview-grid compact" data-preview-list>
@@ -40,10 +36,6 @@
                 </figure>
             <% } %>
         </div>
-        <label class="cms-path-editor">
-            <span>Saved logo path</span>
-            <input name="logo" value="<%= work.logo %>" placeholder="/uploads/images/company-logo.webp">
-        </label>
     </div>
     <label><span>Description bullets</span><textarea name="descriptions" rows="8"><%= work.descriptions.join('\n') %></textarea></label>
     <div class="cms-form-actions">

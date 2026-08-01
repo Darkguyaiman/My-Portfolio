@@ -3,23 +3,27 @@
     <div>
         <p class="cms-kicker">Education</p>
         <h1>Manage education</h1>
-        <p>Edit institutions, durations, results JSON, and descriptions. Drag rows to change display order.</p>
+        <p>Edit qualifications, institutions, dates, results, and descriptions.</p>
     </div>
-    <a href="/admin/education/new" class="cms-button primary"><i class="fas fa-plus"></i><span>New Education</span></a>
+    <div class="cms-page-heading-actions">
+        <% if (rows.length) { %>
+            <script type="application/json" class="cms-sort-modal-data"><%~ JSON.stringify(rows.map((row) => ({ id: row.id, label: row.qualification, meta: row.institution }))) %></script>
+            <button type="button" class="cms-button secondary cms-sort-modal-trigger" data-reorder-url="/admin/education/reorder" data-modal-title="Sort education">
+                <i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i><span>Sort order</span>
+            </button>
+        <% } %>
+        <a href="/admin/education/new" class="cms-button primary"><i class="fas fa-plus"></i><span>New Education</span></a>
+    </div>
 </section>
 
 <section class="cms-panel">
-    <div class="cms-table-wrap" data-selectable="false" data-searchable="false" data-reorderable="true" data-reorder-url="/admin/education/reorder" data-sortable="false" data-paginated="false">
+    <div class="cms-table-wrap" data-selectable="false">
         <table class="cms-table">
-            <thead><tr><th class="cms-drag-col" aria-label="Reorder"></th><th>Qualification</th><th>Institution</th><th>Duration</th><th></th></tr></thead>
+            <thead><tr><th>Order</th><th>Qualification</th><th>Institution</th><th>Duration</th><th></th></tr></thead>
             <tbody>
                 <% rows.forEach((row) => { %>
-                    <tr data-row-id="<%= row.id %>">
-                        <td class="cms-drag-cell">
-                            <button type="button" class="cms-drag-handle" aria-label="Drag to reorder <%= row.qualification %>" draggable="true">
-                                <i class="fas fa-grip-vertical" aria-hidden="true"></i>
-                            </button>
-                        </td>
+                    <tr>
+                        <td><%= row.display_order %></td>
                         <td><strong><%= row.qualification %></strong><span><%= row.field %></span></td>
                         <td><%= row.institution %></td>
                         <td><%= row.duration_start %> - <%= row.duration_end %></td>

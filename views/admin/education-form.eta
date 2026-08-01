@@ -3,21 +3,151 @@
     <div>
         <p class="cms-kicker">Education</p>
         <h1><%= title %></h1>
-        <p>Results must be valid JSON, for example <code>{"semester":4,"gpa":4}</code>.</p>
+        <p>Enter education results using the standard fields below.</p>
     </div>
     <a href="/admin/education" class="cms-button secondary"><i class="fas fa-chevron-left"></i><span>Back</span></a>
 </section>
 
+<% const resultFields = education.resultFields || {}; %>
+<% const hasAcademicResult = resultFields.semester || resultFields.gpa; %>
+<% const hasGradeResult = resultFields.totalSubjects || resultFields.gradeAStar || resultFields.gradeA || resultFields.gradeB || resultFields.gradeC || resultFields.gradeD || resultFields.gradeF; %>
+<% const isPresent = String(education.durationEnd || '').toLowerCase() === 'present'; %>
+<% const monthOptions = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    .map((label, index) => ({ value: String(index), label })); %>
+<% const yearNow = new Date().getFullYear(); %>
+<% const yearOptions = []; %>
+<% for (let year = yearNow + 10; year >= 1995; year -= 1) { yearOptions.push({ value: String(year), label: String(year) }); } %>
+<% const parseDurationMonthYear = (value) => {
+    const parts = String(value || '').trim().split(/\s+/);
+    const monthIndex = monthOptions.findIndex((opt) => opt.label.toLowerCase() === String(parts[0] || '').toLowerCase());
+    const year = String(parts[1] || '');
+    return {
+        month: monthIndex >= 0 ? String(monthIndex) : '',
+        year: yearOptions.some((opt) => opt.value === year) ? year : '',
+    };
+}; %>
+<% const startDuration = parseDurationMonthYear(education.durationStart); %>
+<% const endDuration = parseDurationMonthYear(isPresent ? '' : education.durationEnd); %>
 <form method="post" action="<%= action %>" class="cms-panel cms-form">
     <div class="cms-form-grid two">
-        <label><span>Qualification</span><input name="qualification" value="<%= education.qualification %>" required></label>
-        <label><span>Institution</span><input name="institution" value="<%= education.institution %>" required></label>
-        <label><span>Field</span><input name="field" value="<%= education.field %>" required></label>
-        <label><span>Duration start</span><input name="durationStart" value="<%= education.durationStart %>" required></label>
-        <label><span>Duration end</span><input name="durationEnd" value="<%= education.durationEnd %>" required></label>
+        <label><span>Qualification</span><input name="qualification" value="<%= education.qualification %>" placeholder="Diploma of Information Technology" required></label>
+        <label><span>Institution</span><input name="institution" value="<%= education.institution %>" placeholder="Malaysia University of Science and Technology" required></label>
+        <label><span>Field</span><input name="field" value="<%= education.field %>" placeholder="Information Technology" required></label>
+        <div class="cms-month-picker" data-month-picker>
+            <span class="cms-field-label">Duration start</span>
+            <input type="hidden" name="durationStart" value="<%= education.durationStart %>" required data-month-value>
+            <button type="button" class="cms-month-trigger" data-month-trigger>
+                <span data-month-label><%= education.durationStart || 'Select start month' %></span>
+                <i class="fas fa-calendar-days"></i>
+            </button>
+            <div class="cms-month-popover hidden" data-month-popover>
+                <div class="cms-month-popover-row">
+                    <div class="cms-month-popover-field" data-month-select>
+                        <%~ include('partials/dropdown', {
+                            bare: true,
+                            compact: true,
+                            id: 'edu-start-month',
+                            value: startDuration.month,
+                            options: monthOptions,
+                            placeholder: 'Month',
+                            ariaLabel: 'Start month'
+                        }) %>
+                    </div>
+                    <div class="cms-month-popover-field" data-year-select>
+                        <%~ include('partials/dropdown', {
+                            bare: true,
+                            compact: true,
+                            id: 'edu-start-year',
+                            value: startDuration.year,
+                            options: yearOptions,
+                            placeholder: 'Year',
+                            ariaLabel: 'Start year'
+                        }) %>
+                    </div>
+                    <button type="button" class="cms-month-apply" data-month-apply>Apply</button>
+                </div>
+            </div>
+        </div>
+        <div class="cms-duration-end-group" data-duration-end-group>
+            <div class="cms-duration-end-header">
+                <span class="cms-field-label" data-duration-end-label>Duration end</span>
+                <label class="cms-present-check">
+                    <input type="checkbox" data-present-toggle<% if (isPresent) { %> checked<% } %>>
+                    <span class="cms-choice-check"><i class="fas fa-check"></i></span>
+                    <span class="cms-present-label">Present</span>
+                </label>
+            </div>
+            <div class="cms-month-picker<% if (isPresent) { %> hidden<% } %>" data-month-picker data-end-picker>
+                <input type="hidden" name="durationEnd" value="<%= education.durationEnd %>" required data-month-value>
+                <button type="button" class="cms-month-trigger" data-month-trigger>
+                    <span data-month-label><%= isPresent ? 'Select end month' : (education.durationEnd || 'Select end month') %></span>
+                    <i class="fas fa-calendar-days"></i>
+                </button>
+                <div class="cms-month-popover hidden" data-month-popover>
+                    <div class="cms-month-popover-row">
+                        <div class="cms-month-popover-field" data-month-select>
+                            <%~ include('partials/dropdown', {
+                                bare: true,
+                                compact: true,
+                                id: 'edu-end-month',
+                                value: endDuration.month,
+                                options: monthOptions,
+                                placeholder: 'Month',
+                                ariaLabel: 'End month'
+                            }) %>
+                        </div>
+                        <div class="cms-month-popover-field" data-year-select>
+                            <%~ include('partials/dropdown', {
+                                bare: true,
+                                compact: true,
+                                id: 'edu-end-year',
+                                value: endDuration.year,
+                                options: yearOptions,
+                                placeholder: 'Year',
+                                ariaLabel: 'End year'
+                            }) %>
+                        </div>
+                        <button type="button" class="cms-month-apply" data-month-apply>Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <label><span>Results JSON</span><textarea name="results" rows="5"><%= education.results %></textarea></label>
-    <label><span>Description</span><textarea name="description" rows="7" required><%= education.description %></textarea></label>
+
+    <div class="cms-result-toggle-group" data-education-result-toggles>
+        <label class="cms-choice-card">
+            <input type="checkbox" data-result-toggle="academic"<% if (hasAcademicResult) { %> checked<% } %>>
+            <span class="cms-choice-check"><i class="fas fa-check"></i></span>
+            <span class="cms-choice-copy">
+                <strong>Semester and GPA</strong>
+                <small>Show current semester, GPA, or both</small>
+            </span>
+        </label>
+        <label class="cms-choice-card">
+            <input type="checkbox" data-result-toggle="grades"<% if (hasGradeResult) { %> checked<% } %>>
+            <span class="cms-choice-check"><i class="fas fa-check"></i></span>
+            <span class="cms-choice-copy">
+                <strong>Subject grades</strong>
+                <small>Show total subjects and grade counts</small>
+            </span>
+        </label>
+    </div>
+
+    <div class="cms-form-grid two cms-result-fields<% if (!hasAcademicResult) { %> hidden<% } %>" data-result-fields="academic">
+        <label><span>Semester</span><input type="number" name="semester" min="1" step="1" value="<%= resultFields.semester || '' %>" placeholder="4"></label>
+        <label><span>GPA</span><input type="number" name="gpa" min="0" max="4" step="0.01" value="<%= resultFields.gpa || '' %>" placeholder="4.00"></label>
+    </div>
+
+    <div class="cms-form-grid two cms-result-fields<% if (!hasGradeResult) { %> hidden<% } %>" data-result-fields="grades">
+        <label><span>Total subjects</span><input type="number" name="totalSubjects" min="0" step="1" value="<%= resultFields.totalSubjects || '' %>" placeholder="Leave blank if not applicable"></label>
+        <label><span>A* grades</span><input type="number" name="gradeAStar" min="0" step="1" value="<%= resultFields.gradeAStar || '' %>" placeholder="Leave blank if not applicable"></label>
+        <label><span>A grades</span><input type="number" name="gradeA" min="0" step="1" value="<%= resultFields.gradeA || '' %>" placeholder="Leave blank if not applicable"></label>
+        <label><span>B grades</span><input type="number" name="gradeB" min="0" step="1" value="<%= resultFields.gradeB || '' %>" placeholder="Leave blank if not applicable"></label>
+        <label><span>C grades</span><input type="number" name="gradeC" min="0" step="1" value="<%= resultFields.gradeC || '' %>" placeholder="Leave blank if not applicable"></label>
+        <label><span>D grades</span><input type="number" name="gradeD" min="0" step="1" value="<%= resultFields.gradeD || '' %>" placeholder="Leave blank if not applicable"></label>
+        <label><span>F grades</span><input type="number" name="gradeF" min="0" step="1" value="<%= resultFields.gradeF || '' %>" placeholder="Leave blank if not applicable"></label>
+    </div>
+    <label><span>Description</span><textarea name="description" rows="7" placeholder="Short summary of the program, coursework, or learning experience" required><%= education.description %></textarea></label>
     <div class="cms-form-actions">
         <button type="submit" class="cms-button primary"><i class="fas fa-floppy-disk"></i><span>Save Education</span></button>
     </div>

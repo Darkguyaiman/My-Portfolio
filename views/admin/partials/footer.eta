@@ -1,5 +1,6 @@
         </main>
     </div>
+    <%~ include('sort-order-modal') %>
     <script src="/js/cms-admin.js"></script>
 </body>
 </html>
