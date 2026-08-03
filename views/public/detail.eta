@@ -135,18 +135,36 @@
     </footer>
 
     <!-- Image Modal -->
-    <div class="image-modal" id="imageModal">
-        <span class="image-modal-close" id="modalClose">&times;</span>
-        <span class="image-modal-nav image-modal-prev" id="modalPrev">
-            <i class="fas fa-chevron-left"></i>
-        </span>
-        <span class="image-modal-nav image-modal-next" id="modalNext">
-            <i class="fas fa-chevron-right"></i>
-        </span>
-        <div class="image-modal-content">
-            <img class="image-modal-img" id="modalImage" src="" alt="">
+    <div class="image-modal" id="imageModal" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
+        <button type="button" class="image-modal-btn image-modal-close" id="modalClose" aria-label="Close image viewer">
+            <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="image-modal-btn image-modal-nav image-modal-prev" id="modalPrev" aria-label="Previous image">
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="image-modal-btn image-modal-nav image-modal-next" id="modalNext" aria-label="Next image">
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+        <div class="image-modal-stage" id="modalStage">
+            <div class="image-modal-content" id="modalContent">
+                <img class="image-modal-img" id="modalImage" src="" alt="">
+            </div>
         </div>
-        <div class="image-modal-counter" id="modalCounter"></div>
+        <div class="image-modal-toolbar">
+            <div class="image-modal-zoom">
+                <button type="button" class="image-modal-btn image-modal-zoom-btn" id="modalZoomOut" aria-label="Zoom out">
+                    <i class="fas fa-minus" aria-hidden="true"></i>
+                </button>
+                <span class="image-modal-zoom-level" id="modalZoomLevel">100%</span>
+                <button type="button" class="image-modal-btn image-modal-zoom-btn" id="modalZoomIn" aria-label="Zoom in">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="image-modal-btn image-modal-zoom-btn image-modal-reset" id="modalZoomReset" aria-label="Reset zoom">
+                    <i class="fas fa-compress" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="image-modal-counter" id="modalCounter"></div>
+        </div>
     </div>
 
     <script src="/vendor/lenis/lenis.min.js"></script>
@@ -189,40 +207,125 @@
 
         let currentImageIndex = 0;
         let projectImages = [];
+        let zoomLevel = 1;
+        let panX = 0;
+        let panY = 0;
+        let isPanning = false;
+        let panStartX = 0;
+        let panStartY = 0;
+        let originPanX = 0;
+        let originPanY = 0;
+        const ZOOM_MIN = 1;
+        const ZOOM_MAX = 4;
+        const ZOOM_STEP = 0.25;
+
+        function clampZoom(value) {
+            return Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(value * 100) / 100));
+        }
+
+        function applyImageTransform() {
+            const modalImg = document.getElementById('modalImage');
+            const modalContent = document.getElementById('modalContent');
+            const zoomLabel = document.getElementById('modalZoomLevel');
+            const zoomOutBtn = document.getElementById('modalZoomOut');
+            const zoomInBtn = document.getElementById('modalZoomIn');
+            const zoomResetBtn = document.getElementById('modalZoomReset');
+
+            const modal = document.getElementById('imageModal');
+            modalImg.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+            modalContent.classList.toggle('is-zoomed', zoomLevel > 1);
+            modal.classList.toggle('is-zoomed', zoomLevel > 1);
+            zoomLabel.textContent = `${Math.round(zoomLevel * 100)}%`;
+            zoomOutBtn.disabled = zoomLevel <= ZOOM_MIN;
+            zoomInBtn.disabled = zoomLevel >= ZOOM_MAX;
+            zoomResetBtn.disabled = zoomLevel === 1 && panX === 0 && panY === 0;
+        }
+
+        function resetZoom(hard = true) {
+            zoomLevel = 1;
+            if (hard) {
+                panX = 0;
+                panY = 0;
+            }
+            applyImageTransform();
+        }
+
+        function setZoom(nextZoom, anchorX, anchorY) {
+            const modalStage = document.getElementById('modalStage');
+            const prevZoom = zoomLevel;
+            const clamped = clampZoom(nextZoom);
+            if (clamped === prevZoom) {
+                applyImageTransform();
+                return;
+            }
+
+            if (clamped === 1) {
+                panX = 0;
+                panY = 0;
+            } else if (typeof anchorX === 'number' && typeof anchorY === 'number') {
+                const rect = modalStage.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const offsetX = anchorX - centerX;
+                const offsetY = anchorY - centerY;
+                const ratio = clamped / prevZoom;
+                panX = offsetX - (offsetX - panX) * ratio;
+                panY = offsetY - (offsetY - panY) * ratio;
+            }
+
+            zoomLevel = clamped;
+            applyImageTransform();
+        }
+
+        function zoomIn(anchorX, anchorY) {
+            setZoom(zoomLevel + ZOOM_STEP, anchorX, anchorY);
+        }
+
+        function zoomOut(anchorX, anchorY) {
+            setZoom(zoomLevel - ZOOM_STEP, anchorX, anchorY);
+        }
 
         function openImageModal(index, images) {
             projectImages = images;
             currentImageIndex = index;
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
-            const modalCounter = document.getElementById('modalCounter');
 
             modalImg.src = `/${images[index]}`;
-            modalImg.classList.remove('zoomed');
+            modalImg.alt = `Project image ${index + 1}`;
+            modal.hidden = false;
             modal.classList.add('active');
+            document.body.classList.add('image-modal-open');
+            resetZoom();
             updateModalCounter();
+            updateNavVisibility();
         }
 
         function closeImageModal() {
             const modal = document.getElementById('imageModal');
             modal.classList.remove('active');
+            modal.hidden = true;
+            document.body.classList.remove('image-modal-open');
+            resetZoom();
         }
 
         function nextImage() {
-            if (projectImages.length === 0) return;
+            if (projectImages.length <= 1) return;
             currentImageIndex = (currentImageIndex + 1) % projectImages.length;
             const modalImg = document.getElementById('modalImage');
             modalImg.src = `/${projectImages[currentImageIndex]}`;
-            modalImg.classList.remove('zoomed');
+            modalImg.alt = `Project image ${currentImageIndex + 1}`;
+            resetZoom();
             updateModalCounter();
         }
 
         function prevImage() {
-            if (projectImages.length === 0) return;
+            if (projectImages.length <= 1) return;
             currentImageIndex = (currentImageIndex - 1 + projectImages.length) % projectImages.length;
             const modalImg = document.getElementById('modalImage');
             modalImg.src = `/${projectImages[currentImageIndex]}`;
-            modalImg.classList.remove('zoomed');
+            modalImg.alt = `Project image ${currentImageIndex + 1}`;
+            resetZoom();
             updateModalCounter();
         }
 
@@ -231,28 +334,90 @@
             modalCounter.textContent = `${currentImageIndex + 1} / ${projectImages.length}`;
         }
 
+        function updateNavVisibility() {
+            const modalPrev = document.getElementById('modalPrev');
+            const modalNext = document.getElementById('modalNext');
+            const showNav = projectImages.length > 1;
+            modalPrev.hidden = !showNav;
+            modalNext.hidden = !showNav;
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
+            const modalStage = document.getElementById('modalStage');
             const modalClose = document.getElementById('modalClose');
             const modalPrev = document.getElementById('modalPrev');
             const modalNext = document.getElementById('modalNext');
+            const modalZoomIn = document.getElementById('modalZoomIn');
+            const modalZoomOut = document.getElementById('modalZoomOut');
+            const modalZoomReset = document.getElementById('modalZoomReset');
 
             modalClose.addEventListener('click', closeImageModal);
             modalPrev.addEventListener('click', prevImage);
             modalNext.addEventListener('click', nextImage);
+            modalZoomIn.addEventListener('click', () => zoomIn());
+            modalZoomOut.addEventListener('click', () => zoomOut());
+            modalZoomReset.addEventListener('click', () => resetZoom());
 
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
                     closeImageModal();
+                    return;
+                }
+                if (e.target === modalStage && zoomLevel === 1) {
+                    closeImageModal();
                 }
             });
 
-            modalImg.addEventListener('click', () => {
-                modalImg.classList.toggle('zoomed');
+            modalImg.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                if (zoomLevel > 1) {
+                    resetZoom();
+                } else {
+                    setZoom(2, e.clientX, e.clientY);
+                }
             });
 
+            modalStage.addEventListener('wheel', (e) => {
+                if (!modal.classList.contains('active')) return;
+                e.preventDefault();
+                if (e.deltaY < 0) {
+                    zoomIn(e.clientX, e.clientY);
+                } else {
+                    zoomOut(e.clientX, e.clientY);
+                }
+            }, { passive: false });
+
+            modalImg.addEventListener('pointerdown', (e) => {
+                if (zoomLevel <= 1) return;
+                isPanning = true;
+                panStartX = e.clientX;
+                panStartY = e.clientY;
+                originPanX = panX;
+                originPanY = panY;
+                modalImg.setPointerCapture(e.pointerId);
+                modalImg.classList.add('is-panning');
+            });
+
+            modalImg.addEventListener('pointermove', (e) => {
+                if (!isPanning) return;
+                panX = originPanX + (e.clientX - panStartX);
+                panY = originPanY + (e.clientY - panStartY);
+                applyImageTransform();
+            });
+
+            const endPan = (e) => {
+                if (!isPanning) return;
+                isPanning = false;
+                modalImg.classList.remove('is-panning');
+                if (e && e.pointerId != null) {
+                    try { modalImg.releasePointerCapture(e.pointerId); } catch (_) {}
+                }
+            };
+
+            modalImg.addEventListener('pointerup', endPan);
+            modalImg.addEventListener('pointercancel', endPan);
 
             document.addEventListener('keydown', (e) => {
                 if (!modal.classList.contains('active')) return;
@@ -263,6 +428,14 @@
                     prevImage();
                 } else if (e.key === 'ArrowRight') {
                     nextImage();
+                } else if (e.key === '+' || e.key === '=') {
+                    e.preventDefault();
+                    zoomIn();
+                } else if (e.key === '-' || e.key === '_') {
+                    e.preventDefault();
+                    zoomOut();
+                } else if (e.key === '0') {
+                    resetZoom();
                 }
             });
         });

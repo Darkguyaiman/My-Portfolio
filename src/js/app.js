@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         "It worked yesterday, I swear.",
         "One last change, right?",
-        "Deploy on Fridayâ€¦ what could go wrong?",
+        "Deploy on Friday… what could go wrong?",
         "Did you try turning it off and on?",
         "Works on my machine.",
         "How did this even compile?"
@@ -895,7 +895,7 @@ function calculateWorkDurations() {
             }
         }
 
-        durationElement.textContent = `Â· ${durationText}`;
+        durationElement.textContent = `· ${durationText}`;
     });
 }
 
@@ -1154,7 +1154,7 @@ async function loadEducation() {
                     }
                     resultsHTML = `
                     <div class="timeline-results">
-                        <span class="timeline-results-text">${parts.join(' Â· ')}</span>
+                        <span class="timeline-results-text">${parts.join(' · ')}</span>
                     </div>
                 `;
                 }

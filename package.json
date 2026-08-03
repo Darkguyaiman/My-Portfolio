@@ -17,6 +17,7 @@
   "dependencies": {
     "@fontsource/playfair-display": "^5.2.8",
     "@types/multer": "^2.2.0",
+    "compression": "^1.8.1",
     "dotenv": "^17.4.2",
     "eta": "^4.6.0",
     "express": "^4.18.2",
@@ -28,6 +29,7 @@
     "@fontsource/press-start-2p": "^5.2.7",
     "@fortawesome/fontawesome-free": "^7.3.0",
     "@tailwindcss/cli": "^4.3.1",
+    "@types/compression": "^1.8.1",
     "@types/express": "^4.17.21",
     "@types/node": "^20.10.0",
     "devicon": "^2.17.0",

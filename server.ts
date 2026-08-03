@@ -1,3 +1,4 @@
+import compression from 'compression';
 import express, { Request, Response } from 'express';
 import { Eta } from 'eta';
 import fs from 'fs';
@@ -23,6 +24,12 @@ const eta = new Eta({
   useWith: true,
 });
 const cachedAssetPattern = /\.(?:css|woff2?|ttf|otf|eot)$/i;
+
+// Gzip/Brotli-capable responses for HTML, JSON, CSS, JS, and other compressible types.
+app.use(compression({
+  threshold: 1024,
+  level: 6,
+}));
 
 // Linux is case-sensitive: git may have `Public/` while builds write to `public/`.
 function resolvePublicRoots(root: string): string[] {
@@ -92,19 +99,19 @@ app.use('/api/education', educationRoutes);
 app.use('/api/languages', languageRoutes);
 
 app.get('/', async (req: Request, res: Response) => {
-  res.render('index', { content: await getSiteContent() });
+  res.render('public/index', { content: await getSiteContent() });
 });
 
 app.get('/projects', (req: Request, res: Response) => {
-  res.render('projects');
+  res.render('public/projects');
 });
 
 app.get('/projects/', (req: Request, res: Response) => {
-  res.render('projects');
+  res.render('public/projects');
 });
 
 app.get('/privacy', (req: Request, res: Response) => {
-  res.render('privacy');
+  res.render('public/privacy');
 });
 
 app.get('/projects/detail', async (req: Request, res: Response) => {
@@ -122,10 +129,10 @@ app.get('/projects/:slug', async (req: Request, res: Response) => {
   const project = await getProjectBySlug(req.params.slug).catch(() => null);
 
   if (!project) {
-    return res.status(404).render('detail', { projectName: null, project: null });
+    return res.status(404).render('public/detail', { projectName: null, project: null });
   }
 
-  res.render('detail', { projectName: project.projectName, project });
+  res.render('public/detail', { projectName: project.projectName, project });
 });
 
 app.listen(PORT, HOST, () => {
