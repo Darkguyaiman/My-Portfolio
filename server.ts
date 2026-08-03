@@ -75,6 +75,8 @@ function resolvePublicRoots(root: string): string[] {
 
 const publicRoots = resolvePublicRoots(appRoot);
 const publicRoot = publicRoots[0];
+const publicAssetExists = (relativePath: string) => publicRoots.some((root) => fs.existsSync(path.join(root, relativePath)));
+const publicAssetRoot = (relativePath: string) => publicRoots.find((root) => fs.existsSync(path.join(root, relativePath))) || null;
 
 const setStaticCacheHeaders = (res: Response, filePath: string) => {
   if (cachedAssetPattern.test(filePath)) {
@@ -116,7 +118,7 @@ app.locals.projectThumbnail = (assetPath: string) => {
       ? `${path.dirname(normalized).replace(/\\/g, '/')}/thumbnails/${path.parse(path.basename(normalized)).name}.webp`
       : null;
   if (!candidate) return normalized;
-  return fs.existsSync(path.join(publicRoot, candidate)) ? candidate : normalized;
+  return publicAssetExists(candidate) ? candidate : normalized;
 };
 interface ProjectImageSource {
   src: string;
@@ -139,7 +141,9 @@ app.locals.projectImageSources = (assetPath: string): ProjectImageSource => {
 
   const baseDirectory = path.dirname(normalized).replace(/\\/g, '/');
   const basename = path.parse(path.basename(normalized)).name;
-  const metadataPath = path.join(publicRoot, baseDirectory, 'detail', `${basename}.json`);
+  const metadataRelativePath = path.join(baseDirectory, 'detail', `${basename}.json`);
+  const metadataRoot = publicAssetRoot(metadataRelativePath);
+  const metadataPath = metadataRoot ? path.join(metadataRoot, metadataRelativePath) : '';
   const fallback: ProjectImageSource = {
     src: normalized,
     srcset: null,
@@ -149,6 +153,7 @@ app.locals.projectImageSources = (assetPath: string): ProjectImageSource => {
   };
 
   try {
+    if (!metadataPath) return fallback;
     const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8')) as ProjectImageMetadata;
     const source: ProjectImageSource = {
       src: `${baseDirectory}/${metadata.src}`,
@@ -174,11 +179,11 @@ app.locals.optimizedAsset = (assetPath: string, width: number) => {
   const baseName = path.parse(path.basename(normalized)).name;
   if (lowerPath.startsWith('assets/') && /^2d mohamed(?: leaning)?$/i.test(baseName)) {
     const candidate = `assets/optimized/${baseName}-${width <= 256 ? 240 : 480}.webp`;
-    return fs.existsSync(path.join(publicRoot, candidate)) ? candidate : normalized;
+    return publicAssetExists(candidate) ? candidate : normalized;
   }
   if (!directory) return normalized;
   const candidate = `${directory}/optimized/${baseName}-${width}.webp`;
-  return fs.existsSync(path.join(publicRoot, candidate)) ? candidate : normalized;
+  return publicAssetExists(candidate) ? candidate : normalized;
 };
 
 const staticOptions = {

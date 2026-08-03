@@ -10,6 +10,9 @@ const cli = path.join(
   'dist',
   'index.mjs',
 );
+const publicRoot = path.join(process.cwd(), 'public');
+const cssRoot = path.join(publicRoot, 'css');
+fs.mkdirSync(cssRoot, { recursive: true });
 
 const stylesheets = [
   'app',
@@ -29,7 +32,7 @@ for (const stylesheet of stylesheets) {
       '-i',
       `./src/css/${stylesheet}.css`,
       '-o',
-      `./public/css/${stylesheet}.min.css`,
+      path.join(cssRoot, `${stylesheet}.min.css`),
       '--minify',
     ],
     { stdio: 'inherit' },
@@ -40,10 +43,6 @@ for (const stylesheet of stylesheets) {
   }
 }
 
-const publicRoot = fs.existsSync(path.join(process.cwd(), 'Public'))
-  ? path.join(process.cwd(), 'Public')
-  : path.join(process.cwd(), 'public');
-const cssRoot = path.join(publicRoot, 'css');
 const lenisCss = fs.readFileSync(path.join(publicRoot, 'vendor', 'lenis', 'lenis.css'), 'utf8');
 const pageBundles = {
   'home-page': ['app', 'home', 'projects'],

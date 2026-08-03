@@ -103,10 +103,12 @@ async function createFavicon() {
 }
 
 async function resolvePublicRoot() {
-  for (const name of ['public', 'Public']) {
+  // On Linux the vendor build may create `public/`, while tracked source
+  // images live in `Public/`. Select the tree that actually owns the sources.
+  for (const name of ['Public', 'public']) {
     const candidate = path.join(projectRoot, name);
     try {
-      if ((await fs.stat(candidate)).isDirectory()) return candidate;
+      if ((await fs.stat(path.join(candidate, 'assets', 'Mohamed Aiman Alter Ego.webp'))).isFile()) return candidate;
     } catch {
       // Try the other case-sensitive directory name.
     }
