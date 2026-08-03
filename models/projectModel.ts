@@ -1,5 +1,6 @@
 import { RowDataPacket } from 'mysql2';
 import { pool } from '../config/db.js';
+import { getCached } from '../utils/cache.js';
 
 export interface Project {
   id: number;
@@ -10,6 +11,7 @@ export interface Project {
   images?: string[];
   deployedLink?: string;
   githubLink?: string;
+  updatedAt: Date;
 }
 
 interface ProjectRow extends RowDataPacket {
@@ -18,6 +20,7 @@ interface ProjectRow extends RowDataPacket {
   description: string;
   deployed_link: string | null;
   github_link: string | null;
+  updated_at: Date;
 }
 
 interface ChildRow extends RowDataPacket {
@@ -26,8 +29,12 @@ interface ChildRow extends RowDataPacket {
 }
 
 export async function getProjects(): Promise<Project[]> {
+  return getCached('public:projects', loadProjects, { tags: ['projects'] });
+}
+
+async function loadProjects(): Promise<Project[]> {
   const [projectRows] = await pool.query<ProjectRow[]>(
-    'SELECT id, project_name, description, deployed_link, github_link FROM projects ORDER BY display_order ASC, id ASC',
+    'SELECT id, project_name, description, deployed_link, github_link, updated_at FROM projects ORDER BY display_order ASC, id ASC',
   );
 
   const [technologyRows] = await pool.query<ChildRow[]>(
@@ -50,6 +57,7 @@ export async function getProjects(): Promise<Project[]> {
     images: imagesByProject.get(project.id)?.map(normalizeAssetPath),
     deployedLink: project.deployed_link || undefined,
     githubLink: project.github_link || undefined,
+    updatedAt: project.updated_at,
   }));
 }
 

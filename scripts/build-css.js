@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 
 const cli = path.join(
@@ -37,4 +38,24 @@ for (const stylesheet of stylesheets) {
   if (result.status !== 0) {
     process.exit(result.status ?? 1);
   }
+}
+
+const publicRoot = fs.existsSync(path.join(process.cwd(), 'Public'))
+  ? path.join(process.cwd(), 'Public')
+  : path.join(process.cwd(), 'public');
+const cssRoot = path.join(publicRoot, 'css');
+const lenisCss = fs.readFileSync(path.join(publicRoot, 'vendor', 'lenis', 'lenis.css'), 'utf8');
+const pageBundles = {
+  'home-page': ['app', 'home', 'projects'],
+  'projects-page': ['app', 'projects'],
+  'privacy-page': ['app', 'privacy'],
+  'detail-page': ['app', 'detail'],
+};
+
+for (const [bundleName, bundleStylesheets] of Object.entries(pageBundles)) {
+  const bundle = bundleStylesheets
+    .map((stylesheet) => fs.readFileSync(path.join(cssRoot, `${stylesheet}.min.css`), 'utf8'))
+    .concat(lenisCss)
+    .join('');
+  fs.writeFileSync(path.join(cssRoot, `${bundleName}.min.css`), bundle);
 }

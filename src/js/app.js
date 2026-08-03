@@ -12,8 +12,33 @@ function prefersReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+function loadDeferredIconStyles() {
+    const stylesheets = ['/vendor/fontawesome/css/all.min.css'];
+    if (document.querySelector('[class*="devicon-"]')) {
+        stylesheets.push('/vendor/devicon/devicon.min.css');
+    }
+
+    stylesheets.forEach(href => {
+        if (document.querySelector(`link[href^="${href}"]`)) return;
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        document.head.appendChild(link);
+    });
+}
+
+window.addEventListener('load', () => {
+    if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(loadDeferredIconStyles, { timeout: 1500 });
+    } else {
+        setTimeout(loadDeferredIconStyles, 0);
+    }
+}, { once: true });
+
 function initLenis() {
-    if (prefersReducedMotion() || typeof window.Lenis !== 'function') return null;
+    const hasCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const savesData = Boolean(navigator.connection && navigator.connection.saveData);
+    if (prefersReducedMotion() || hasCoarsePointer || savesData || typeof window.Lenis !== 'function') return null;
 
     lenis = new window.Lenis({
         duration: 1.15,
@@ -174,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeroTitleAnimate();
     initHeroLinesAnimate();
     initTextAnimateTitles();
+    enhanceServerRenderedTechIcons();
 
 
     // Load all dynamic content first, then handle initial hash scrolling
@@ -902,6 +928,11 @@ function calculateWorkDurations() {
 
 async function loadWorkExperience() {
     try {
+        const existingTimeline = document.getElementById('workTimeline');
+        if (!existingTimeline || existingTimeline.dataset.serverRendered === 'true') {
+            if (existingTimeline) calculateWorkDurations();
+            return;
+        }
 
         const workJsonPath = '/api/work';
         const response = await fetch(workJsonPath);
@@ -1021,17 +1052,24 @@ function getSmallTechIcon(tech) {
 
 window.getSmallTechIcon = getSmallTechIcon;
 
+function enhanceServerRenderedTechIcons() {
+    document.querySelectorAll('.project-tags').forEach(container => {
+        const labels = [...container.querySelectorAll('.project-tech-icon-fallback')]
+            .map(element => element.textContent.trim())
+            .filter(Boolean);
+        if (labels.length) container.innerHTML = labels.map(getSmallTechIcon).join('');
+    });
+}
+
 
 async function loadFeaturedProjects() {
     try {
+        const projectsGrid = document.getElementById('projectsGrid');
+        if (!projectsGrid || projectsGrid.dataset.serverRendered === 'true') return;
 
         const projectsJsonPath = '/api/projects';
         const response = await fetch(projectsJsonPath);
         const projects = await response.json();
-
-        const projectsGrid = document.getElementById('projectsGrid');
-        if (!projectsGrid) return;
-
 
         const featuredProjects = projects.slice(0, 3);
 
@@ -1052,12 +1090,12 @@ async function loadFeaturedProjects() {
                 ${displayImages.length > 0 ? `
                 <div class="project-card-images">
                     ${displayImages.map(img => `<img src="/${img}" alt="${project.projectName}" class="project-card-image">`).join('')}
-                    ${hasMoreImages ? `<div class="project-card-image-more">+${project.images.length - 3}</div>` : ''}
+                    ${hasMoreImages ? `<div class="project-card-image-more" role="img" aria-label="${project.images.length - 3} more screenshots">+${project.images.length - 3}</div>` : ''}
                 </div>
                 ` : ''}
                 <h3 class="project-title">${project.projectName}</h3>
                 <p class="project-description">${project.description}</p>
-                <div class="project-tags">
+                <div class="project-tags" role="group" aria-label="Technologies used">
                     ${project.techUsed.map(tech => getSmallTechIcon(tech)).join('')}
                 </div>
                 <div class="project-links">
@@ -1097,6 +1135,8 @@ function getInstitutionLogo(institutionName) {
 
 async function loadEducation() {
     try {
+        const existingTimeline = document.getElementById('educationTimeline');
+        if (!existingTimeline || existingTimeline.dataset.serverRendered === 'true') return;
 
         const educationJsonPath = '/api/education';
         const response = await fetch(educationJsonPath);
@@ -1204,6 +1244,8 @@ function formatEducationDate(dateString) {
 
 async function loadLanguages() {
     try {
+        const existingGrid = document.getElementById('languagesGrid');
+        if (!existingGrid || existingGrid.dataset.serverRendered === 'true') return;
 
         const languagesJsonPath = '/api/languages';
         const response = await fetch(languagesJsonPath);
@@ -1345,10 +1387,14 @@ function initCursorTrail() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    setTimeout(() => {
-        initCursorTrail();
-    }, 100);
+    const canUsePointerEffects = window.matchMedia('(pointer: fine)').matches && !prefersReducedMotion();
+    if (canUsePointerEffects) {
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(initCursorTrail, { timeout: 1000 });
+        } else {
+            setTimeout(initCursorTrail, 100);
+        }
+    }
 
 
     updateCopyrightYear();
@@ -1362,5 +1408,3 @@ function updateCopyrightYear() {
         element.textContent = currentYear;
     });
 }
-
-

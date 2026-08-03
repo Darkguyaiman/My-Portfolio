@@ -4,31 +4,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Details - Darkguyaiman</title>
-    <meta name="description" id="metaDescription" content="Project details by Mohamed Aiman - Web Developer Portfolio">
-    <meta name="keywords" id="metaKeywords" content="Mohamed Aiman, web development, project">
+    <title><%= seo.title %></title>
+    <meta name="description" content="<%= seo.description %>">
     <meta name="author" content="Mohamed Aiman">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="<%= seo.robots %>">
+    <meta name="theme-color" content="#1a1a1c">
+    <meta name="color-scheme" content="dark light">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" id="ogType">
-    <meta property="og:url" id="ogUrl" content="">
-    <meta property="og:title" id="ogTitle" content="Project Details - Darkguyaiman">
-    <meta property="og:description" id="ogDescription" content="Project details by Mohamed Aiman">
-    <meta property="og:image" id="ogImage" content="https://darkguyaiman.github.io/assets/Mohamed Aiman.webp">
+    <!-- Open Graph powers previews on Reddit and other social platforms. -->
+    <meta property="og:type" content="<%= seo.type %>">
+    <meta property="og:site_name" content="Mohamed Aiman Portfolio">
+    <meta property="og:locale" content="en_MY">
+    <meta property="og:url" content="<%= seo.canonical %>">
+    <meta property="og:title" content="<%= seo.title %>">
+    <meta property="og:description" content="<%= seo.description %>">
+    <meta property="og:image" content="<%= seo.image %>">
+    <meta property="og:image:alt" content="<%= seo.imageAlt %>">
+    <% (seo.tags || []).forEach(function(tag) { %><meta property="article:tag" content="<%= tag %>"><% }) %>
 
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" id="twitterUrl" content="">
-    <meta name="twitter:title" id="twitterTitle" content="Project Details - Darkguyaiman">
-    <meta name="twitter:description" id="twitterDescription" content="Project details by Mohamed Aiman">
-    <meta name="twitter:image" id="twitterImage"
-        content="https://darkguyaiman.github.io/assets/Mohamed Aiman.webp">
+    <meta name="twitter:site" content="@MohamedAiman103">
+    <meta name="twitter:creator" content="@MohamedAiman103">
+    <meta name="twitter:title" content="<%= seo.title %>">
+    <meta name="twitter:description" content="<%= seo.description %>">
+    <meta name="twitter:image" content="<%= seo.image %>">
+    <meta name="twitter:image:alt" content="<%= seo.imageAlt %>">
 
-    <!-- Canonical URL -->
-    <link rel="canonical" id="canonicalUrl" href="">
-
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="canonical" href="<%= seo.canonical %>">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="alternate" type="application/json" href="/portfolio.json" title="Machine-readable portfolio">
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="AI-readable site summary">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
+    <script type="application/ld+json"><%~ seo.jsonLd %></script>
     <script>
         (function () {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -37,11 +45,11 @@
     </script>
     <style>html{background:#fdfbf7}html[data-theme="dark"]{background:#1a1a1c}</style>
     <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2?v=<%= assetVersion %>" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/css/app.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/css/detail.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/devicon/devicon.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/lenis/lenis.css?v=<%= assetVersion %>">
+    <% if (project && project.images && project.images[0]) { const leadImage = projectImageSources(project.images[0]); %>
+    <link rel="preload" as="image" href="/<%= leadImage.src %>"<% if (leadImage.srcset) { %> imagesrcset="<%= leadImage.srcset %>" imagesizes="<%= leadImage.sizes %>"<% } %> fetchpriority="high">
+    <% } %>
+    <link rel="stylesheet" href="/css/detail-page.min.css?v=<%= assetVersion %>">
+    <noscript><link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>"><link rel="stylesheet" href="/vendor/devicon/devicon.min.css?v=<%= assetVersion %>"></noscript>
 </head>
 
 <body>
@@ -54,7 +62,7 @@
                 <div class="easter-egg" id="easterEgg">
                     <div class="easter-egg-content">
                         <div class="easter-egg-image-container">
-                            <img src="/assets/2D Mohamed.webp" alt="2D Mohamed" class="easter-egg-image">
+                            <img src="/assets/optimized/2D Mohamed-240.webp" srcset="/assets/optimized/2D Mohamed-240.webp 1x, /assets/optimized/2D Mohamed-480.webp 2x" alt="2D Mohamed" class="easter-egg-image" width="240" height="240" loading="lazy" decoding="async">
                         </div>
                         <div class="easter-egg-name">darkguyaiman</div>
                         <div class="easter-egg-message" id="easterEggMessage"></div>
@@ -80,8 +88,8 @@
                         </div>
                         <div class="nav-image-content">
                             <div class="nav-image-glow"></div>
-                            <img src="/assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning"
-                                class="nav-leaning-image">
+                            <img src="/assets/optimized/2D Mohamed Leaning-240.webp" srcset="/assets/optimized/2D Mohamed Leaning-240.webp 1x, /assets/optimized/2D Mohamed Leaning-480.webp 2x" alt="2D Mohamed Leaning"
+                                class="nav-leaning-image" width="240" height="240" loading="lazy" decoding="async">
                             <div class="nav-name">darkguyaiman</div>
                         </div>
                     </div>
@@ -109,19 +117,36 @@
                     <span>back to projects</span>
                 </a>
 
+                <% if (project) { %>
                 <div class="project-detail-header">
-                    <h1 class="project-detail-title" id="projectTitle"></h1>
-                    <p class="project-detail-description" id="projectDescription"></p>
+                    <h1 class="project-detail-title" id="projectTitle"><%= project.projectName %></h1>
+                    <p class="project-detail-description" id="projectDescription"><%= project.description %></p>
                 </div>
 
-                <div class="project-detail-images" id="projectImages"></div>
+                <div class="project-detail-images" id="projectImages">
+                    <% (project.images || []).forEach(function(image, index) { %>
+                    <% const imageSource = projectImageSources(image); %>
+                    <img src="/<%= imageSource.src %>"<% if (imageSource.srcset) { %> srcset="<%= imageSource.srcset %>" sizes="<%= imageSource.sizes %>"<% } %><% if (imageSource.width && imageSource.height) { %> width="<%= imageSource.width %>" height="<%= imageSource.height %>"<% } %> alt="<%= project.projectName %> screenshot <%= index + 1 %>" class="project-detail-image" data-image-index="<%= index %>" loading="<%= index < 2 ? 'eager' : 'lazy' %>" decoding="async" fetchpriority="<%= index < 2 ? 'high' : 'low' %>">
+                    <% }) %>
+                </div>
 
                 <div class="project-detail-tech">
-                    <h3 class="section-title" style="margin-bottom: 1rem;">technologies used</h3>
-                    <div class="project-tech-icons" id="projectTech"></div>
+                    <h2 class="section-title" style="margin-bottom: 1rem;">technologies used</h2>
+                    <div class="project-tech-icons" id="projectTech">
+                        <% project.techUsed.forEach(function(technology) { %><div class="tech-icon-item" title="<%= technology %>"><span class="tech-icon-name"><%= technology %></span></div><% }) %>
+                    </div>
                 </div>
 
-                <div class="project-detail-links" id="projectLinks"></div>
+                <div class="project-detail-links" id="projectLinks"<% if (!project.deployedLink && !project.githubLink) { %> hidden<% } %>>
+                    <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Website</span></a><% } %>
+                    <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> source code"><i class="fab fa-github" aria-hidden="true"></i><span>Source</span></a><% } %>
+                </div>
+                <% } else { %>
+                <div class="project-detail-header">
+                    <h1 class="project-detail-title">Project not found</h1>
+                    <p class="project-detail-description">This project may have moved or no longer exists. Browse the current projects instead.</p>
+                </div>
+                <% } %>
             </div>
         </section>
     </main>
@@ -147,7 +172,7 @@
         </button>
         <div class="image-modal-stage" id="modalStage">
             <div class="image-modal-content" id="modalContent">
-                <img class="image-modal-img" id="modalImage" src="" alt="">
+                <img class="image-modal-img" id="modalImage" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" decoding="async">
             </div>
         </div>
         <div class="image-modal-toolbar">
@@ -167,8 +192,8 @@
         </div>
     </div>
 
-    <script src="/vendor/lenis/lenis.min.js"></script>
-    <script src="/js/app.min.js"></script>
+    <script src="/vendor/lenis/lenis.min.js?v=<%= assetVersion %>"></script>
+    <script src="/js/app.min.js?v=<%= assetVersion %>"></script>
     <script>
 
         function getTechIcon(tech) {
@@ -440,118 +465,15 @@
             });
         });
 
-        function getProjectSlug() {
-            const slug = window.location.pathname.split('/').filter(Boolean).pop();
-            return slug === 'projects' ? null : slug;
-        }
-
-
-        async function loadProjectDetail() {
-            try {
-                const projectSlug = getProjectSlug();
-
-                if (!projectSlug) {
-                    document.body.innerHTML = '<div class="container" style="padding-top: 120px;"><h1>Project not specified</h1><a href="/projects">Back to Projects</a></div>';
-                    return;
-                }
-
-                const response = await fetch(`/api/projects/${encodeURIComponent(projectSlug)}`);
-                const project = response.ok ? await response.json() : null;
-
-                if (!project) {
-                    document.body.innerHTML = '<div class="container" style="padding-top: 120px;"><h1>Project not found</h1><a href="/projects">Back to Projects</a></div>';
-                    return;
-                }
-
-
-                const baseUrl = 'https://darkguyaiman.github.io';
-                const currentUrl = `${baseUrl}/projects/${project.slug}`;
-                const projectImage = project.images && project.images.length > 0
-                    ? `${baseUrl}/${project.images[0]}`
-                    : `${baseUrl}/assets/Mohamed Aiman.webp`;
-                const techKeywords = project.techUsed.join(', ');
-
-
-                const truncateDescription = (text, maxLength = 155) => {
-                    if (text.length <= maxLength) return text;
-                    return text.substring(0, maxLength).trim() + '...';
-                };
-
-                const seoDescription = truncateDescription(project.description);
-                const fullDescription = `${seoDescription} Built with: ${techKeywords}`;
-
-
-                document.title = `${project.projectName} - Mohamed Aiman Portfolio`;
-
-
-                document.getElementById('metaDescription').setAttribute('content', truncateDescription(fullDescription, 160));
-
-
-                document.getElementById('metaKeywords').setAttribute('content', `${project.projectName}, ${techKeywords}, Mohamed Aiman, web development, project`);
-
-
-                document.getElementById('ogUrl').setAttribute('content', currentUrl);
-                document.getElementById('ogTitle').setAttribute('content', `${project.projectName} - Mohamed Aiman Portfolio`);
-                document.getElementById('ogDescription').setAttribute('content', seoDescription);
-                document.getElementById('ogImage').setAttribute('content', projectImage);
-
-
-                document.getElementById('twitterUrl').setAttribute('content', currentUrl);
-                document.getElementById('twitterTitle').setAttribute('content', `${project.projectName} - Mohamed Aiman Portfolio`);
-                document.getElementById('twitterDescription').setAttribute('content', seoDescription);
-                document.getElementById('twitterImage').setAttribute('content', projectImage);
-
-
-                document.getElementById('canonicalUrl').setAttribute('href', currentUrl);
-
-
-                const projectTitle = document.getElementById('projectTitle');
-                projectTitle.textContent = project.projectName;
-                if (typeof window.animateTextByCharacter === 'function') {
-                    window.animateTextByCharacter(projectTitle);
-                }
-                document.getElementById('projectDescription').textContent = project.description;
-
-
-                const techContainer = document.getElementById('projectTech');
-                techContainer.innerHTML = project.techUsed.map(tech => getTechIcon(tech)).join('');
-
-
-                const imagesContainer = document.getElementById('projectImages');
-                if (project.images && project.images.length > 0) {
-                    imagesContainer.innerHTML = project.images.map((img, index) =>
-                        `<img src="/${img}" alt="${project.projectName}" class="project-detail-image" data-image-index="${index}">`
-                    ).join('');
-
-
-                    const images = imagesContainer.querySelectorAll('.project-detail-image');
-                    images.forEach((img, index) => {
-                        img.addEventListener('click', () => {
-                            openImageModal(index, project.images);
-                        });
-                    });
-                } else {
-                    imagesContainer.style.display = 'none';
-                }
-
-
-                const linksContainer = document.getElementById('projectLinks');
-                const links = [];
-                if (project.deployedLink) {
-                    links.push(`<a href="${project.deployedLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Website</span></a>`);
-                }
-                if (project.githubLink) {
-                    links.push(`<a href="${project.githubLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} source code"><i class="fab fa-github" aria-hidden="true"></i><span>Source</span></a>`);
-                }
-                linksContainer.innerHTML = links.join('');
-                linksContainer.hidden = links.length === 0;
-            } catch (error) {
-                console.error('Error loading project details:', error);
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            loadProjectDetail();
+            const project = <%~ projectJson %>;
+            if (!project) return;
+
+            const techContainer = document.getElementById('projectTech');
+            techContainer.innerHTML = project.techUsed.map(tech => getTechIcon(tech)).join('');
+            document.querySelectorAll('.project-detail-image').forEach((image, index) => {
+                image.addEventListener('click', () => openImageModal(index, project.images));
+            });
         });
     </script>
 </body>

@@ -6,10 +6,15 @@
   "scripts": {
     "build": "npm run build:server && npm run build:assets",
     "build:server": "tsc",
-    "build:assets": "npm run build:vendor && npm run build:css && npm run build:js",
+    "build:assets": "npm run build:vendor && npm run build:images && npm run build:css && npm run build:js",
+    "build:images": "node scripts/optimize-images.js",
     "build:vendor": "node scripts/copy-vendor-assets.js",
     "build:css": "node scripts/build-css.js",
     "build:js": "terser ./src/js/app.js --compress --mangle --output ./public/js/app.min.js",
+    "audit:performance": "npm run build && node scripts/audit-performance.mjs",
+    "test:cache": "npm run build:server && node scripts/test-cache.mjs",
+    "test:uploads": "npm run build:server && node scripts/test-image-uploads.mjs",
+    "test:seo": "npm run build && node scripts/test-seo.mjs",
     "start": "node dist/server.js",
     "dev": "tsx watch server.ts",
     "lint": "eslint . --ext .ts"
@@ -22,7 +27,8 @@
     "eta": "^4.6.0",
     "express": "^4.18.2",
     "multer": "^2.2.0",
-    "mysql2": "^3.22.5"
+    "mysql2": "^3.22.5",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@fontsource/inter": "^5.2.8",

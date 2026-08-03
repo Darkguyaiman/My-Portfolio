@@ -1,5 +1,6 @@
 import { RowDataPacket } from 'mysql2';
 import { pool } from '../config/db.js';
+import { getCached } from '../utils/cache.js';
 
 interface EducationRow extends RowDataPacket {
   qualification: string;
@@ -12,6 +13,10 @@ interface EducationRow extends RowDataPacket {
 }
 
 export async function getEducation() {
+  return getCached('public:education', loadEducation, { tags: ['education'] });
+}
+
+async function loadEducation() {
   const [rows] = await pool.query<EducationRow[]>(
     'SELECT qualification, institution, field, duration_start, duration_end, results, description FROM education ORDER BY display_order ASC, id ASC',
   );

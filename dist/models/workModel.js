@@ -1,5 +1,9 @@
 import { pool } from '../config/db.js';
+import { getCached } from '../utils/cache.js';
 export async function getWorkExperiences() {
+    return getCached('public:work', loadWorkExperiences, { tags: ['work'] });
+}
+async function loadWorkExperiences() {
     const [workRows] = await pool.query('SELECT id, company, role, start_date, end_date, logo FROM work_experiences ORDER BY display_order ASC, id ASC');
     const [descriptionRows] = await pool.query('SELECT work_experience_id, description FROM work_experience_descriptions ORDER BY display_order ASC, id ASC');
     const descriptionsByWork = descriptionRows.reduce((map, row) => {

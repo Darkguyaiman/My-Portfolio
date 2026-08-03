@@ -3,30 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects - Mohamed Aiman Portfolio</title>
-    <meta name="description" content="Explore all projects by Mohamed Aiman, including web applications, ERP systems, management tools, and more. Built with Node.js, Express, MySQL, and modern web technologies.">
-    <meta name="keywords" content="Mohamed Aiman projects, web development projects, Node.js projects, Express.js projects, portfolio projects, backend development">
+    <title><%= seo.title %></title>
+    <meta name="description" content="<%= seo.description %>">
     <meta name="author" content="Mohamed Aiman">
-    <meta name="robots" content="index, follow">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://darkguyaiman.github.io/projects/">
-    <meta property="og:title" content="Projects - Mohamed Aiman Portfolio">
-    <meta property="og:description" content="Explore all projects by Mohamed Aiman, including web applications, ERP systems, management tools, and more.">
-    <meta property="og:image" content="https://darkguyaiman.github.io/assets/Mohamed Aiman.webp">
-    
-    <!-- Twitter -->
+    <meta name="robots" content="<%= seo.robots %>">
+    <meta name="theme-color" content="#1a1a1c">
+    <meta name="color-scheme" content="dark light">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- Open Graph powers previews on Reddit and other social platforms. -->
+    <meta property="og:type" content="<%= seo.type %>">
+    <meta property="og:site_name" content="Mohamed Aiman Portfolio">
+    <meta property="og:locale" content="en_MY">
+    <meta property="og:url" content="<%= seo.canonical %>">
+    <meta property="og:title" content="<%= seo.title %>">
+    <meta property="og:description" content="<%= seo.description %>">
+    <meta property="og:image" content="<%= seo.image %>">
+    <meta property="og:image:alt" content="<%= seo.imageAlt %>">
+
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://darkguyaiman.github.io/projects/">
-    <meta name="twitter:title" content="Projects - Mohamed Aiman Portfolio">
-    <meta name="twitter:description" content="Explore all projects by Mohamed Aiman, including web applications, ERP systems, management tools, and more.">
-    <meta name="twitter:image" content="https://darkguyaiman.github.io/assets/Mohamed Aiman.webp">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://darkguyaiman.github.io/projects/">
-    
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="twitter:site" content="@MohamedAiman103">
+    <meta name="twitter:creator" content="@MohamedAiman103">
+    <meta name="twitter:title" content="<%= seo.title %>">
+    <meta name="twitter:description" content="<%= seo.description %>">
+    <meta name="twitter:image" content="<%= seo.image %>">
+    <meta name="twitter:image:alt" content="<%= seo.imageAlt %>">
+
+    <link rel="canonical" href="<%= seo.canonical %>">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="alternate" type="application/json" href="/portfolio.json" title="Machine-readable portfolio">
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="AI-readable site summary">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
+    <script type="application/ld+json"><%~ seo.jsonLd %></script>
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -35,11 +43,8 @@
     </script>
     <style>html{background:#fdfbf7}html[data-theme="dark"]{background:#1a1a1c}</style>
     <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2?v=<%= assetVersion %>" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/css/app.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/css/projects.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/devicon/devicon.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/lenis/lenis.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/css/projects-page.min.css?v=<%= assetVersion %>">
+    <noscript><link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>"><link rel="stylesheet" href="/vendor/devicon/devicon.min.css?v=<%= assetVersion %>"></noscript>
 </head>
 <body>
     <!-- Navigation -->
@@ -51,7 +56,7 @@
                 <div class="easter-egg" id="easterEgg">
                     <div class="easter-egg-content">
                         <div class="easter-egg-image-container">
-                            <img src="/assets/2D Mohamed.webp" alt="2D Mohamed" class="easter-egg-image">
+                            <img src="/assets/optimized/2D Mohamed-240.webp" srcset="/assets/optimized/2D Mohamed-240.webp 1x, /assets/optimized/2D Mohamed-480.webp 2x" alt="2D Mohamed" class="easter-egg-image" width="240" height="240" loading="lazy" decoding="async">
                         </div>
                         <div class="easter-egg-name">darkguyaiman</div>
                         <div class="easter-egg-message" id="easterEggMessage"></div>
@@ -77,7 +82,7 @@
                         </div>
                         <div class="nav-image-content">
                             <div class="nav-image-glow"></div>
-                            <img src="/assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning" class="nav-leaning-image">
+                            <img src="/assets/optimized/2D Mohamed Leaning-240.webp" srcset="/assets/optimized/2D Mohamed Leaning-240.webp 1x, /assets/optimized/2D Mohamed Leaning-480.webp 2x" alt="2D Mohamed Leaning" class="nav-leaning-image" width="240" height="240" loading="lazy" decoding="async">
                             <div class="nav-name">darkguyaiman</div>
                         </div>
                     </div>
@@ -101,11 +106,32 @@
     <section class="projects" style="padding-top: 120px;">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">all projects</h2>
+                <h1 class="section-title">all projects</h1>
                 <a href="/" class="view-more"><i class="fas fa-chevron-left"></i> back to home</a>
             </div>
-            <div class="projects-grid" id="allProjectsGrid">
-                <!-- All projects will be dynamically loaded from the API -->
+            <div class="projects-grid" id="allProjectsGrid" data-server-rendered="true">
+                <% projects.forEach(function(project) { %>
+                <% const displayImages = (project.images || []).slice(0, 3); %>
+                <article class="project-card">
+                    <a href="/projects/<%= project.slug %>" class="project-card-main-link">View <%= project.projectName %> details</a>
+                    <% if (displayImages.length) { %>
+                    <div class="project-card-images">
+                        <% displayImages.forEach(function(image) { %><img src="/<%= projectThumbnail(image) %>" alt="Screenshot of <%= project.projectName %>" class="project-card-image" loading="lazy" decoding="async"><% }) %>
+                        <% if ((project.images || []).length > 3) { %><div class="project-card-image-more" role="img" aria-label="<%= project.images.length - 3 %> more screenshots">+<%= project.images.length - 3 %></div><% } %>
+                    </div>
+                    <% } %>
+                    <h3 class="project-title"><%= project.projectName %></h3>
+                    <p class="project-description"><%= project.description %></p>
+                    <div class="project-tags" role="group" aria-label="Technologies used">
+                        <% project.techUsed.forEach(function(technology) { %><span class="project-tech-icon-fallback" data-tooltip="<%= technology %>"><%= technology %></span><% }) %>
+                    </div>
+                    <div class="project-links">
+                        <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website">Website</a><% } %>
+                        <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> source code">Source</a><% } %>
+                        <a href="/projects/<%= project.slug %>" class="project-link" aria-label="View <%= project.projectName %> details">Details</a>
+                    </div>
+                </article>
+                <% }) %>
             </div>
         </div>
     </section>
@@ -118,73 +144,7 @@
         </div>
     </footer>
 
-    <script src="/vendor/lenis/lenis.min.js"></script>
-    <script src="/js/app.min.js"></script>
-    <script>
-
-        async function loadAllProjects() {
-            try {
-                const response = await fetch('/api/projects');
-                const projects = await response.json();
-                
-                const projectsGrid = document.getElementById('allProjectsGrid');
-                if (!projectsGrid) return;
-                
-                projectsGrid.innerHTML = '';
-                
-                projects.forEach(project => {
-                    const projectCard = document.createElement('div');
-                    projectCard.className = 'project-card';
-                    
-                    const displayImages = project.images ? project.images.slice(0, 3) : [];
-                    const hasMoreImages = project.images && project.images.length > 3;
-                    const detailLink = `/projects/${project.slug}`;
-                    
-                    projectCard.innerHTML = `
-                        <a href="${detailLink}" class="project-card-main-link">View ${project.projectName} details</a>
-                        ${displayImages.length > 0 ? `
-                        <div class="project-card-images">
-                            ${displayImages.map(img => `<img src="/${img}" alt="${project.projectName}" class="project-card-image">`).join('')}
-                            ${hasMoreImages ? `<div class="project-card-image-more">+${project.images.length - 3}</div>` : ''}
-                        </div>
-                        ` : ''}
-                        <h3 class="project-title">${project.projectName}</h3>
-                        <p class="project-description">${project.description}</p>
-                        <div class="project-tags">
-                            ${project.techUsed.map(tech => window.getSmallTechIcon(tech)).join('')}
-                        </div>
-                        <div class="project-links">
-                            ${project.deployedLink ? `<a href="${project.deployedLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} website">Website</a>` : ''}
-                            ${project.githubLink ? `<a href="${project.githubLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} source code">Source</a>` : ''}
-                            <a href="${detailLink}" class="project-link" aria-label="View ${project.projectName} details">Details</a>
-                        </div>
-                    `;
-                    
-                    projectsGrid.appendChild(projectCard);
-                });
-                
-
-                const newItems = projectsGrid.querySelectorAll('.project-card');
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                        }
-                    });
-                }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-                
-                newItems.forEach(item => {
-                    item.classList.add('fade-in');
-                    observer.observe(item);
-                });
-            } catch (error) {
-                console.error('Error loading projects:', error);
-            }
-        }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAllProjects();
-        });
-    </script>
+    <script src="/vendor/lenis/lenis.min.js?v=<%= assetVersion %>"></script>
+    <script src="/js/app.min.js?v=<%= assetVersion %>"></script>
 </body>
 </html>

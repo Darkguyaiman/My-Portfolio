@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
+import { optimizeCmsImageUploads } from '../utils/imageUploads.js';
 import {
   createEducation,
   createLanguage,
@@ -59,7 +60,7 @@ const upload = multer({
     filename: (_req, file, callback) => {
       const extension = path.extname(file.originalname).toLowerCase();
       const basename = path.basename(file.originalname, extension).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'upload';
-      callback(null, `${Date.now()}-${basename}${extension}`);
+      callback(null, `${Date.now()}-${crypto.randomBytes(4).toString('hex')}-${basename}${extension}`);
     },
   }),
   limits: {
@@ -86,6 +87,15 @@ const cmsUploads = upload.fields([
   { name: 'resumeFile', maxCount: 1 },
   { name: 'workLogo', maxCount: 1 },
 ]);
+const optimizeCmsUploads = async (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    const files = req.files as Record<string, Express.Multer.File[]> | undefined;
+    await optimizeCmsImageUploads(Object.values(files || {}).flat());
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
 
 router.get('/login', (req, res) => {
   if (isAuthenticated(req)) return res.redirect('/admin');
@@ -141,7 +151,7 @@ router.get('/content', async (_req, res, next) => {
   }
 });
 
-router.post('/content', cmsUploads, async (req, res, next) => {
+router.post('/content', cmsUploads, optimizeCmsUploads, async (req, res, next) => {
   try {
     await saveSiteContent(parseSiteContent(req.body, getUploadedPaths(req)));
     res.render('admin/content', {
@@ -175,7 +185,7 @@ router.get('/projects/new', (_req, res) => {
   });
 });
 
-router.post('/projects', cmsUploads, async (req, res, next) => {
+router.post('/projects', cmsUploads, optimizeCmsUploads, async (req, res, next) => {
   try {
     const id = await createProject({
       ...parseProject(req.body, getUploadedPaths(req)),
@@ -211,7 +221,7 @@ router.get('/projects/:id/edit', async (req, res, next) => {
   }
 });
 
-router.post('/projects/:id', cmsUploads, async (req, res, next) => {
+router.post('/projects/:id', cmsUploads, optimizeCmsUploads, async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const existing = await getAdminProject(id);
@@ -247,7 +257,7 @@ router.get('/work/new', (_req, res) => {
   res.render('admin/work-form', { active: 'work', work: emptyWork(), action: '/admin/work', title: 'New Work Item' });
 });
 
-router.post('/work', cmsUploads, async (req, res, next) => {
+router.post('/work', cmsUploads, optimizeCmsUploads, async (req, res, next) => {
   try {
     const id = await createWork({
       ...parseWork(req.body, getUploadedPaths(req)),
@@ -278,7 +288,7 @@ router.get('/work/:id/edit', async (req, res, next) => {
   }
 });
 
-router.post('/work/:id', cmsUploads, async (req, res, next) => {
+router.post('/work/:id', cmsUploads, optimizeCmsUploads, async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const existing = await getAdminWork(id);
@@ -596,7 +606,7 @@ function getUploadedPaths(req: Request): UploadedPaths {
 
   return Object.fromEntries(Object.entries(files).map(([field, fieldFiles]) => [
     field,
-    fieldFiles.map((file) => `/${path.relative(path.join(process.cwd(), 'public'), file.path).replace(/\\/g, '/')}`),
+    fieldFiles.map((file) => `/${path.relative(resolvePublicRoot(), file.path).replace(/\\/g, '/')}`),
   ]));
 }
 

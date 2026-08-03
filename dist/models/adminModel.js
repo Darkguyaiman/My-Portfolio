@@ -1,4 +1,5 @@
 import { pool } from '../config/db.js';
+import { getCached, invalidateCacheTags } from '../utils/cache.js';
 import { slugify } from './projectModel.js';
 export const defaultSiteContent = {
     heroTitlePrefix: "Hellow, I'm",
@@ -42,19 +43,22 @@ export async function getDashboardStats() {
 }
 export async function getSiteContent() {
     try {
-        await ensureCmsSchema();
-        const [rows] = await pool.query('SELECT content_key, content_value FROM site_content');
-        return rows.reduce((content, row) => {
-            if (row.content_key in content) {
-                content[row.content_key] = row.content_value;
-            }
-            return content;
-        }, { ...defaultSiteContent });
+        return await getCached('public:site-content', loadSiteContent, { tags: ['site-content'] });
     }
     catch (error) {
         console.error('Error loading site content:', error);
         return { ...defaultSiteContent };
     }
+}
+async function loadSiteContent() {
+    await ensureCmsSchema();
+    const [rows] = await pool.query('SELECT content_key, content_value FROM site_content');
+    return rows.reduce((content, row) => {
+        if (row.content_key in content) {
+            content[row.content_key] = row.content_value;
+        }
+        return content;
+    }, { ...defaultSiteContent });
 }
 export async function saveSiteContent(content) {
     await ensureCmsSchema();
@@ -62,6 +66,7 @@ export async function saveSiteContent(content) {
     for (const [key, value] of entries) {
         await pool.query('INSERT INTO site_content (content_key, content_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE content_value = VALUES(content_value)', [key, value]);
     }
+    invalidateCacheTags('site-content');
 }
 export async function listAdminProjects() {
     const [rows] = await pool.query('SELECT id, project_name, description, deployed_link, github_link, display_order, updated_at FROM projects ORDER BY display_order ASC, id ASC');
@@ -92,6 +97,7 @@ export async function createProject(input) {
         const [result] = await connection.query('INSERT INTO projects (project_name, description, deployed_link, github_link, display_order) VALUES (?, ?, ?, ?, ?)', [input.projectName, input.description, input.deployedLink, input.githubLink, input.displayOrder]);
         await replaceProjectChildren(connection, result.insertId, input);
         await connection.commit();
+        invalidateCacheTags('projects');
         return result.insertId;
     }
     catch (error) {
@@ -109,6 +115,7 @@ export async function updateProject(id, input) {
         await connection.query('UPDATE projects SET project_name = ?, description = ?, deployed_link = ?, github_link = ?, display_order = ? WHERE id = ?', [input.projectName, input.description, input.deployedLink, input.githubLink, input.displayOrder, id]);
         await replaceProjectChildren(connection, id, input);
         await connection.commit();
+        invalidateCacheTags('projects');
     }
     catch (error) {
         await connection.rollback();
@@ -120,12 +127,14 @@ export async function updateProject(id, input) {
 }
 export async function deleteProject(id) {
     await pool.query('DELETE FROM projects WHERE id = ?', [id]);
+    invalidateCacheTags('projects');
 }
 export async function getNextProjectDisplayOrder() {
     return nextDisplayOrder('projects');
 }
 export async function reorderProjects(ids) {
     await reorderDisplayOrder('projects', ids);
+    invalidateCacheTags('projects');
 }
 export async function listAdminWork() {
     const [rows] = await pool.query('SELECT id, company, role, start_date, end_date, logo, display_order FROM work_experiences ORDER BY display_order ASC, id ASC');
@@ -155,6 +164,7 @@ export async function createWork(input) {
         const [result] = await connection.query('INSERT INTO work_experiences (company, role, start_date, end_date, logo, display_order) VALUES (?, ?, ?, ?, ?, ?)', [input.company, input.role, input.startDate, input.endDate, input.logo, input.displayOrder]);
         await replaceWorkDescriptions(connection, result.insertId, input.descriptions);
         await connection.commit();
+        invalidateCacheTags('work');
         return result.insertId;
     }
     catch (error) {
@@ -172,6 +182,7 @@ export async function updateWork(id, input) {
         await connection.query('UPDATE work_experiences SET company = ?, role = ?, start_date = ?, end_date = ?, logo = ?, display_order = ? WHERE id = ?', [input.company, input.role, input.startDate, input.endDate, input.logo, input.displayOrder, id]);
         await replaceWorkDescriptions(connection, id, input.descriptions);
         await connection.commit();
+        invalidateCacheTags('work');
     }
     catch (error) {
         await connection.rollback();
@@ -183,12 +194,14 @@ export async function updateWork(id, input) {
 }
 export async function deleteWork(id) {
     await pool.query('DELETE FROM work_experiences WHERE id = ?', [id]);
+    invalidateCacheTags('work');
 }
 export async function getNextWorkDisplayOrder() {
     return nextDisplayOrder('work_experiences');
 }
 export async function reorderWork(ids) {
     await reorderDisplayOrder('work_experiences', ids);
+    invalidateCacheTags('work');
 }
 export async function listAdminEducation() {
     const [rows] = await pool.query('SELECT id, qualification, institution, field, duration_start, duration_end, results, description, display_order FROM education ORDER BY display_order ASC, id ASC');
@@ -235,19 +248,23 @@ function parseEducationResultFields(results) {
 }
 export async function createEducation(input) {
     const [result] = await pool.query('INSERT INTO education (qualification, institution, field, duration_start, duration_end, results, description, display_order) VALUES (?, ?, ?, ?, ?, CAST(? AS JSON), ?, ?)', [input.qualification, input.institution, input.field, input.durationStart, input.durationEnd, input.results, input.description, input.displayOrder]);
+    invalidateCacheTags('education');
     return result.insertId;
 }
 export async function updateEducation(id, input) {
     await pool.query('UPDATE education SET qualification = ?, institution = ?, field = ?, duration_start = ?, duration_end = ?, results = CAST(? AS JSON), description = ?, display_order = ? WHERE id = ?', [input.qualification, input.institution, input.field, input.durationStart, input.durationEnd, input.results, input.description, input.displayOrder, id]);
+    invalidateCacheTags('education');
 }
 export async function getNextEducationDisplayOrder() {
     return nextDisplayOrder('education');
 }
 export async function reorderEducation(ids) {
     await reorderDisplayOrder('education', ids);
+    invalidateCacheTags('education');
 }
 export async function deleteEducation(id) {
     await pool.query('DELETE FROM education WHERE id = ?', [id]);
+    invalidateCacheTags('education');
 }
 export async function listAdminLanguages() {
     const [rows] = await pool.query('SELECT id, name, level, display_order FROM languages ORDER BY display_order ASC, id ASC');
@@ -259,19 +276,23 @@ export async function getAdminLanguage(id) {
 }
 export async function createLanguage(input) {
     const [result] = await pool.query('INSERT INTO languages (name, level, display_order) VALUES (?, ?, ?)', [input.name, input.level, input.displayOrder]);
+    invalidateCacheTags('languages');
     return result.insertId;
 }
 export async function updateLanguage(id, input) {
     await pool.query('UPDATE languages SET name = ?, level = ?, display_order = ? WHERE id = ?', [input.name, input.level, input.displayOrder, id]);
+    invalidateCacheTags('languages');
 }
 export async function deleteLanguage(id) {
     await pool.query('DELETE FROM languages WHERE id = ?', [id]);
+    invalidateCacheTags('languages');
 }
 export async function getNextLanguageDisplayOrder() {
     return nextDisplayOrder('languages');
 }
 export async function reorderLanguages(ids) {
     await reorderDisplayOrder('languages', ids);
+    invalidateCacheTags('languages');
 }
 async function nextDisplayOrder(table) {
     const [rows] = await pool.query(`SELECT COALESCE(MAX(display_order), 0) + 1 AS next_order FROM ${table}`);

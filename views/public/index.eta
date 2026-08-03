@@ -3,30 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mohamed Aiman - Web Developer Portfolio</title>
-    <meta name="description" content="Mohamed Aiman is a 17-year-old web developer from Malaysia, specializing in server-side development. Explore my projects, work experience, and skills in Node.js, Express, MySQL, and more.">
-    <meta name="keywords" content="Mohamed Aiman, web developer, backend developer, Node.js, Express.js, MySQL, portfolio, Malaysia, Myanmar, Sudan">
+    <title><%= seo.title %></title>
+    <meta name="description" content="<%= seo.description %>">
     <meta name="author" content="Mohamed Aiman">
-    <meta name="robots" content="index, follow">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://darkguyaiman.github.io/">
-    <meta property="og:title" content="Mohamed Aiman - Web Developer Portfolio">
-    <meta property="og:description" content="Mohamed Aiman is a 17-year-old web developer from Malaysia, specializing in server-side development. Explore my projects, work experience, and skills.">
-    <meta property="og:image" content="https://darkguyaiman.github.io/assets/Mohamed Aiman.webp">
-    
-    <!-- Twitter -->
+    <meta name="robots" content="<%= seo.robots %>">
+    <meta name="theme-color" content="#1a1a1c">
+    <meta name="color-scheme" content="dark light">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- Open Graph powers previews on Reddit, LinkedIn, Facebook, and other social platforms. -->
+    <meta property="og:type" content="<%= seo.type %>">
+    <meta property="og:site_name" content="Mohamed Aiman Portfolio">
+    <meta property="og:locale" content="en_MY">
+    <meta property="og:url" content="<%= seo.canonical %>">
+    <meta property="og:title" content="<%= seo.title %>">
+    <meta property="og:description" content="<%= seo.description %>">
+    <meta property="og:image" content="<%= seo.image %>">
+    <meta property="og:image:alt" content="<%= seo.imageAlt %>">
+    <meta property="profile:first_name" content="Mohamed">
+    <meta property="profile:last_name" content="Aiman">
+    <meta property="profile:username" content="Darkguyaiman">
+
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://darkguyaiman.github.io/">
-    <meta name="twitter:title" content="Mohamed Aiman - Web Developer Portfolio">
-    <meta name="twitter:description" content="Mohamed Aiman is a 17-year-old web developer from Malaysia, specializing in server-side development. Explore my projects, work experience, and skills.">
-    <meta name="twitter:image" content="https://darkguyaiman.github.io/assets/Mohamed Aiman.webp">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://darkguyaiman.github.io/">
-    
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="twitter:site" content="@MohamedAiman103">
+    <meta name="twitter:creator" content="@MohamedAiman103">
+    <meta name="twitter:title" content="<%= seo.title %>">
+    <meta name="twitter:description" content="<%= seo.description %>">
+    <meta name="twitter:image" content="<%= seo.image %>">
+    <meta name="twitter:image:alt" content="<%= seo.imageAlt %>">
+
+    <link rel="canonical" href="<%= seo.canonical %>">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="alternate" type="application/json" href="/portfolio.json" title="Machine-readable portfolio">
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="AI-readable site summary">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
+    <script type="application/ld+json"><%~ seo.jsonLd %></script>
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -35,12 +46,9 @@
     </script>
     <style>html{background:#fdfbf7}html[data-theme="dark"]{background:#1a1a1c}</style>
     <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2?v=<%= assetVersion %>" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/css/app.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/css/home.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/css/projects.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/devicon/devicon.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/lenis/lenis.css?v=<%= assetVersion %>">
+    <link rel="preload" as="image" href="/assets/optimized/Mohamed Aiman Alter Ego-440.webp" imagesrcset="/assets/optimized/Mohamed Aiman Alter Ego-220.webp 220w, /assets/optimized/Mohamed Aiman Alter Ego-440.webp 440w, /assets/optimized/Mohamed Aiman Alter Ego-680.webp 680w" imagesizes="(max-width: 360px) 180px, (max-width: 768px) 220px, (min-width: 1400px) 340px, (min-width: 1200px) 320px, (min-width: 1024px) 300px, 280px" fetchpriority="high">
+    <link rel="stylesheet" href="/css/home-page.min.css?v=<%= assetVersion %>">
+    <noscript><link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>"><link rel="stylesheet" href="/vendor/devicon/devicon.min.css?v=<%= assetVersion %>"></noscript>
 </head>
 <body>
     <!-- Navigation -->
@@ -52,7 +60,7 @@
                 <div class="easter-egg" id="easterEgg">
                     <div class="easter-egg-content">
                         <div class="easter-egg-image-container">
-                            <img src="/assets/2D Mohamed.webp" alt="2D Mohamed" class="easter-egg-image">
+                            <img src="/assets/optimized/2D Mohamed-240.webp" srcset="/assets/optimized/2D Mohamed-240.webp 1x, /assets/optimized/2D Mohamed-480.webp 2x" alt="2D Mohamed" class="easter-egg-image" width="240" height="240" loading="lazy" decoding="async">
                         </div>
                         <div class="easter-egg-name">darkguyaiman</div>
                         <div class="easter-egg-message" id="easterEggMessage"></div>
@@ -78,7 +86,7 @@
                         </div>
                         <div class="nav-image-content">
                             <div class="nav-image-glow"></div>
-                            <img src="/assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning" class="nav-leaning-image">
+                            <img src="/assets/optimized/2D Mohamed Leaning-240.webp" srcset="/assets/optimized/2D Mohamed Leaning-240.webp 1x, /assets/optimized/2D Mohamed Leaning-480.webp 2x" alt="2D Mohamed Leaning" class="nav-leaning-image" width="240" height="240" loading="lazy" decoding="async">
                             <div class="nav-name">darkguyaiman</div>
                         </div>
                     </div>
@@ -125,8 +133,8 @@
                 </div>
                 <div class="hero-image-container">
                     <div class="image-wrapper">
-                        <img src="/assets/Mohamed Aiman.webp" alt="Mohamed Aiman" class="profile-image" id="profileImage">
-                        <img src="/assets/Mohamed Aiman Alter Ego.webp" alt="Mohamed Aiman Alter Ego" class="profile-image alter-ego" id="alterEgoImage">
+                        <img src="/assets/optimized/Mohamed Aiman-440.webp" srcset="/assets/optimized/Mohamed Aiman-220.webp 220w, /assets/optimized/Mohamed Aiman-440.webp 440w, /assets/optimized/Mohamed Aiman-680.webp 680w" sizes="(max-width: 360px) 180px, (max-width: 768px) 220px, (min-width: 1400px) 340px, (min-width: 1200px) 320px, (min-width: 1024px) 300px, 280px" alt="Mohamed Aiman" class="profile-image" id="profileImage" width="680" height="680" decoding="async" fetchpriority="low">
+                        <img src="/assets/optimized/Mohamed Aiman Alter Ego-440.webp" srcset="/assets/optimized/Mohamed Aiman Alter Ego-220.webp 220w, /assets/optimized/Mohamed Aiman Alter Ego-440.webp 440w, /assets/optimized/Mohamed Aiman Alter Ego-680.webp 680w" sizes="(max-width: 360px) 180px, (max-width: 768px) 220px, (min-width: 1400px) 340px, (min-width: 1200px) 320px, (min-width: 1024px) 300px, 280px" alt="Mohamed Aiman Alter Ego" class="profile-image alter-ego" id="alterEgoImage" width="680" height="680" decoding="async" fetchpriority="high">
                         <div class="image-glow"></div>
                     </div>
                 </div>
@@ -224,8 +232,35 @@
                 <h2 class="section-title">featured projects</h2>
                 <a href="/projects" class="view-more">view more <i class="fas fa-chevron-right"></i></a>
             </div>
-            <div class="projects-grid" id="projectsGrid">
-                <!-- Projects will be dynamically loaded from the API -->
+            <div class="projects-grid" id="projectsGrid" data-server-rendered="true">
+                <% projects.forEach(function(project) { %>
+                <% const displayImages = (project.images || []).slice(0, 3); %>
+                <article class="project-card">
+                    <a href="/projects/<%= project.slug %>" class="project-card-main-link">View <%= project.projectName %> details</a>
+                    <% if (displayImages.length) { %>
+                    <div class="project-card-images">
+                        <% displayImages.forEach(function(image) { %>
+                        <img src="/<%= projectThumbnail(image) %>" alt="Screenshot of <%= project.projectName %>" class="project-card-image" loading="lazy" decoding="async">
+                        <% }) %>
+                        <% if ((project.images || []).length > 3) { %>
+                        <div class="project-card-image-more" role="img" aria-label="<%= project.images.length - 3 %> more screenshots">+<%= project.images.length - 3 %></div>
+                        <% } %>
+                    </div>
+                    <% } %>
+                    <h3 class="project-title"><%= project.projectName %></h3>
+                    <p class="project-description"><%= project.description %></p>
+                    <div class="project-tags" role="group" aria-label="Technologies used">
+                        <% project.techUsed.forEach(function(technology) { %>
+                        <span class="project-tech-icon-fallback" data-tooltip="<%= technology %>"><%= technology %></span>
+                        <% }) %>
+                    </div>
+                    <div class="project-links">
+                        <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website">Website</a><% } %>
+                        <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> source code">Source</a><% } %>
+                        <a href="/projects/<%= project.slug %>" class="project-link" aria-label="View <%= project.projectName %> details">Details</a>
+                    </div>
+                </article>
+                <% }) %>
             </div>
         </div>
     </section>
@@ -234,8 +269,26 @@
     <section id="work" class="work">
         <div class="container">
             <h2 class="section-title">Work</h2>
-            <div class="timeline" id="workTimeline">
-                <!-- Work items will be dynamically loaded from the API -->
+            <div class="timeline" id="workTimeline" data-server-rendered="true">
+                <% workExperiences.forEach(function(job) { %>
+                <article class="timeline-item" data-start="<%= job.startDate %>" data-end="<%= job.endDate %>">
+                    <div class="timeline-marker">
+                        <% if (job.logo) { %><img src="/<%= optimizedAsset(job.logo, 256) %>" alt="<%= job.company %> logo" class="timeline-logo" loading="lazy" decoding="async"><% } %>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">
+                            <span class="timeline-date-text"><%= formatMonthYear(job.startDate) %> - <%= formatMonthYear(job.endDate) %></span>
+                            <span class="timeline-duration" data-duration="<%= job.startDate %>-<%= job.endDate %>"></span>
+                            <% if (job.endDate === 'present') { %><span class="timeline-current-badge">Current</span><% } %>
+                        </div>
+                        <h3 class="timeline-company"><%= job.company %></h3>
+                        <div class="timeline-role"><%= job.role %></div>
+                        <ul class="timeline-description">
+                            <% job.description.forEach(function(description) { %><li><%= description %></li><% }) %>
+                        </ul>
+                    </div>
+                </article>
+                <% }) %>
             </div>
         </div>
     </section>
@@ -244,8 +297,27 @@
     <section id="education" class="education">
         <div class="container">
             <h2 class="section-title">Education</h2>
-            <div class="timeline" id="educationTimeline">
-                <!-- Education items will be dynamically loaded from the API -->
+            <div class="timeline" id="educationTimeline" data-server-rendered="true">
+                <% education.forEach(function(edu) { %>
+                <% const logoPath = institutionLogo(edu.institution); %>
+                <article class="timeline-item" data-start="<%= edu.duration.start %>" data-end="<%= edu.duration.end %>">
+                    <div class="timeline-marker">
+                        <% if (logoPath) { %><img src="/<%= optimizedAsset(logoPath, 192) %>" alt="<%= edu.institution %> logo" class="timeline-logo" loading="lazy" decoding="async"><% } else { %><i class="fas fa-graduation-cap" aria-hidden="true"></i><% } %>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date"><span class="timeline-date-text"><%= edu.duration.start %> - <%= edu.duration.end %></span></div>
+                        <h3 class="timeline-company"><%= edu.qualification %></h3>
+                        <div class="timeline-role"><%= edu.institution %></div>
+                        <div class="timeline-field"><%= edu.field %></div>
+                        <% if (edu.results && edu.results.grades) { %>
+                        <div class="timeline-results"><span class="timeline-results-text"><%= edu.results.total_subjects %> subjects: <%= Object.entries(edu.results.grades).map(function(entry) { return entry[1] + ' ' + entry[0] + (entry[1] > 1 ? 's' : ''); }).join(', ') %></span></div>
+                        <% } else if (edu.results && (edu.results.semester != null || edu.results.gpa != null)) { %>
+                        <div class="timeline-results"><span class="timeline-results-text"><% if (edu.results.semester != null) { %>Semester <%= edu.results.semester %><% } %><% if (edu.results.semester != null && edu.results.gpa != null) { %> · <% } %><% if (edu.results.gpa != null) { %><%= Number(edu.results.gpa).toFixed(1) %> GPA<% } %></span></div>
+                        <% } %>
+                        <p class="timeline-description-text"><%= edu.description %></p>
+                    </div>
+                </article>
+                <% }) %>
             </div>
         </div>
     </section>
@@ -254,8 +326,13 @@
     <section id="languages" class="languages">
         <div class="container">
             <h2 class="section-title">I speak these human languages</h2>
-            <div class="languages-grid" id="languagesGrid">
-                <!-- Languages will be dynamically loaded from the API -->
+            <div class="languages-grid" id="languagesGrid" data-server-rendered="true">
+                <% languages.forEach(function(language) { %>
+                <div class="language-item">
+                    <div class="language-name"><%= language.name %></div>
+                    <div class="language-level <%= language.level.toLowerCase().replace(/\s+/g, '-') %>"><%= language.level %></div>
+                </div>
+                <% }) %>
             </div>
         </div>
     </section>
@@ -298,7 +375,7 @@
         </div>
     </footer>
 
-    <script src="/vendor/lenis/lenis.min.js"></script>
-    <script src="/js/app.min.js"></script>
+    <script src="/vendor/lenis/lenis.min.js?v=<%= assetVersion %>"></script>
+    <script src="/js/app.min.js?v=<%= assetVersion %>"></script>
 </body>
 </html>

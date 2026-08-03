@@ -4,8 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - Darkguyaiman</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <title><%= seo.title %></title>
+    <meta name="description" content="<%= seo.description %>">
+    <meta name="author" content="Mohamed Aiman">
+    <meta name="robots" content="<%= seo.robots %>">
+    <meta name="theme-color" content="#1a1a1c">
+    <meta name="color-scheme" content="dark light">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta property="og:type" content="<%= seo.type %>">
+    <meta property="og:site_name" content="Mohamed Aiman Portfolio">
+    <meta property="og:locale" content="en_MY">
+    <meta property="og:url" content="<%= seo.canonical %>">
+    <meta property="og:title" content="<%= seo.title %>">
+    <meta property="og:description" content="<%= seo.description %>">
+    <meta property="og:image" content="<%= seo.image %>">
+    <meta property="og:image:alt" content="<%= seo.imageAlt %>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= seo.title %>">
+    <meta name="twitter:description" content="<%= seo.description %>">
+    <meta name="twitter:image" content="<%= seo.image %>">
+    <meta name="twitter:image:alt" content="<%= seo.imageAlt %>">
+    <link rel="canonical" href="<%= seo.canonical %>">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="alternate" type="application/json" href="/portfolio.json" title="Machine-readable portfolio">
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="AI-readable site summary">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
+    <script type="application/ld+json"><%~ seo.jsonLd %></script>
     <script>
         (function () {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -14,10 +38,8 @@
     </script>
     <style>html{background:#fdfbf7}html[data-theme="dark"]{background:#1a1a1c}</style>
     <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2?v=<%= assetVersion %>" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/css/app.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/css/privacy.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/vendor/lenis/lenis.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/css/privacy-page.min.css?v=<%= assetVersion %>">
+    <noscript><link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>"></noscript>
 </head>
 
 <body>
@@ -30,7 +52,7 @@
                 <div class="easter-egg" id="easterEgg">
                     <div class="easter-egg-content">
                         <div class="easter-egg-image-container">
-                            <img src="/assets/2D Mohamed.webp" alt="2D Mohamed" class="easter-egg-image">
+                            <img src="/assets/optimized/2D Mohamed-240.webp" srcset="/assets/optimized/2D Mohamed-240.webp 1x, /assets/optimized/2D Mohamed-480.webp 2x" alt="2D Mohamed" class="easter-egg-image" width="240" height="240" loading="lazy" decoding="async">
                         </div>
                         <div class="easter-egg-name">darkguyaiman</div>
                         <div class="easter-egg-message" id="easterEggMessage"></div>
@@ -56,8 +78,8 @@
                         </div>
                         <div class="nav-image-content">
                             <div class="nav-image-glow"></div>
-                            <img src="/assets/2D Mohamed Leaning.webp" alt="2D Mohamed Leaning"
-                                class="nav-leaning-image">
+                            <img src="/assets/optimized/2D Mohamed Leaning-240.webp" srcset="/assets/optimized/2D Mohamed Leaning-240.webp 1x, /assets/optimized/2D Mohamed Leaning-480.webp 2x" alt="2D Mohamed Leaning"
+                                class="nav-leaning-image" width="240" height="240" loading="lazy" decoding="async">
                             <div class="nav-name">darkguyaiman</div>
                         </div>
                     </div>
@@ -153,8 +175,8 @@
         </div>
     </footer>
 
-    <script src="/vendor/lenis/lenis.min.js"></script>
-    <script src="/js/app.min.js"></script>
+    <script src="/vendor/lenis/lenis.min.js?v=<%= assetVersion %>"></script>
+    <script src="/js/app.min.js?v=<%= assetVersion %>"></script>
     <script>
 
         function updateLastUpdatedDate() {

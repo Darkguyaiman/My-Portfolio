@@ -1,6 +1,10 @@
 import { pool } from '../config/db.js';
+import { getCached } from '../utils/cache.js';
 export async function getProjects() {
-    const [projectRows] = await pool.query('SELECT id, project_name, description, deployed_link, github_link FROM projects ORDER BY display_order ASC, id ASC');
+    return getCached('public:projects', loadProjects, { tags: ['projects'] });
+}
+async function loadProjects() {
+    const [projectRows] = await pool.query('SELECT id, project_name, description, deployed_link, github_link, updated_at FROM projects ORDER BY display_order ASC, id ASC');
     const [technologyRows] = await pool.query('SELECT project_id, technology AS value FROM project_technologies ORDER BY display_order ASC, id ASC');
     const [imageRows] = await pool.query('SELECT project_id, image_path AS value FROM project_images ORDER BY display_order ASC, id ASC');
     const technologiesByProject = groupByProjectId(technologyRows);
@@ -14,6 +18,7 @@ export async function getProjects() {
         images: imagesByProject.get(project.id)?.map(normalizeAssetPath),
         deployedLink: project.deployed_link || undefined,
         githubLink: project.github_link || undefined,
+        updatedAt: project.updated_at,
     }));
 }
 export async function getProjectByName(projectName) {

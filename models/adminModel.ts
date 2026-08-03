@@ -1,5 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../config/db.js';
+import { getCached, invalidateCacheTags } from '../utils/cache.js';
 import { slugify } from './projectModel.js';
 
 export interface ProjectInput {
@@ -153,18 +154,22 @@ export async function getDashboardStats() {
 
 export async function getSiteContent(): Promise<SiteContent> {
   try {
-    await ensureCmsSchema();
-    const [rows] = await pool.query<SiteContentRow[]>('SELECT content_key, content_value FROM site_content');
-    return rows.reduce<SiteContent>((content, row) => {
-      if (row.content_key in content) {
-        content[row.content_key] = row.content_value;
-      }
-      return content;
-    }, { ...defaultSiteContent });
+    return await getCached('public:site-content', loadSiteContent, { tags: ['site-content'] });
   } catch (error) {
     console.error('Error loading site content:', error);
     return { ...defaultSiteContent };
   }
+}
+
+async function loadSiteContent(): Promise<SiteContent> {
+  await ensureCmsSchema();
+  const [rows] = await pool.query<SiteContentRow[]>('SELECT content_key, content_value FROM site_content');
+  return rows.reduce<SiteContent>((content, row) => {
+    if (row.content_key in content) {
+      content[row.content_key] = row.content_value;
+    }
+    return content;
+  }, { ...defaultSiteContent });
 }
 
 export async function saveSiteContent(content: SiteContent) {
@@ -176,6 +181,7 @@ export async function saveSiteContent(content: SiteContent) {
       [key, value],
     );
   }
+  invalidateCacheTags('site-content');
 }
 
 export async function listAdminProjects() {
@@ -224,6 +230,7 @@ export async function createProject(input: ProjectInput) {
     );
     await replaceProjectChildren(connection, result.insertId, input);
     await connection.commit();
+    invalidateCacheTags('projects');
     return result.insertId;
   } catch (error) {
     await connection.rollback();
@@ -243,6 +250,7 @@ export async function updateProject(id: number, input: ProjectInput) {
     );
     await replaceProjectChildren(connection, id, input);
     await connection.commit();
+    invalidateCacheTags('projects');
   } catch (error) {
     await connection.rollback();
     throw error;
@@ -253,6 +261,7 @@ export async function updateProject(id: number, input: ProjectInput) {
 
 export async function deleteProject(id: number) {
   await pool.query('DELETE FROM projects WHERE id = ?', [id]);
+  invalidateCacheTags('projects');
 }
 
 export async function getNextProjectDisplayOrder() {
@@ -261,6 +270,7 @@ export async function getNextProjectDisplayOrder() {
 
 export async function reorderProjects(ids: number[]) {
   await reorderDisplayOrder('projects', ids);
+  invalidateCacheTags('projects');
 }
 
 export async function listAdminWork() {
@@ -305,6 +315,7 @@ export async function createWork(input: WorkInput) {
     );
     await replaceWorkDescriptions(connection, result.insertId, input.descriptions);
     await connection.commit();
+    invalidateCacheTags('work');
     return result.insertId;
   } catch (error) {
     await connection.rollback();
@@ -324,6 +335,7 @@ export async function updateWork(id: number, input: WorkInput) {
     );
     await replaceWorkDescriptions(connection, id, input.descriptions);
     await connection.commit();
+    invalidateCacheTags('work');
   } catch (error) {
     await connection.rollback();
     throw error;
@@ -334,6 +346,7 @@ export async function updateWork(id: number, input: WorkInput) {
 
 export async function deleteWork(id: number) {
   await pool.query('DELETE FROM work_experiences WHERE id = ?', [id]);
+  invalidateCacheTags('work');
 }
 
 export async function getNextWorkDisplayOrder() {
@@ -342,6 +355,7 @@ export async function getNextWorkDisplayOrder() {
 
 export async function reorderWork(ids: number[]) {
   await reorderDisplayOrder('work_experiences', ids);
+  invalidateCacheTags('work');
 }
 
 export async function listAdminEducation() {
@@ -398,6 +412,7 @@ export async function createEducation(input: EducationInput) {
     'INSERT INTO education (qualification, institution, field, duration_start, duration_end, results, description, display_order) VALUES (?, ?, ?, ?, ?, CAST(? AS JSON), ?, ?)',
     [input.qualification, input.institution, input.field, input.durationStart, input.durationEnd, input.results, input.description, input.displayOrder],
   );
+  invalidateCacheTags('education');
   return result.insertId;
 }
 
@@ -406,6 +421,7 @@ export async function updateEducation(id: number, input: EducationInput) {
     'UPDATE education SET qualification = ?, institution = ?, field = ?, duration_start = ?, duration_end = ?, results = CAST(? AS JSON), description = ?, display_order = ? WHERE id = ?',
     [input.qualification, input.institution, input.field, input.durationStart, input.durationEnd, input.results, input.description, input.displayOrder, id],
   );
+  invalidateCacheTags('education');
 }
 
 export async function getNextEducationDisplayOrder() {
@@ -414,10 +430,12 @@ export async function getNextEducationDisplayOrder() {
 
 export async function reorderEducation(ids: number[]) {
   await reorderDisplayOrder('education', ids);
+  invalidateCacheTags('education');
 }
 
 export async function deleteEducation(id: number) {
   await pool.query('DELETE FROM education WHERE id = ?', [id]);
+  invalidateCacheTags('education');
 }
 
 export async function listAdminLanguages() {
@@ -440,6 +458,7 @@ export async function createLanguage(input: LanguageInput) {
     'INSERT INTO languages (name, level, display_order) VALUES (?, ?, ?)',
     [input.name, input.level, input.displayOrder],
   );
+  invalidateCacheTags('languages');
   return result.insertId;
 }
 
@@ -448,10 +467,12 @@ export async function updateLanguage(id: number, input: LanguageInput) {
     'UPDATE languages SET name = ?, level = ?, display_order = ? WHERE id = ?',
     [input.name, input.level, input.displayOrder, id],
   );
+  invalidateCacheTags('languages');
 }
 
 export async function deleteLanguage(id: number) {
   await pool.query('DELETE FROM languages WHERE id = ?', [id]);
+  invalidateCacheTags('languages');
 }
 
 export async function getNextLanguageDisplayOrder() {
@@ -460,6 +481,7 @@ export async function getNextLanguageDisplayOrder() {
 
 export async function reorderLanguages(ids: number[]) {
   await reorderDisplayOrder('languages', ids);
+  invalidateCacheTags('languages');
 }
 
 type OrderableTable = 'projects' | 'work_experiences' | 'education' | 'languages';

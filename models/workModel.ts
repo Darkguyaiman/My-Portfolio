@@ -1,5 +1,6 @@
 import { RowDataPacket } from 'mysql2';
 import { pool } from '../config/db.js';
+import { getCached } from '../utils/cache.js';
 
 interface WorkRow extends RowDataPacket {
   id: number;
@@ -16,6 +17,10 @@ interface DescriptionRow extends RowDataPacket {
 }
 
 export async function getWorkExperiences() {
+  return getCached('public:work', loadWorkExperiences, { tags: ['work'] });
+}
+
+async function loadWorkExperiences() {
   const [workRows] = await pool.query<WorkRow[]>(
     'SELECT id, company, role, start_date, end_date, logo FROM work_experiences ORDER BY display_order ASC, id ASC',
   );

@@ -12,6 +12,6 @@
     "resolveJsonModule": true,
     "moduleResolution": "NodeNext"
   },
-  "include": ["server.ts", "config/**/*.ts", "controllers/**/*.ts", "models/**/*.ts", "routes/**/*.ts"],
+  "include": ["server.ts", "config/**/*.ts", "controllers/**/*.ts", "models/**/*.ts", "routes/**/*.ts", "utils/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

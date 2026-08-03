@@ -1,5 +1,9 @@
 import { pool } from '../config/db.js';
+import { getCached } from '../utils/cache.js';
 export async function getEducation() {
+    return getCached('public:education', loadEducation, { tags: ['education'] });
+}
+async function loadEducation() {
     const [rows] = await pool.query('SELECT qualification, institution, field, duration_start, duration_end, results, description FROM education ORDER BY display_order ASC, id ASC');
     return {
         education: rows.map((row) => ({
