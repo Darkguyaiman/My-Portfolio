@@ -13,7 +13,7 @@ import { getEducation } from './models/educationModel.js';
 import { getLanguages } from './models/languageModel.js';
 import { getProjectByName, getProjectBySlug, getProjects } from './models/projectModel.js';
 import { getWorkExperiences } from './models/workModel.js';
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, getSiteUrl, INDEX_ROBOTS, serializeJsonLd, SITE_NAME, truncateDescription, xmlEscape, } from './utils/seo.js';
+import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_ALT, DEFAULT_SOCIAL_IMAGE_HEIGHT, DEFAULT_SOCIAL_IMAGE_TYPE, DEFAULT_SOCIAL_IMAGE_WIDTH, getSiteUrl, INDEX_ROBOTS, serializeJsonLd, SITE_NAME, truncateDescription, xmlEscape, } from './utils/seo.js';
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -336,7 +336,7 @@ app.get('/', async (req, res) => {
         description: homeDescription,
         path: '/',
         type: 'profile',
-        imageAlt: 'Portrait of Mohamed Aiman, full-stack and backend developer',
+        imageAlt: DEFAULT_SOCIAL_IMAGE_ALT,
         jsonLd: {
             '@context': 'https://schema.org',
             '@graph': [
@@ -383,7 +383,7 @@ app.get('/projects', async (req, res) => {
         title: 'Web Development Projects | Mohamed Aiman',
         description: projectsDescription,
         path: '/projects',
-        imageAlt: 'Selected web development work by Mohamed Aiman',
+        imageAlt: DEFAULT_SOCIAL_IMAGE_ALT,
         jsonLd: {
             '@context': 'https://schema.org',
             '@type': 'CollectionPage',
@@ -411,7 +411,7 @@ app.get('/privacy', (req, res) => {
         title: 'Privacy Policy | Mohamed Aiman',
         description,
         path: '/privacy',
-        imageAlt: 'Mohamed Aiman portfolio',
+        imageAlt: DEFAULT_SOCIAL_IMAGE_ALT,
         jsonLd: {
             '@context': 'https://schema.org',
             '@type': 'WebPage',
@@ -524,13 +524,18 @@ async function loadPublicPortfolioData() {
     };
 }
 function createSeo(siteUrl, options) {
+    const imagePath = options.image || DEFAULT_SOCIAL_IMAGE;
+    const usingDefaultSocialImage = imagePath === DEFAULT_SOCIAL_IMAGE;
     return {
         siteUrl,
         title: options.title,
         description: truncateDescription(options.description),
         canonical: absoluteUrl(siteUrl, options.path),
-        image: absoluteUrl(siteUrl, options.image || DEFAULT_SOCIAL_IMAGE),
+        image: absoluteUrl(siteUrl, imagePath),
         imageAlt: options.imageAlt,
+        imageWidth: usingDefaultSocialImage ? DEFAULT_SOCIAL_IMAGE_WIDTH : undefined,
+        imageHeight: usingDefaultSocialImage ? DEFAULT_SOCIAL_IMAGE_HEIGHT : undefined,
+        imageType: usingDefaultSocialImage ? DEFAULT_SOCIAL_IMAGE_TYPE : undefined,
         type: options.type || 'website',
         robots: options.robots || INDEX_ROBOTS,
         tags: options.tags,

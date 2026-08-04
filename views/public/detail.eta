@@ -20,6 +20,9 @@
     <meta property="og:title" content="<%= seo.title %>">
     <meta property="og:description" content="<%= seo.description %>">
     <meta property="og:image" content="<%= seo.image %>">
+    <% if (seo.imageType) { %><meta property="og:image:type" content="<%= seo.imageType %>"><% } %>
+    <% if (seo.imageWidth) { %><meta property="og:image:width" content="<%= seo.imageWidth %>"><% } %>
+    <% if (seo.imageHeight) { %><meta property="og:image:height" content="<%= seo.imageHeight %>"><% } %>
     <meta property="og:image:alt" content="<%= seo.imageAlt %>">
     <% (seo.tags || []).forEach(function(tag) { %><meta property="article:tag" content="<%= tag %>"><% }) %>
 
@@ -35,7 +38,7 @@
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="alternate" type="application/json" href="/portfolio.json" title="Machine-readable portfolio">
     <link rel="alternate" type="text/plain" href="/llms.txt" title="AI-readable site summary">
-    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
+    <%~ include('partials/head-icons') %>
     <script type="application/ld+json"><%~ seo.jsonLd %></script>
     <script>
         (function () {

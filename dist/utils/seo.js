@@ -1,6 +1,10 @@
 export const SITE_NAME = 'Mohamed Aiman Portfolio';
 export const DEFAULT_SITE_URL = 'https://darkguyaiman.com';
-export const DEFAULT_SOCIAL_IMAGE = '/assets/Mohamed Aiman.webp';
+export const DEFAULT_SOCIAL_IMAGE = '/assets/Mohamed Aiman Alter Ego.webp';
+export const DEFAULT_SOCIAL_IMAGE_WIDTH = 1024;
+export const DEFAULT_SOCIAL_IMAGE_HEIGHT = 935;
+export const DEFAULT_SOCIAL_IMAGE_TYPE = 'image/webp';
+export const DEFAULT_SOCIAL_IMAGE_ALT = 'Portrait of Mohamed Aiman in graduation attire, black and white with a red stole and tassel';
 export const INDEX_ROBOTS = 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
 export function getSiteUrl(_req) {
     const configured = normalizeSiteUrl(process.env.SITE_URL);
