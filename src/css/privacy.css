@@ -5,7 +5,16 @@
         }
 
         .privacy-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.25rem;
             margin-bottom: 3rem;
+        }
+
+        .privacy-header-text {
+            min-width: 0;
+            flex: 1;
         }
 
         .privacy-title {
@@ -101,7 +110,7 @@
             border-radius: 6px;
             border: 1px solid transparent;
             font-weight: 500;
-            margin-bottom: 2.5rem;
+            flex-shrink: 0;
         }
 
         .back-link i {
@@ -132,4 +141,16 @@
 
         [data-theme="dark"] .privacy-section h2 {
             color: var(--dark-gray);
+        }
+
+        @media (max-width: 480px) {
+            .privacy-header {
+                flex-wrap: wrap;
+                align-items: center;
+            }
+
+            .back-link {
+                margin-top: 0;
+                margin-left: auto;
+            }
         }

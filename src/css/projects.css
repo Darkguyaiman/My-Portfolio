@@ -197,7 +197,7 @@
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--dark-gray);
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.55rem;
 }
 
 .project-description {
@@ -417,6 +417,7 @@
     display: flex;
     gap: 1.5rem;
     flex-wrap: wrap;
+    margin-bottom: 0.9rem;
 }
 
 .project-links .project-link {

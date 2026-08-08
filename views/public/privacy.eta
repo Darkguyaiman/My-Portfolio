@@ -40,7 +40,7 @@
         })();
     </script>
     <style>html{background:#fdfbf7}html[data-theme="dark"]{background:#1a1a1c}</style>
-    <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2?v=<%= assetVersion %>" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/css/privacy-page.min.css?v=<%= assetVersion %>">
     <noscript><link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>"></noscript>
 </head>
@@ -55,7 +55,7 @@
                 <div class="easter-egg" id="easterEgg">
                     <div class="easter-egg-content">
                         <div class="easter-egg-image-container">
-                            <img src="/assets/optimized/2D Mohamed-240.webp" srcset="/assets/optimized/2D Mohamed-240.webp 1x, /assets/optimized/2D Mohamed-480.webp 2x" alt="2D Mohamed" class="easter-egg-image" width="240" height="240" loading="lazy" decoding="async">
+                            <img src="/assets/optimized/2D%20Mohamed-240.webp" srcset="/assets/optimized/2D%20Mohamed-240.webp 1x, /assets/optimized/2D%20Mohamed-480.webp 2x" alt="2D Mohamed" class="easter-egg-image" width="240" height="240" loading="lazy" decoding="async">
                         </div>
                         <div class="easter-egg-name">darkguyaiman</div>
                         <div class="easter-egg-message" id="easterEggMessage"></div>
@@ -81,7 +81,7 @@
                         </div>
                         <div class="nav-image-content">
                             <div class="nav-image-glow"></div>
-                            <img src="/assets/optimized/2D Mohamed Leaning-240.webp" srcset="/assets/optimized/2D Mohamed Leaning-240.webp 1x, /assets/optimized/2D Mohamed Leaning-480.webp 2x" alt="2D Mohamed Leaning"
+                            <img src="/assets/optimized/2D%20Mohamed%20Leaning-240.webp" srcset="/assets/optimized/2D%20Mohamed%20Leaning-240.webp 1x, /assets/optimized/2D%20Mohamed%20Leaning-480.webp 2x" alt="2D Mohamed Leaning"
                                 class="nav-leaning-image" width="240" height="240" loading="lazy" decoding="async">
                             <div class="nav-name">darkguyaiman</div>
                         </div>
@@ -104,14 +104,15 @@
     <!-- Privacy Content Section -->
     <section class="privacy-content">
         <div class="container">
-            <a href="/" class="back-link">
-                <i class="fas fa-chevron-left"></i>
-                <span>back to home</span>
-            </a>
-
             <div class="privacy-header">
-                <h1 class="privacy-title">privacy policy</h1>
-                <p class="privacy-last-updated">Last Updated: <span id="lastUpdatedDate">Sep 2024</span></p>
+                <div class="privacy-header-text">
+                    <h1 class="privacy-title">privacy policy</h1>
+                    <p class="privacy-last-updated">Last Updated: <span id="lastUpdatedDate">Sep 2024</span></p>
+                </div>
+                <a href="/" class="back-link">
+                    <i class="fas fa-chevron-left"></i>
+                    <span>back to home</span>
+                </a>
             </div>
 
             <div class="privacy-section">
@@ -178,7 +179,6 @@
         </div>
     </footer>
 
-    <script src="/vendor/lenis/lenis.min.js?v=<%= assetVersion %>"></script>
     <script src="/js/app.min.js?v=<%= assetVersion %>"></script>
     <script>
 

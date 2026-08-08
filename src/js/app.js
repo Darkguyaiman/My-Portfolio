@@ -3,10 +3,12 @@ const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('navMenu');
 const navCloseBtn = document.getElementById('navCloseBtn');
 const navGreeting = document.getElementById('navGreeting');
+const clientAssetVersion = document.currentScript
+    ? new URL(document.currentScript.src).searchParams.get('v')
+    : null;
 
 let navTypewriterTimeout;
 let navTypewriterIndex = 0;
-let lenis;
 
 function prefersReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -15,14 +17,14 @@ function prefersReducedMotion() {
 function loadDeferredIconStyles() {
     const stylesheets = ['/vendor/fontawesome/css/all.min.css'];
     if (document.querySelector('[class*="devicon-"]')) {
-        stylesheets.push('/vendor/devicon/devicon.min.css');
+        stylesheets.push('/vendor/devicon/devicon-subset.css');
     }
 
     stylesheets.forEach(href => {
         if (document.querySelector(`link[href^="${href}"]`)) return;
         const link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = href;
+        link.href = clientAssetVersion ? `${href}?v=${encodeURIComponent(clientAssetVersion)}` : href;
         document.head.appendChild(link);
     });
 }
@@ -35,35 +37,8 @@ window.addEventListener('load', () => {
     }
 }, { once: true });
 
-function initLenis() {
-    const hasCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
-    const savesData = Boolean(navigator.connection && navigator.connection.saveData);
-    if (prefersReducedMotion() || hasCoarsePointer || savesData || typeof window.Lenis !== 'function') return null;
-
-    lenis = new window.Lenis({
-        duration: 1.15,
-        easing: (t) => 1 - Math.pow(1 - t, 4),
-        smoothWheel: true,
-        syncTouch: false
-    });
-
-    function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-    return lenis;
-}
-
 function scrollToTarget(target) {
     const offset = -80;
-
-    if (lenis) {
-        lenis.scrollTo(target, { offset });
-        return;
-    }
-
     const offsetTop = target.offsetTop + offset;
     window.scrollTo({
         top: offsetTop,
@@ -183,8 +158,6 @@ function updateAge() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    initLenis();
     updateAge();
 
     const fadeElements = document.querySelectorAll('.timeline-item, .project-card, .skill-item, .language-item');
@@ -199,26 +172,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeroTitleAnimate();
     initHeroLinesAnimate();
     initTextAnimateTitles();
-    enhanceServerRenderedTechIcons();
+    calculateWorkDurations();
 
-
-    // Load all dynamic content first, then handle initial hash scrolling
-    Promise.all([
-        loadWorkExperience(),
-        loadFeaturedProjects(),
-        loadEducation(),
-        loadLanguages()
-    ]).then(() => {
-        // Handle hash scrolling after content is loaded
-        if (window.location.hash) {
-            setTimeout(() => {
-                const target = document.querySelector(window.location.hash);
-                if (target) {
-                    scrollToTarget(target);
-                }
-            }, 150);
-        }
-    });
+    if (window.location.hash) {
+        const target = document.querySelector(window.location.hash);
+        if (target) scrollToTarget(target);
+    }
 
 
     const resumeLink = document.getElementById('resumeLink');
@@ -688,18 +647,17 @@ function initHeroLinesAnimate() {
     const lines = Array.from(document.querySelectorAll('.hero-text .hero-line'));
     if (!lines.length) return;
 
+    // Rise with the name roll ("Mohamed Aiman."), both lines together.
+    const CHAR_STAGGER_MS = 35;
     const title = document.querySelector('.hero-title');
-    const charCount = title ? title.querySelectorAll('.text-char').length : 0;
-    const titleDurationMs = prefersReducedMotion()
-        ? 0
-        : Math.max(400, charCount * 35 + 350);
-    const lineStaggerMs = 220;
+    const nameFirstChar = title?.querySelector('.name-highlight .text-char');
+    const nameStartIndex = nameFirstChar
+        ? Number.parseInt(nameFirstChar.style.getPropertyValue('--char-index'), 10) || 0
+        : Math.floor((title?.querySelectorAll('.text-char').length || 0) * 0.45);
+    const linesDelayMs = prefersReducedMotion() ? 0 : nameStartIndex * CHAR_STAGGER_MS;
 
-    lines.forEach((line, index) => {
-        line.style.setProperty(
-            '--hero-line-delay',
-            `${(titleDurationMs + index * lineStaggerMs) / 1000}s`
-        );
+    lines.forEach((line) => {
+        line.style.setProperty('--hero-line-delay', `${linesDelayMs / 1000}s`);
     });
 
     const heroText = document.querySelector('.hero-text');
@@ -719,15 +677,13 @@ function initIconDocks() {
 
         let hovered = -1;
         let frameId = 0;
-        let padExtra = 0;
-        let gapExtra = 0;
         const state = icons.map(() => ({ x: 0, y: 0, scale: 1 }));
 
         const lerp = (current, target, amount) => current + (target - current) * amount;
 
+        // Magnify with transforms only — never change padding/gap (those
+        // reflow siblings like contact text and can bounce the dock under the cursor).
         const apply = () => {
-            dock.style.setProperty('--dock-pad-extra', `${padExtra.toFixed(2)}px`);
-            dock.style.setProperty('--dock-gap-extra', `${gapExtra.toFixed(2)}px`);
             icons.forEach((icon, index) => {
                 const item = state[index];
                 icon.style.setProperty('--dock-x', `${item.x.toFixed(2)}px`);
@@ -741,8 +697,6 @@ function initIconDocks() {
             frameId = 0;
 
             if (prefersReducedMotion()) {
-                padExtra = 0;
-                gapExtra = 0;
                 state.forEach((item) => {
                     item.x = 0;
                     item.y = 0;
@@ -752,16 +706,7 @@ function initIconDocks() {
                 return;
             }
 
-            const targetPad = hovered >= 0 ? 8 : 0;
-            const targetGap = hovered >= 0 ? 6 : 0;
             let animating = false;
-
-            padExtra = lerp(padExtra, targetPad, 0.16);
-            gapExtra = lerp(gapExtra, targetGap, 0.16);
-            if (Math.abs(padExtra - targetPad) > 0.08) animating = true;
-            else padExtra = targetPad;
-            if (Math.abs(gapExtra - targetGap) > 0.08) animating = true;
-            else gapExtra = targetGap;
 
             state.forEach((item, index) => {
                 const active = index === hovered;
@@ -923,364 +868,6 @@ function calculateWorkDurations() {
 
         durationElement.textContent = `· ${durationText}`;
     });
-}
-
-
-async function loadWorkExperience() {
-    try {
-        const existingTimeline = document.getElementById('workTimeline');
-        if (!existingTimeline || existingTimeline.dataset.serverRendered === 'true') {
-            if (existingTimeline) calculateWorkDurations();
-            return;
-        }
-
-        const workJsonPath = '/api/work';
-        const response = await fetch(workJsonPath);
-        const workData = await response.json();
-
-
-        workData.sort((a, b) => {
-            const dateA = new Date(a.startDate + '-01');
-            const dateB = new Date(b.startDate + '-01');
-            return dateB - dateA;
-        });
-
-        const timeline = document.getElementById('workTimeline');
-        if (!timeline) return;
-
-        timeline.innerHTML = '';
-
-        workData.forEach(job => {
-            const timelineItem = document.createElement('div');
-            timelineItem.className = 'timeline-item';
-            timelineItem.setAttribute('data-start', job.startDate);
-            timelineItem.setAttribute('data-end', job.endDate);
-
-            const isCurrent = job.endDate === 'present';
-            const startDate = formatDate(job.startDate);
-            const endDate = isCurrent ? 'Present' : formatDate(job.endDate);
-
-            timelineItem.innerHTML = `
-                <div class="timeline-marker">
-                    <img src="${job.logo}" alt="${job.company}" class="timeline-logo">
-                </div>
-                <div class="timeline-content">
-                    <div class="timeline-date">
-                        <span class="timeline-date-text">${startDate} - ${endDate}</span>
-                        <span class="timeline-duration" data-duration="${job.startDate}-${job.endDate}"></span>
-                        ${isCurrent ? '<span class="timeline-current-badge">Current</span>' : ''}
-                    </div>
-                    <h3 class="timeline-company">${job.company}</h3>
-                    <div class="timeline-role">${job.role}</div>
-                    <ul class="timeline-description">
-                        ${job.description.map(desc => `<li>${desc}</li>`).join('')}
-                    </ul>
-                </div>
-            `;
-
-            timeline.appendChild(timelineItem);
-        });
-
-
-        calculateWorkDurations();
-
-
-        const newItems = timeline.querySelectorAll('.timeline-item');
-        newItems.forEach(item => {
-            item.classList.add('fade-in');
-            observer.observe(item);
-        });
-    } catch (error) {
-        console.error('Error loading work experience:', error);
-    }
-}
-
-
-function formatDate(dateString) {
-    if (dateString === 'present') return 'Present';
-
-    const date = new Date(dateString + '-01');
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${months[date.getMonth()]} ${date.getFullYear()}`;
-}
-
-
-window.techIconMap = {
-    'Next.js': { type: 'devicon', class: 'devicon-nextjs-plain colored' },
-    'React': { type: 'devicon', class: 'devicon-react-original colored' },
-    'TypeScript': { type: 'devicon', class: 'devicon-typescript-plain colored' },
-    'Nginx': { type: 'devicon', class: 'devicon-nginx-original colored' },
-    'Ubuntu': { type: 'fa', class: 'fa-brands fa-ubuntu colored' },
-    'Google Cloud': { type: 'devicon', class: 'devicon-googlecloud-plain colored' },
-    'Google Cloud Platform': { type: 'devicon', class: 'devicon-googlecloud-plain colored' },
-    'GCP': { type: 'devicon', class: 'devicon-googlecloud-plain colored' },
-    'Node.js': { type: 'fa', class: 'fa-brands fa-node-js colored' },
-    'Node': { type: 'fa', class: 'fa-brands fa-node-js colored' },
-    'Express.js': { type: 'devicon', class: 'devicon-express-original colored' },
-    'Express': { type: 'devicon', class: 'devicon-express-original colored' },
-    'EJS': { type: 'ejs', class: 'ejs-icon' },
-    'jQuery': { type: 'devicon', class: 'devicon-jquery-plain colored' },
-    'HTML': { type: 'devicon', class: 'devicon-html5-plain colored' },
-    'CSS': { type: 'devicon', class: 'devicon-css3-plain colored' },
-    'JavaScript': { type: 'devicon', class: 'devicon-javascript-plain colored' },
-    'MySQL': { type: 'devicon', class: 'devicon-mysql-plain colored' },
-    'Bootstrap': { type: 'devicon', class: 'devicon-bootstrap-plain colored' },
-    'Tailwind CSS': { type: 'devicon', class: 'devicon-tailwindcss-plain colored' },
-    'Python': { type: 'devicon', class: 'devicon-python-plain colored' },
-    'SQL': { type: 'devicon', class: 'devicon-mysql-plain colored' },
-    'MySQL Workbench': { type: 'devicon', class: 'devicon-mysql-plain colored' },
-    'Google Apps Script': { type: 'devicon', class: 'devicon-google-plain colored' },
-    'Google Drive API': { type: 'fa', class: 'fa-brands fa-google-drive' },
-    'Google Sheets API': { type: 'fa', class: 'fa-regular fa-file-excel' },
-    'Google Sheets': { type: 'fa', class: 'fa-regular fa-file-excel' }
-};
-
-
-function getSmallTechIcon(tech) {
-    const iconData = window.techIconMap[tech] || null;
-    const label = String(tech).replace(/"/g, '&quot;');
-    if (!iconData) {
-        return `<span class="project-tech-icon-fallback" data-tooltip="${label}">${tech}</span>`;
-    }
-
-    if (iconData.type === 'ejs') {
-        return `<span class="project-tech-icon ejs-icon-small" data-tooltip="${label}">EJS</span>`;
-    }
-
-    return `<i class="project-tech-icon ${iconData.class}" data-tooltip="${label}"></i>`;
-}
-
-window.getSmallTechIcon = getSmallTechIcon;
-
-function enhanceServerRenderedTechIcons() {
-    document.querySelectorAll('.project-tags').forEach(container => {
-        const labels = [...container.querySelectorAll('.project-tech-icon-fallback')]
-            .map(element => element.textContent.trim())
-            .filter(Boolean);
-        if (labels.length) container.innerHTML = labels.map(getSmallTechIcon).join('');
-    });
-}
-
-
-async function loadFeaturedProjects() {
-    try {
-        const projectsGrid = document.getElementById('projectsGrid');
-        if (!projectsGrid || projectsGrid.dataset.serverRendered === 'true') return;
-
-        const projectsJsonPath = '/api/projects';
-        const response = await fetch(projectsJsonPath);
-        const projects = await response.json();
-
-        const featuredProjects = projects.slice(0, 3);
-
-        projectsGrid.innerHTML = '';
-
-        featuredProjects.forEach(project => {
-            const projectCard = document.createElement('div');
-            projectCard.className = 'project-card';
-
-
-            const displayImages = project.images ? project.images.slice(0, 3) : [];
-            const hasMoreImages = project.images && project.images.length > 3;
-
-            const detailLink = `/projects/${project.slug}`;
-
-            projectCard.innerHTML = `
-                <a href="${detailLink}" class="project-card-main-link">View ${project.projectName} details</a>
-                ${displayImages.length > 0 ? `
-                <div class="project-card-images">
-                    ${displayImages.map(img => `<img src="/${img}" alt="${project.projectName}" class="project-card-image">`).join('')}
-                    ${hasMoreImages ? `<div class="project-card-image-more" role="img" aria-label="${project.images.length - 3} more screenshots">+${project.images.length - 3}</div>` : ''}
-                </div>
-                ` : ''}
-                <h3 class="project-title">${project.projectName}</h3>
-                <p class="project-description">${project.description}</p>
-                <div class="project-tags" role="group" aria-label="Technologies used">
-                    ${project.techUsed.map(tech => getSmallTechIcon(tech)).join('')}
-                </div>
-                <div class="project-links">
-                    ${project.deployedLink ? `<a href="${project.deployedLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} website">Website</a>` : ''}
-                    ${project.githubLink ? `<a href="${project.githubLink}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View ${project.projectName} source code">Source</a>` : ''}
-                    <a href="${detailLink}" class="project-link" aria-label="View ${project.projectName} details">Details</a>
-                </div>
-            `;
-
-            projectsGrid.appendChild(projectCard);
-        });
-
-
-        const newItems = projectsGrid.querySelectorAll('.project-card');
-        newItems.forEach(item => {
-            item.classList.add('fade-in');
-            observer.observe(item);
-        });
-    } catch (error) {
-        console.error('Error loading projects:', error);
-    }
-}
-
-
-const institutionLogoMap = {
-    'International Modern Arabic School': 'education-institutions/Imas.webp',
-    'Malaysia University of Science and Technology': 'education-institutions/MUST.webp',
-    'IMAS': 'education-institutions/Imas.webp',
-    'MUST': 'education-institutions/MUST.webp'
-};
-
-
-function getInstitutionLogo(institutionName) {
-    return institutionLogoMap[institutionName] || null;
-}
-
-
-async function loadEducation() {
-    try {
-        const existingTimeline = document.getElementById('educationTimeline');
-        if (!existingTimeline || existingTimeline.dataset.serverRendered === 'true') return;
-
-        const educationJsonPath = '/api/education';
-        const response = await fetch(educationJsonPath);
-        const data = await response.json();
-        const educationData = data.education || [];
-
-
-        educationData.sort((a, b) => {
-            const dateA = new Date(a.duration.start);
-            const dateB = new Date(b.duration.start);
-            return dateB - dateA;
-        });
-
-        const timeline = document.getElementById('educationTimeline');
-        if (!timeline) return;
-
-        timeline.innerHTML = '';
-
-        educationData.forEach(edu => {
-            const timelineItem = document.createElement('div');
-            timelineItem.className = 'timeline-item';
-            timelineItem.setAttribute('data-start', edu.duration.start);
-            timelineItem.setAttribute('data-end', edu.duration.end);
-
-            const startDate = formatEducationDate(edu.duration.start);
-            const endDate = formatEducationDate(edu.duration.end);
-
-
-            const logoPath = getInstitutionLogo(edu.institution);
-            const logoHTML = logoPath
-                ? `<img src="/${logoPath}" alt="${edu.institution}" class="timeline-logo">`
-                : `<i class="fas fa-graduation-cap"></i>`;
-
-            let resultsHTML = '';
-            if (edu.results) {
-                if (edu.results.grades) {
-                    const grades = edu.results.grades;
-                    const gradeEntries = Object.entries(grades).map(([grade, count]) =>
-                        `${count} ${grade}${count > 1 ? 's' : ''}`
-                    ).join(', ');
-                    resultsHTML = `
-                    <div class="timeline-results">
-                        <span class="timeline-results-text">${edu.results.total_subjects} subjects: ${gradeEntries}</span>
-                    </div>
-                `;
-                } else if (edu.results.semester != null || edu.results.gpa != null) {
-                    const parts = [];
-                    if (edu.results.semester != null) {
-                        parts.push(`Semester ${edu.results.semester}`);
-                    }
-                    if (edu.results.gpa != null) {
-                        const g = edu.results.gpa;
-                        const gpaLabel = typeof g === 'number' ? g.toFixed(1) : String(g);
-                        parts.push(`${gpaLabel} GPA`);
-                    }
-                    resultsHTML = `
-                    <div class="timeline-results">
-                        <span class="timeline-results-text">${parts.join(' · ')}</span>
-                    </div>
-                `;
-                }
-            }
-
-            timelineItem.innerHTML = `
-                <div class="timeline-marker">
-                    ${logoHTML}
-                </div>
-                <div class="timeline-content">
-                    <div class="timeline-date">
-                        <span class="timeline-date-text">${startDate} - ${endDate}</span>
-                    </div>
-                    <h3 class="timeline-company">${edu.qualification}</h3>
-                    <div class="timeline-role">${edu.institution}</div>
-                    <div class="timeline-field">${edu.field}</div>
-                    ${resultsHTML}
-                    <p class="timeline-description-text">${edu.description}</p>
-                </div>
-            `;
-
-            timeline.appendChild(timelineItem);
-        });
-
-
-        const newItems = timeline.querySelectorAll('.timeline-item');
-        newItems.forEach(item => {
-            item.classList.add('fade-in');
-            observer.observe(item);
-        });
-    } catch (error) {
-        console.error('Error loading education:', error);
-    }
-}
-
-
-function formatEducationDate(dateString) {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-
-        return dateString;
-    }
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${months[date.getMonth()]} ${date.getFullYear()}`;
-}
-
-
-async function loadLanguages() {
-    try {
-        const existingGrid = document.getElementById('languagesGrid');
-        if (!existingGrid || existingGrid.dataset.serverRendered === 'true') return;
-
-        const languagesJsonPath = '/api/languages';
-        const response = await fetch(languagesJsonPath);
-        const data = await response.json();
-        const languagesData = data.languages || [];
-
-        const languagesGrid = document.getElementById('languagesGrid');
-        if (!languagesGrid) return;
-
-        languagesGrid.innerHTML = '';
-
-        languagesData.forEach(lang => {
-            const languageItem = document.createElement('div');
-            languageItem.className = 'language-item';
-
-
-            const levelClass = lang.level.toLowerCase().replace(' ', '-');
-
-            languageItem.innerHTML = `
-                <div class="language-name">${lang.name}</div>
-                <div class="language-level ${levelClass}">${lang.level}</div>
-            `;
-
-            languagesGrid.appendChild(languageItem);
-        });
-
-
-        const newItems = languagesGrid.querySelectorAll('.language-item');
-        newItems.forEach(item => {
-            item.classList.add('fade-in');
-            observer.observe(item);
-        });
-    } catch (error) {
-        console.error('Error loading languages:', error);
-    }
 }
 
 

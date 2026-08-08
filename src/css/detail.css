@@ -18,7 +18,7 @@
             font-size: 2rem;
             font-weight: 600;
             color: var(--dark-gray);
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             text-align: left;
             text-transform: capitalize;
             overflow: visible;
@@ -446,10 +446,6 @@
             transform: translateY(-3px);
         }
 
-        .tech-icon-item {
-            cursor: help;
-        }
-
         .tech-icon-item i {
             font-size: 2.5rem;
             transition: all 0.3s ease;
@@ -550,7 +546,8 @@
             filter: none !important;
         }
 
-        .tech-icon-item:hover i[class*="nodejs"] {
+        .tech-icon-item:hover i[class*="nodejs"],
+        .tech-icon-item:hover i.fa-node-js {
             color: #339933 !important;
             filter: none !important;
         }
@@ -591,8 +588,9 @@
             filter: none !important;
         }
 
+        /* Next.js hover in dark mode - use red like Express */
         [data-theme="dark"] .tech-icon-item:hover i[class*="nextjs"] {
-            color: #ffffff !important;
+            color: var(--red) !important;
             filter: none !important;
         }
 
@@ -700,7 +698,7 @@
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
-            margin-top: 0.5rem;
+            margin: 0 0 1.25rem;
         }
 
         .project-detail-links .project-link {

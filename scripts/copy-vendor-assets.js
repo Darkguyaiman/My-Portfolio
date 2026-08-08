@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import subsetFont from 'subset-font';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,22 +55,53 @@ copyDir(
   path.join(vendorRoot, 'fontawesome', 'webfonts'),
 );
 
-copyFile(
-  path.join(nodeModules, 'devicon', 'devicon.min.css'),
-  path.join(vendorRoot, 'devicon', 'devicon.min.css'),
-);
-copyDir(
-  path.join(nodeModules, 'devicon', 'fonts'),
-  path.join(vendorRoot, 'devicon', 'fonts'),
-);
+const deviconClasses = [
+  'bootstrap-plain',
+  'css3-plain',
+  'express-original',
+  'google-plain',
+  'googlecloud-plain',
+  'html5-plain',
+  'javascript-plain',
+  'jquery-plain',
+  'mysql-plain',
+  'nextjs-plain',
+  'nginx-original',
+  'python-plain',
+  'react-original',
+  'tailwindcss-plain',
+  'typescript-plain',
+];
 
-copyFile(
-  path.join(nodeModules, 'lenis', 'dist', 'lenis.min.js'),
-  path.join(vendorRoot, 'lenis', 'lenis.min.js'),
+const deviconRoot = path.join(nodeModules, 'devicon');
+const deviconCss = fs.readFileSync(path.join(deviconRoot, 'devicon.min.css'), 'utf8');
+const selectedSelectors = new Set(deviconClasses.map((name) => `.devicon-${name}`));
+const glyphs = [];
+const subsetRules = [];
+
+for (const match of deviconCss.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+  const selectors = match[1].split(',').map((selector) => selector.trim());
+  const declarations = match[2];
+  const retained = selectors.filter((selector) =>
+    [...selectedSelectors].some((selected) => selector === selected || selector === `${selected}:before`),
+  );
+  if (!retained.length) continue;
+  const content = declarations.match(/content:"([^"]+)"/u)?.[1];
+  if (content) glyphs.push(content);
+  subsetRules.push(`${retained.join(',')}{${declarations}}`);
+}
+
+const subset = await subsetFont(
+  fs.readFileSync(path.join(deviconRoot, 'fonts', 'devicon.ttf')),
+  [...new Set(glyphs)].join(''),
+  { targetFormat: 'woff2' },
 );
-copyFile(
-  path.join(nodeModules, 'lenis', 'dist', 'lenis.css'),
-  path.join(vendorRoot, 'lenis', 'lenis.css'),
+const deviconOutput = path.join(vendorRoot, 'devicon');
+fs.mkdirSync(path.join(deviconOutput, 'fonts'), { recursive: true });
+fs.writeFileSync(path.join(deviconOutput, 'fonts', 'devicon-subset.woff2'), subset);
+fs.writeFileSync(
+  path.join(deviconOutput, 'devicon-subset.css'),
+  `@font-face{font-family:"devicon";src:url("fonts/devicon-subset.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:block}[class^=devicon-],[class*=" devicon-"]{font-family:"devicon"!important;speak:never;font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}${subsetRules.join('')}`,
 );
 
 console.log('Vendor assets copied to public/vendor');

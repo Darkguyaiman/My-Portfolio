@@ -47,12 +47,12 @@
         })();
     </script>
     <style>html{background:#fdfbf7}html[data-theme="dark"]{background:#1a1a1c}</style>
-    <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2?v=<%= assetVersion %>" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
     <% if (project && project.images && project.images[0]) { const leadImage = projectImageSources(project.images[0]); %>
     <link rel="preload" as="image" href="/<%= leadImage.src %>"<% if (leadImage.srcset) { %> imagesrcset="<%= leadImage.srcset %>" imagesizes="<%= leadImage.sizes %>"<% } %> fetchpriority="high">
     <% } %>
     <link rel="stylesheet" href="/css/detail-page.min.css?v=<%= assetVersion %>">
-    <noscript><link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>"><link rel="stylesheet" href="/vendor/devicon/devicon.min.css?v=<%= assetVersion %>"></noscript>
+    <noscript><link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=<%= assetVersion %>"><link rel="stylesheet" href="/vendor/devicon/devicon-subset.css?v=<%= assetVersion %>"></noscript>
 </head>
 
 <body>
@@ -65,7 +65,7 @@
                 <div class="easter-egg" id="easterEgg">
                     <div class="easter-egg-content">
                         <div class="easter-egg-image-container">
-                            <img src="/assets/optimized/2D Mohamed-240.webp" srcset="/assets/optimized/2D Mohamed-240.webp 1x, /assets/optimized/2D Mohamed-480.webp 2x" alt="2D Mohamed" class="easter-egg-image" width="240" height="240" loading="lazy" decoding="async">
+                            <img src="/assets/optimized/2D%20Mohamed-240.webp" srcset="/assets/optimized/2D%20Mohamed-240.webp 1x, /assets/optimized/2D%20Mohamed-480.webp 2x" alt="2D Mohamed" class="easter-egg-image" width="240" height="240" loading="lazy" decoding="async">
                         </div>
                         <div class="easter-egg-name">darkguyaiman</div>
                         <div class="easter-egg-message" id="easterEggMessage"></div>
@@ -91,7 +91,7 @@
                         </div>
                         <div class="nav-image-content">
                             <div class="nav-image-glow"></div>
-                            <img src="/assets/optimized/2D Mohamed Leaning-240.webp" srcset="/assets/optimized/2D Mohamed Leaning-240.webp 1x, /assets/optimized/2D Mohamed Leaning-480.webp 2x" alt="2D Mohamed Leaning"
+                            <img src="/assets/optimized/2D%20Mohamed%20Leaning-240.webp" srcset="/assets/optimized/2D%20Mohamed%20Leaning-240.webp 1x, /assets/optimized/2D%20Mohamed%20Leaning-480.webp 2x" alt="2D Mohamed Leaning"
                                 class="nav-leaning-image" width="240" height="240" loading="lazy" decoding="async">
                             <div class="nav-name">darkguyaiman</div>
                         </div>
@@ -123,6 +123,10 @@
                 <% if (project) { %>
                 <div class="project-detail-header">
                     <h1 class="project-detail-title" id="projectTitle"><%= project.projectName %></h1>
+                    <div class="project-detail-links" id="projectLinks"<% if (!project.deployedLink && !project.githubLink) { %> hidden<% } %>>
+                        <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Website</span></a><% } %>
+                        <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> on GitHub"><i class="fab fa-github" aria-hidden="true"></i><span>Github</span></a><% } %>
+                    </div>
                     <p class="project-detail-description" id="projectDescription"><%= project.description %></p>
                 </div>
 
@@ -136,13 +140,8 @@
                 <div class="project-detail-tech">
                     <h2 class="section-title" style="margin-bottom: 1rem;">technologies used</h2>
                     <div class="project-tech-icons" id="projectTech">
-                        <% project.techUsed.forEach(function(technology) { %><div class="tech-icon-item" title="<%= technology %>"><span class="tech-icon-name"><%= technology %></span></div><% }) %>
+                        <% project.techUsed.forEach(function(technology) { const iconClass = techIcon(technology); const techKey = technology.toLowerCase().replace(/\s+/g, '').replace('.', ''); %><div class="tech-icon-item" data-tech="<%= techKey %>"><% if (iconClass) { %><i class="<%= iconClass %>" aria-hidden="true"></i><% } else if (technology === 'EJS') { %><span class="ejs-icon" aria-hidden="true">EJS</span><% } %><span class="tech-icon-name"><%= technology %></span></div><% }) %>
                     </div>
-                </div>
-
-                <div class="project-detail-links" id="projectLinks"<% if (!project.deployedLink && !project.githubLink) { %> hidden<% } %>>
-                    <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Website</span></a><% } %>
-                    <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> source code"><i class="fab fa-github" aria-hidden="true"></i><span>Source</span></a><% } %>
                 </div>
                 <% } else { %>
                 <div class="project-detail-header">
@@ -195,44 +194,8 @@
         </div>
     </div>
 
-    <script src="/vendor/lenis/lenis.min.js?v=<%= assetVersion %>"></script>
     <script src="/js/app.min.js?v=<%= assetVersion %>"></script>
     <script>
-
-        function getTechIcon(tech) {
-
-            const iconData = window.techIconMap ? window.techIconMap[tech] : null;
-            if (!iconData) {
-
-                return `<div class="tech-icon-item" data-tech="${tech.toLowerCase()}" title="${tech}">
-                    <span class="tech-icon-name">${tech}</span>
-                </div>`;
-            }
-
-
-            const techKey = tech.toLowerCase().replace(/\s+/g, '').replace('.', '');
-
-            if (iconData.type === 'ejs') {
-                return `<div class="tech-icon-item" data-tech="ejs" title="${tech}">
-                    <span class="ejs-icon">EJS</span>
-                    <span class="tech-icon-name">EJS</span>
-                </div>`;
-            }
-
-            if (iconData.type === 'fa') {
-                return `<div class="tech-icon-item" data-tech="${techKey}" title="${tech}">
-                    <i class="${iconData.class}"></i>
-                    <span class="tech-icon-name">${tech}</span>
-                </div>`;
-            }
-
-            return `<div class="tech-icon-item" data-tech="${techKey}" title="${tech}">
-                <i class="${iconData.class}"></i>
-                <span class="tech-icon-name">${tech}</span>
-            </div>`;
-        }
-
-
         let currentImageIndex = 0;
         let projectImages = [];
         let zoomLevel = 1;
@@ -472,8 +435,6 @@
             const project = <%~ projectJson %>;
             if (!project) return;
 
-            const techContainer = document.getElementById('projectTech');
-            techContainer.innerHTML = project.techUsed.map(tech => getTechIcon(tech)).join('');
             document.querySelectorAll('.project-detail-image').forEach((image, index) => {
                 image.addEventListener('click', () => openImageModal(index, project.images));
             });

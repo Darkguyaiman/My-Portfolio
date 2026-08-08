@@ -1,6 +1,7 @@
 {
   "name": "Mohamed Aiman Portfolio",
-  "short_name": "Aiman",
+  "short_name": "Darkguyaiman",
+  "description": "Portfolio of Mohamed Aiman (Darkguyaiman), a full-stack and backend developer in Malaysia.",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

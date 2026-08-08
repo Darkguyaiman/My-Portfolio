@@ -36,14 +36,57 @@ const appRoot = process.cwd();
 const viewsRoot = path.join(appRoot, 'views');
 const templateCacheEnabled = process.env.NODE_ENV === 'production';
 const assetVersion = Date.now().toString(36);
+const publicHtmlEdgeTtlSeconds = 60;
+const publicHtmlStaleSeconds = 600;
 const eta = new Eta({
   views: viewsRoot,
   cache: templateCacheEnabled,
   useWith: true,
 });
-const cachedAssetPattern = /\.(?:css|woff2?|ttf|otf|eot)$/i;
-const homeDescription = 'Portfolio of Mohamed Aiman, a full-stack and backend developer in Malaysia building web applications, business systems, and automation tools.';
-const projectsDescription = 'Explore web applications, business systems, dashboards, and automation projects built by Mohamed Aiman with Node.js, TypeScript, MySQL, and modern web technologies.';
+const cachedAssetPattern = /\.(?:css|js|svg|woff2?|ttf|otf|eot)$/i;
+const techIconClasses: Record<string, string> = {
+  'Next.js': 'devicon-nextjs-plain colored',
+  React: 'devicon-react-original colored',
+  TypeScript: 'devicon-typescript-plain colored',
+  Nginx: 'devicon-nginx-original colored',
+  Ubuntu: 'fa-brands fa-ubuntu colored',
+  'Google Cloud': 'devicon-googlecloud-plain colored',
+  'Google Cloud Platform': 'devicon-googlecloud-plain colored',
+  GCP: 'devicon-googlecloud-plain colored',
+  'Node.js': 'fa-brands fa-node-js colored',
+  Node: 'fa-brands fa-node-js colored',
+  'Express.js': 'devicon-express-original colored',
+  Express: 'devicon-express-original colored',
+  jQuery: 'devicon-jquery-plain colored',
+  HTML: 'devicon-html5-plain colored',
+  CSS: 'devicon-css3-plain colored',
+  JavaScript: 'devicon-javascript-plain colored',
+  MySQL: 'devicon-mysql-plain colored',
+  Bootstrap: 'devicon-bootstrap-plain colored',
+  'Tailwind CSS': 'devicon-tailwindcss-plain colored',
+  Python: 'devicon-python-plain colored',
+  SQL: 'devicon-mysql-plain colored',
+  'MySQL Workbench': 'devicon-mysql-plain colored',
+  'Google Apps Script': 'devicon-google-plain colored',
+  'Google Drive API': 'fa-brands fa-google-drive',
+  'Google Sheets API': 'fa-regular fa-file-excel',
+  'Google Sheets': 'fa-regular fa-file-excel',
+};
+const developerSkills = [
+  'Backend development',
+  'Full-stack web development',
+  'TypeScript',
+  'Node.js',
+  'Express.js',
+  'MySQL',
+  'Next.js',
+  'React',
+  'Google Apps Script',
+  'Business systems',
+  'Web application development',
+];
+const homeDescription = 'Mohamed Aiman, known as Darkguyaiman, is a full-stack and backend developer in Malaysia building web applications, business systems, dashboards, and automation.';
+const projectsDescription = 'Explore full-stack and backend development projects by Mohamed Aiman (Darkguyaiman), built with Node.js, TypeScript, MySQL, React, and Google Apps Script.';
 
 interface PublicPortfolioData {
   content: SiteContent;
@@ -81,6 +124,10 @@ const publicRoots = resolvePublicRoots(appRoot);
 const publicRoot = publicRoots[0];
 const publicAssetExists = (relativePath: string) => publicRoots.some((root) => fs.existsSync(path.join(root, relativePath)));
 const publicAssetRoot = (relativePath: string) => publicRoots.find((root) => fs.existsSync(path.join(root, relativePath))) || null;
+const encodeAssetPath = (assetPath: string) => assetPath
+  .split('/')
+  .map((segment) => encodeURIComponent(segment))
+  .join('/');
 
 const setStaticCacheHeaders = (res: Response, filePath: string) => {
   if (cachedAssetPattern.test(filePath)) {
@@ -100,6 +147,7 @@ app.set('view engine', 'eta');
 app.set('views', viewsRoot);
 app.set('view cache', templateCacheEnabled);
 app.locals.assetVersion = assetVersion;
+app.locals.techIcon = (technology: string) => techIconClasses[technology] || null;
 app.locals.formatMonthYear = (value: string) => {
   if (value.toLowerCase() === 'present') return 'Present';
   const [year, month] = value.split('-').map(Number);
@@ -149,7 +197,7 @@ app.locals.projectImageSources = (assetPath: string): ProjectImageSource => {
   const metadataRoot = publicAssetRoot(metadataRelativePath);
   const metadataPath = metadataRoot ? path.join(metadataRoot, metadataRelativePath) : '';
   const fallback: ProjectImageSource = {
-    src: normalized,
+    src: encodeAssetPath(normalized),
     srcset: null,
     sizes: '(max-width: 480px) calc(100vw - 32px), (max-width: 900px) calc(100vw - 40px), (max-width: 1200px) calc(50vw - 48px), 560px',
     width: null,
@@ -160,8 +208,10 @@ app.locals.projectImageSources = (assetPath: string): ProjectImageSource => {
     if (!metadataPath) return fallback;
     const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8')) as ProjectImageMetadata;
     const source: ProjectImageSource = {
-      src: `${baseDirectory}/${metadata.src}`,
-      srcset: metadata.sources.map((item) => `/${baseDirectory}/${item.path} ${item.width}w`).join(', '),
+      src: encodeAssetPath(`${baseDirectory}/${metadata.src}`),
+      srcset: metadata.sources
+        .map((item) => `/${encodeAssetPath(`${baseDirectory}/${item.path}`)} ${item.width}w`)
+        .join(', '),
       sizes: fallback.sizes,
       width: metadata.width,
       height: metadata.height,
@@ -205,8 +255,19 @@ for (const root of publicRoots) {
     extensions: ['css', 'js', 'pdf', 'webp', 'ico', 'png', 'jpg', 'svg'],
   }));
 }
-app.use((_req, res, next) => {
-  res.setHeader('Cache-Control', 'no-store');
+app.use((req, res, next) => {
+  const isPublicHtml = (req.method === 'GET' || req.method === 'HEAD') && (
+    req.path === '/'
+    || req.path === '/projects'
+    || req.path === '/privacy'
+    || (req.path !== '/projects/detail' && /^\/projects\/[^/]+$/.test(req.path))
+  );
+  res.setHeader(
+    'Cache-Control',
+    isPublicHtml
+      ? `public, max-age=0, s-maxage=${publicHtmlEdgeTtlSeconds}, stale-while-revalidate=${publicHtmlStaleSeconds}`
+      : 'no-store',
+  );
   next();
 });
 app.use(express.urlencoded({ extended: true }));
@@ -346,26 +407,41 @@ app.get('/.well-known/llms.txt', (_req: Request, res: Response) => {
 app.get('/portfolio.json', async (req: Request, res: Response) => {
   const siteUrl = getSiteUrl(req);
   const data = await loadPublicPortfolioData();
+  const personId = `${absoluteUrl(siteUrl, '/')}#person`;
   res.type('application/json').setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
   res.json({
     '@context': 'https://schema.org',
     '@type': 'ProfilePage',
+    '@id': `${absoluteUrl(siteUrl, '/')}#profile`,
     url: absoluteUrl(siteUrl, '/'),
     mainEntity: {
       '@type': 'Person',
+      '@id': personId,
       name: 'Mohamed Aiman',
+      alternateName: 'Darkguyaiman',
+      identifier: 'darkguyaiman',
+      description: homeDescription,
       jobTitle: 'Full-Stack and Backend Developer',
       email: `mailto:${data.content.email}`,
       sameAs: socialProfiles(data.content),
-      knowsAbout: ['TypeScript', 'Node.js', 'Express.js', 'MySQL', 'Next.js', 'React', 'Google Apps Script'],
+      knowsAbout: developerSkills,
+      hasOccupation: {
+        '@type': 'Occupation',
+        name: 'Full-Stack and Backend Developer',
+        occupationLocation: { '@type': 'Country', name: 'Malaysia' },
+        skills: developerSkills.join(', '),
+      },
     },
     projects: data.projects.map((project) => ({
-      '@type': 'CreativeWork',
+      '@type': 'SoftwareSourceCode',
+      '@id': `${absoluteUrl(siteUrl, `/projects/${project.slug}`)}#project`,
       name: project.projectName,
       description: project.description,
       url: absoluteUrl(siteUrl, `/projects/${project.slug}`),
       image: project.images?.map((image) => absoluteUrl(siteUrl, `/${image}`)) || [],
       keywords: project.techUsed,
+      programmingLanguage: project.techUsed,
+      author: { '@id': personId },
       codeRepository: project.githubLink,
       workExample: project.deployedLink,
       dateModified: validDate(project.updatedAt)?.toISOString(),
@@ -381,7 +457,7 @@ app.get('/', async (req: Request, res: Response) => {
   const data = await loadPublicPortfolioData();
   const personId = `${absoluteUrl(siteUrl, '/')}#person`;
   const seo = createSeo(siteUrl, {
-    title: 'Mohamed Aiman | Full-Stack & Backend Developer in Malaysia',
+    title: 'Mohamed Aiman (Darkguyaiman) | Backend Developer',
     description: homeDescription,
     path: '/',
     type: 'profile',
@@ -393,8 +469,10 @@ app.get('/', async (req: Request, res: Response) => {
           '@type': 'WebSite',
           '@id': `${absoluteUrl(siteUrl, '/')}#website`,
           url: absoluteUrl(siteUrl, '/'),
-          name: SITE_NAME,
-          inLanguage: 'en',
+          name: 'Mohamed Aiman',
+          alternateName: ['Darkguyaiman', SITE_NAME],
+          description: homeDescription,
+          inLanguage: 'en-MY',
           publisher: { '@id': personId },
         },
         {
@@ -404,19 +482,40 @@ app.get('/', async (req: Request, res: Response) => {
           name: 'Mohamed Aiman – Developer Portfolio',
           mainEntity: { '@id': personId },
           isPartOf: { '@id': `${absoluteUrl(siteUrl, '/')}#website` },
+          description: homeDescription,
+          hasPart: data.projects.map((project) => ({
+            '@id': `${absoluteUrl(siteUrl, `/projects/${project.slug}`)}#project`,
+          })),
         },
         {
           '@type': 'Person',
           '@id': personId,
           name: 'Mohamed Aiman',
           alternateName: 'Darkguyaiman',
+          identifier: 'darkguyaiman',
           url: absoluteUrl(siteUrl, '/'),
           image: absoluteUrl(siteUrl, DEFAULT_SOCIAL_IMAGE),
           jobTitle: 'Full-Stack and Backend Developer',
+          description: homeDescription,
           email: `mailto:${data.content.email}`,
           sameAs: socialProfiles(data.content),
-          knowsAbout: ['TypeScript', 'Node.js', 'Express.js', 'MySQL', 'Next.js', 'React', 'Google Apps Script', 'Web application development'],
+          knowsAbout: developerSkills,
+          hasOccupation: {
+            '@type': 'Occupation',
+            name: 'Full-Stack and Backend Developer',
+            occupationLocation: { '@type': 'Country', name: 'Malaysia' },
+            skills: developerSkills.join(', '),
+          },
         },
+        ...data.projects.map((project) => ({
+          '@type': 'SoftwareSourceCode',
+          '@id': `${absoluteUrl(siteUrl, `/projects/${project.slug}`)}#project`,
+          name: project.projectName,
+          url: absoluteUrl(siteUrl, `/projects/${project.slug}`),
+          description: project.description,
+          programmingLanguage: project.techUsed,
+          author: { '@id': personId },
+        })),
       ],
     },
   });
@@ -431,7 +530,7 @@ app.get('/projects', async (req: Request, res: Response) => {
     return [];
   });
   const seo = createSeo(siteUrl, {
-    title: 'Web Development Projects | Mohamed Aiman',
+    title: 'Developer Portfolio & Web Projects | Mohamed Aiman',
     description: projectsDescription,
     path: '/projects',
     imageAlt: DEFAULT_SOCIAL_IMAGE_ALT,
@@ -441,6 +540,8 @@ app.get('/projects', async (req: Request, res: Response) => {
       name: 'Web Development Projects by Mohamed Aiman',
       url: absoluteUrl(siteUrl, '/projects'),
       description: projectsDescription,
+      about: { '@id': `${absoluteUrl(siteUrl, '/')}#person` },
+      isPartOf: { '@id': `${absoluteUrl(siteUrl, '/')}#website` },
       mainEntity: {
         '@type': 'ItemList',
         numberOfItems: projects.length,
@@ -492,6 +593,7 @@ app.get('/projects/:slug', async (req: Request, res: Response) => {
   const project = await getProjectBySlug(req.params.slug).catch(() => null);
 
   if (!project) {
+    res.setHeader('Cache-Control', 'no-store');
     const seo = createSeo(siteUrl, {
       title: 'Project Not Found | Mohamed Aiman',
       description: 'The requested project could not be found. Explore Mohamed Aiman’s current web development portfolio.',
@@ -523,14 +625,17 @@ app.get('/projects/:slug', async (req: Request, res: Response) => {
       '@context': 'https://schema.org',
       '@graph': [
         {
-          '@type': 'CreativeWork',
+          '@type': 'SoftwareSourceCode',
           '@id': `${absoluteUrl(siteUrl, projectPath)}#project`,
           name: project.projectName,
           description: project.description,
           url: absoluteUrl(siteUrl, projectPath),
           image: project.images?.map((image) => absoluteUrl(siteUrl, `/${image}`)) || [],
-          keywords: project.techUsed.join(', '),
-          creator: { '@type': 'Person', name: 'Mohamed Aiman', url: absoluteUrl(siteUrl, '/') },
+          keywords: project.techUsed,
+          programmingLanguage: project.techUsed,
+          author: { '@id': `${absoluteUrl(siteUrl, '/')}#person` },
+          creator: { '@id': `${absoluteUrl(siteUrl, '/')}#person` },
+          isPartOf: { '@id': `${absoluteUrl(siteUrl, '/')}#website` },
           codeRepository: project.githubLink,
           workExample: project.deployedLink,
           dateModified: validDate(project.updatedAt)?.toISOString(),

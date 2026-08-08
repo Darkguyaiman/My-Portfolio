@@ -43,7 +43,6 @@ for (const stylesheet of stylesheets) {
   }
 }
 
-const lenisCss = fs.readFileSync(path.join(publicRoot, 'vendor', 'lenis', 'lenis.css'), 'utf8');
 const pageBundles = {
   'home-page': ['app', 'home', 'projects'],
   'projects-page': ['app', 'projects'],
@@ -54,7 +53,6 @@ const pageBundles = {
 for (const [bundleName, bundleStylesheets] of Object.entries(pageBundles)) {
   const bundle = bundleStylesheets
     .map((stylesheet) => fs.readFileSync(path.join(cssRoot, `${stylesheet}.min.css`), 'utf8'))
-    .concat(lenisCss)
     .join('');
   fs.writeFileSync(path.join(cssRoot, `${bundleName}.min.css`), bundle);
 }

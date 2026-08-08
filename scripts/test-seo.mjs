@@ -30,13 +30,18 @@ try {
   const detailUrl = sitemapUrls.find((url) => /\/projects\/[^/]+$/.test(url));
 
   assert.equal(home.status, 200);
-  assert.match(home.body, /<title>Mohamed Aiman \| Full-Stack/);
+  assert.match(home.headers.get('cache-control') || '', /s-maxage=60/);
+  assert.match(home.body, /<title>Mohamed Aiman \(Darkguyaiman\) \| Backend Developer<\/title>/);
+  assert.match(home.body, /"identifier":"darkguyaiman"/);
+  assert.match(home.body, /"@type":"SoftwareSourceCode"/);
   assert.match(home.body, /<script type="application\/ld\+json">/);
   assertStructuredData(home.body);
+  assertValidSrcsets(home.body);
   assert.ok(count(home.body, 'class="project-card"') > 0, 'Homepage should contain server-rendered project cards.');
   assert.equal(projects.status, 200);
   assert.ok(count(projects.body, 'class="project-card"') > 0, 'Projects page should contain server-rendered project cards.');
   assertStructuredData(projects.body);
+  assertValidSrcsets(projects.body);
   assert.equal(sitemap.status, 200);
   assert.ok(sitemapUrls.length >= 4, 'Sitemap should contain public pages.');
   assert.ok(sitemapUrls.every((url) => url.startsWith(canonicalOrigin)), 'Sitemap URLs should use SITE_URL.');
@@ -45,6 +50,9 @@ try {
   assert.match(llms.body, /## Projects/);
   assert.equal(portfolio.status, 200);
   assert.ok(Array.isArray(portfolioData.projects) && portfolioData.projects.length > 0);
+  assert.equal(portfolioData.mainEntity.alternateName, 'Darkguyaiman');
+  assert.equal(portfolioData.mainEntity.identifier, 'darkguyaiman');
+  assert.ok(portfolioData.projects.every((project) => project['@type'] === 'SoftwareSourceCode'));
 
   if (detailUrl) {
     const detailPath = new URL(detailUrl).pathname;
@@ -55,6 +63,7 @@ try {
     assert.doesNotMatch(detail.body, /function loadProjectDetail/, 'Server-rendered project content should not be replaced after load.');
     assert.ok(detail.body.includes(`href="${detailUrl}"`), 'Project detail should emit its canonical URL.');
     assertStructuredData(detail.body);
+    assertValidSrcsets(detail.body);
   }
 
   console.log(`SEO integration checks passed: ${sitemapUrls.length} sitemap URLs, ${portfolioData.projects.length} projects.`);
@@ -64,7 +73,7 @@ try {
 
 async function get(pathname) {
   const response = await fetch(`${localOrigin}${pathname}`);
-  return { status: response.status, body: await response.text() };
+  return { status: response.status, headers: response.headers, body: await response.text() };
 }
 
 async function waitUntilReady(url) {
@@ -91,4 +100,15 @@ function assertStructuredData(html) {
   const matches = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
   assert.ok(matches.length > 0, 'Page should include JSON-LD.');
   matches.forEach((match) => JSON.parse(match[1]));
+}
+
+function assertValidSrcsets(html) {
+  const attributes = [...html.matchAll(/\b(?:srcset|imagesrcset)="([^"]+)"/g)].map((match) => match[1]);
+  for (const attribute of attributes) {
+    for (const candidate of attribute.split(',')) {
+      const parts = candidate.trim().split(/\s+/);
+      assert.equal(parts.length, 2, `Invalid srcset candidate: ${candidate.trim()}`);
+      assert.match(parts[1], /^\d+(?:w|x)$/, `Invalid srcset descriptor: ${parts[1]}`);
+    }
+  }
 }
