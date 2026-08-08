@@ -261,7 +261,7 @@
                     <div class="project-tags" role="group" aria-label="Technologies used">
                         <% project.techUsed.forEach(function(technology) { %>
                         <% const iconClass = techIcon(technology); %>
-                        <% if (iconClass) { %><i class="project-tech-icon <%= iconClass %>" data-tooltip="<%= technology %>" aria-label="<%= technology %>"></i><% } else if (technology === 'EJS') { %><span class="project-tech-icon ejs-icon-small" data-tooltip="EJS">EJS</span><% } else { %><span class="project-tech-icon-fallback" data-tooltip="<%= technology %>"><%= technology %></span><% } %>
+                        <% if (iconClass) { %><span class="project-tech-icon <%= iconClass %>" data-tooltip="<%= technology %>"><span class="visually-hidden"><%= technology %></span></span><% } else if (technology === 'EJS') { %><span class="project-tech-icon ejs-icon-small" data-tooltip="EJS">EJS</span><% } else { %><span class="project-tech-icon-fallback" data-tooltip="<%= technology %>"><%= technology %></span><% } %>
                         <% }) %>
                     </div>
                 </article>
