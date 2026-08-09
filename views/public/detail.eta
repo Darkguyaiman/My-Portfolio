@@ -201,79 +201,283 @@
         let zoomLevel = 1;
         let panX = 0;
         let panY = 0;
-        let isPanning = false;
-        let panStartX = 0;
-        let panStartY = 0;
-        let originPanX = 0;
-        let originPanY = 0;
+        let uiRaf = 0;
+        let isGesturing = false;
+        let suppressClickUntil = 0;
+        let activePanId = null;
+        // Pointer capture retargets click to the modal — track the real down target.
+        let pointerDownOnImage = false;
+        let backdropDismissId = null;
+
+        const pointers = new Map();
+        let gesture = null;
+
+        let lastTapAt = 0;
+        let lastTapX = 0;
+        let lastTapY = 0;
+
         const ZOOM_MIN = 1;
-        const ZOOM_MAX = 4;
-        const ZOOM_STEP = 0.25;
+        const ZOOM_MAX = 6;
+        const ZOOM_STEP = 0.45;
+        // Touch pinch: zoom gain per pixel of finger spread.
+        const PINCH_PIXEL_SCALE = 0.032;
+        // Desktop wheel / two-finger scroll zoom. Higher = faster.
+        const WHEEL_ZOOM_SCALE = 0.0075;
+        // Trackpad pinch (usually reported as ctrl+wheel).
+        const TRACKPAD_PINCH_SCALE = 0.028;
+        const DOUBLE_TAP_MS = 280;
+        const DOUBLE_TAP_SLOP = 28;
+
+        let gestureStartZoom = 1;
 
         function clampZoom(value) {
-            return Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(value * 100) / 100));
+            return Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, value));
+        }
+
+        function roundZoom(value) {
+            return Math.round(value * 100) / 100;
+        }
+
+        function getStageCenter() {
+            const stage = document.getElementById('modalStage');
+            const rect = stage.getBoundingClientRect();
+            return {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2
+            };
+        }
+
+        function pointerDistance(a, b) {
+            return Math.hypot(a.x - b.x, a.y - b.y);
+        }
+
+        function pointerMidpoint(a, b) {
+            return {
+                x: (a.x + b.x) / 2,
+                y: (a.y + b.y) / 2
+            };
         }
 
         function applyImageTransform() {
             const modalImg = document.getElementById('modalImage');
+            modalImg.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${zoomLevel})`;
+        }
+
+        function setGesturing(active) {
+            const modalImg = document.getElementById('modalImage');
+            isGesturing = active;
+            modalImg.classList.toggle('is-gesturing', active);
+            modalImg.classList.toggle('is-panning', active && gesture?.type === 'pan');
+            if (active) {
+                modalImg.classList.remove('is-animating');
+            }
+        }
+
+        function updateZoomUi() {
+            const modal = document.getElementById('imageModal');
             const modalContent = document.getElementById('modalContent');
             const zoomLabel = document.getElementById('modalZoomLevel');
             const zoomOutBtn = document.getElementById('modalZoomOut');
             const zoomInBtn = document.getElementById('modalZoomIn');
             const zoomResetBtn = document.getElementById('modalZoomReset');
+            const zoomed = zoomLevel > 1.001;
 
-            const modal = document.getElementById('imageModal');
-            modalImg.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
-            modalContent.classList.toggle('is-zoomed', zoomLevel > 1);
-            modal.classList.toggle('is-zoomed', zoomLevel > 1);
+            modalContent.classList.toggle('is-zoomed', zoomed);
+            modal.classList.toggle('is-zoomed', zoomed);
             zoomLabel.textContent = `${Math.round(zoomLevel * 100)}%`;
-            zoomOutBtn.disabled = zoomLevel <= ZOOM_MIN;
-            zoomInBtn.disabled = zoomLevel >= ZOOM_MAX;
-            zoomResetBtn.disabled = zoomLevel === 1 && panX === 0 && panY === 0;
+            zoomOutBtn.disabled = zoomLevel <= ZOOM_MIN + 0.001;
+            zoomInBtn.disabled = zoomLevel >= ZOOM_MAX - 0.001;
+            zoomResetBtn.disabled = !zoomed && Math.abs(panX) < 0.5 && Math.abs(panY) < 0.5;
         }
 
-        function resetZoom(hard = true) {
-            zoomLevel = 1;
-            if (hard) {
-                panX = 0;
-                panY = 0;
-            }
-            applyImageTransform();
+        function scheduleZoomUi() {
+            if (uiRaf) return;
+            uiRaf = requestAnimationFrame(() => {
+                uiRaf = 0;
+                updateZoomUi();
+            });
         }
 
-        function setZoom(nextZoom, anchorX, anchorY) {
-            const modalStage = document.getElementById('modalStage');
+        function setZoom(nextZoom, anchorX, anchorY, options = {}) {
+            const animate = options.animate !== false && !isGesturing;
             const prevZoom = zoomLevel;
-            const clamped = clampZoom(nextZoom);
-            if (clamped === prevZoom) {
-                applyImageTransform();
+            const clamped = roundZoom(clampZoom(nextZoom));
+
+            if (Math.abs(clamped - prevZoom) < 0.001 && clamped !== 1) {
+                scheduleZoomUi();
                 return;
             }
 
-            if (clamped === 1) {
-                panX = 0;
-                panY = 0;
-            } else if (typeof anchorX === 'number' && typeof anchorY === 'number') {
-                const rect = modalStage.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                const offsetX = anchorX - centerX;
-                const offsetY = anchorY - centerY;
-                const ratio = clamped / prevZoom;
-                panX = offsetX - (offsetX - panX) * ratio;
-                panY = offsetY - (offsetY - panY) * ratio;
+            const modalImg = document.getElementById('modalImage');
+            if (animate) {
+                modalImg.classList.add('is-animating');
+            } else {
+                modalImg.classList.remove('is-animating');
             }
 
-            zoomLevel = clamped;
+            if (clamped <= ZOOM_MIN + 0.001) {
+                zoomLevel = 1;
+                panX = 0;
+                panY = 0;
+            } else {
+                if (typeof anchorX === 'number' && typeof anchorY === 'number' && prevZoom > 0) {
+                    const center = getStageCenter();
+                    const offsetX = anchorX - center.x;
+                    const offsetY = anchorY - center.y;
+                    const ratio = clamped / prevZoom;
+                    panX = offsetX - (offsetX - panX) * ratio;
+                    panY = offsetY - (offsetY - panY) * ratio;
+                }
+                zoomLevel = clamped;
+            }
+
             applyImageTransform();
+            updateZoomUi();
+        }
+
+        function resetZoom(options = {}) {
+            pointers.clear();
+            gesture = null;
+            activePanId = null;
+            setGesturing(false);
+            setZoom(1, undefined, undefined, { animate: options.animate !== false });
         }
 
         function zoomIn(anchorX, anchorY) {
-            setZoom(zoomLevel + ZOOM_STEP, anchorX, anchorY);
+            const center = getStageCenter();
+            setZoom(zoomLevel + ZOOM_STEP, anchorX ?? center.x, anchorY ?? center.y, { animate: true });
         }
 
         function zoomOut(anchorX, anchorY) {
-            setZoom(zoomLevel - ZOOM_STEP, anchorX, anchorY);
+            const center = getStageCenter();
+            setZoom(zoomLevel - ZOOM_STEP, anchorX ?? center.x, anchorY ?? center.y, { animate: true });
+        }
+
+        function beginPan(pointer) {
+            activePanId = pointer.id;
+            gesture = {
+                type: 'pan',
+                pointerId: pointer.id,
+                startX: pointer.x,
+                startY: pointer.y,
+                originPanX: panX,
+                originPanY: panY,
+                moved: false
+            };
+            setGesturing(true);
+        }
+
+        function beginPinch() {
+            const pts = Array.from(pointers.values());
+            if (pts.length < 2) return;
+            const [a, b] = pts;
+            const distance = Math.max(pointerDistance(a, b), 1);
+            const mid = pointerMidpoint(a, b);
+            activePanId = null;
+            gesture = {
+                type: 'pinch',
+                startDistance: distance,
+                startZoom: zoomLevel,
+                startPanX: panX,
+                startPanY: panY,
+                originX: mid.x,
+                originY: mid.y
+            };
+            setGesturing(true);
+        }
+
+        function updatePan(pointer) {
+            if (!gesture || gesture.type !== 'pan') return;
+            if (gesture.pointerId != null && pointer.id !== gesture.pointerId) return;
+
+            const dx = pointer.x - gesture.startX;
+            const dy = pointer.y - gesture.startY;
+            if (Math.hypot(dx, dy) > 2) gesture.moved = true;
+
+            panX = gesture.originPanX + dx;
+            panY = gesture.originPanY + dy;
+            applyImageTransform();
+            scheduleZoomUi();
+        }
+
+        function updatePinch() {
+            if (!gesture || gesture.type !== 'pinch' || pointers.size < 2) return;
+            const [a, b] = Array.from(pointers.values());
+            const distance = Math.max(pointerDistance(a, b), 1);
+            const mid = pointerMidpoint(a, b);
+            const pixelDelta = distance - gesture.startDistance;
+            const nextZoom = clampZoom(
+                gesture.startZoom * Math.exp(pixelDelta * PINCH_PIXEL_SCALE)
+            );
+            zoomLevel = nextZoom;
+
+            if (nextZoom <= ZOOM_MIN + 0.001) {
+                zoomLevel = 1;
+                panX = 0;
+                panY = 0;
+            } else {
+                const center = getStageCenter();
+                const startOffsetX = gesture.originX - center.x;
+                const startOffsetY = gesture.originY - center.y;
+                const midOffsetX = mid.x - center.x;
+                const midOffsetY = mid.y - center.y;
+                const ratio = nextZoom / gesture.startZoom;
+                panX = midOffsetX - (startOffsetX - gesture.startPanX) * ratio;
+                panY = midOffsetY - (startOffsetY - gesture.startPanY) * ratio;
+            }
+
+            applyImageTransform();
+            scheduleZoomUi();
+        }
+
+        function syncPointersFromTouches(touchList) {
+            pointers.clear();
+            for (let i = 0; i < touchList.length; i += 1) {
+                const touch = touchList[i];
+                pointers.set(touch.identifier, {
+                    id: touch.identifier,
+                    x: touch.clientX,
+                    y: touch.clientY
+                });
+            }
+        }
+
+        function endGesturePointer(pointerId) {
+            pointers.delete(pointerId);
+            if (activePanId === pointerId) activePanId = null;
+
+            if (pointers.size >= 2) {
+                beginPinch();
+                return { moved: true, pinched: true };
+            }
+
+            if (pointers.size === 1 && zoomLevel > 1.001) {
+                beginPan(Array.from(pointers.values())[0]);
+                return { moved: true, pinched: true };
+            }
+
+            const wasPinch = gesture?.type === 'pinch';
+            const moved = Boolean(gesture?.moved);
+            gesture = null;
+            setGesturing(false);
+            zoomLevel = roundZoom(clampZoom(zoomLevel));
+            if (zoomLevel <= ZOOM_MIN + 0.001) {
+                zoomLevel = 1;
+                panX = 0;
+                panY = 0;
+            }
+            applyImageTransform();
+            updateZoomUi();
+
+            return { moved, pinched: wasPinch };
+        }
+
+        function handleDoubleTap(x, y) {
+            if (zoomLevel > 1.05) {
+                resetZoom({ animate: true });
+            } else {
+                setZoom(2.25, x, y, { animate: true });
+            }
         }
 
         function openImageModal(index, images) {
@@ -287,7 +491,7 @@
             modal.hidden = false;
             modal.classList.add('active');
             document.body.classList.add('image-modal-open');
-            resetZoom();
+            resetZoom({ animate: false });
             updateModalCounter();
             updateNavVisibility();
         }
@@ -297,7 +501,7 @@
             modal.classList.remove('active');
             modal.hidden = true;
             document.body.classList.remove('image-modal-open');
-            resetZoom();
+            resetZoom({ animate: false });
         }
 
         function nextImage() {
@@ -306,7 +510,7 @@
             const modalImg = document.getElementById('modalImage');
             modalImg.src = `/${projectImages[currentImageIndex]}`;
             modalImg.alt = `Project image ${currentImageIndex + 1}`;
-            resetZoom();
+            resetZoom({ animate: false });
             updateModalCounter();
         }
 
@@ -316,7 +520,7 @@
             const modalImg = document.getElementById('modalImage');
             modalImg.src = `/${projectImages[currentImageIndex]}`;
             modalImg.alt = `Project image ${currentImageIndex + 1}`;
-            resetZoom();
+            resetZoom({ animate: false });
             updateModalCounter();
         }
 
@@ -349,66 +553,275 @@
             modalNext.addEventListener('click', nextImage);
             modalZoomIn.addEventListener('click', () => zoomIn());
             modalZoomOut.addEventListener('click', () => zoomOut());
-            modalZoomReset.addEventListener('click', () => resetZoom());
+            modalZoomReset.addEventListener('click', () => resetZoom({ animate: true }));
 
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeImageModal();
-                    return;
-                }
-                if (e.target === modalStage && zoomLevel === 1) {
-                    closeImageModal();
-                }
-            });
+            // Don't use click-to-dismiss: setPointerCapture retargets click onto the modal,
+            // so image taps looked like backdrop taps and closed the viewer.
 
             modalImg.addEventListener('dblclick', (e) => {
                 e.preventDefault();
-                if (zoomLevel > 1) {
-                    resetZoom();
-                } else {
-                    setZoom(2, e.clientX, e.clientY);
+                if (performance.now() < suppressClickUntil) return;
+                handleDoubleTap(e.clientX, e.clientY);
+            });
+
+            modalImg.addEventListener('transitionend', (e) => {
+                if (e.propertyName === 'transform') {
+                    modalImg.classList.remove('is-animating');
                 }
             });
 
-            modalStage.addEventListener('wheel', (e) => {
+            modal.addEventListener('wheel', (e) => {
                 if (!modal.classList.contains('active')) return;
                 e.preventDefault();
-                if (e.deltaY < 0) {
-                    zoomIn(e.clientX, e.clientY);
-                } else {
-                    zoomOut(e.clientX, e.clientY);
-                }
+
+                modalImg.classList.remove('is-animating');
+
+                let delta = e.deltaY;
+                // Some trackpads report horizontal dominance; still zoom from the main delta.
+                if (Math.abs(e.deltaX) > Math.abs(delta)) delta = e.deltaX;
+                if (e.deltaMode === 1) delta *= 16; // lines → pixels
+                if (e.deltaMode === 2) delta *= 32; // pages → pixels
+
+                // ctrlKey marks trackpad pinch-to-zoom on Chromium / Firefox / Safari.
+                const scale = e.ctrlKey ? TRACKPAD_PINCH_SCALE : WHEEL_ZOOM_SCALE;
+                const factor = Math.exp(-delta * scale);
+                setZoom(zoomLevel * factor, e.clientX, e.clientY, { animate: false });
             }, { passive: false });
 
-            modalImg.addEventListener('pointerdown', (e) => {
-                if (zoomLevel <= 1) return;
-                isPanning = true;
-                panStartX = e.clientX;
-                panStartY = e.clientY;
-                originPanX = panX;
-                originPanY = panY;
-                modalImg.setPointerCapture(e.pointerId);
-                modalImg.classList.add('is-panning');
-            });
+            const onPointerDown = (e) => {
+                if (!modal.classList.contains('active')) return;
+                // Touch is handled by touch_* listeners (more reliable multi-touch on mobile).
+                if (e.pointerType === 'touch') return;
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                if (e.target.closest('.image-modal-btn, .image-modal-toolbar')) return;
 
-            modalImg.addEventListener('pointermove', (e) => {
-                if (!isPanning) return;
-                panX = originPanX + (e.clientX - panStartX);
-                panY = originPanY + (e.clientY - panStartY);
-                applyImageTransform();
-            });
+                const onImage = Boolean(e.target.closest('.image-modal-img, .image-modal-content'));
+                pointerDownOnImage = onImage;
+                backdropDismissId = onImage ? null : e.pointerId;
 
-            const endPan = (e) => {
-                if (!isPanning) return;
-                isPanning = false;
-                modalImg.classList.remove('is-panning');
-                if (e && e.pointerId != null) {
-                    try { modalImg.releasePointerCapture(e.pointerId); } catch (_) {}
+                e.preventDefault();
+                try { modal.setPointerCapture(e.pointerId); } catch (_) {}
+
+                const point = { id: e.pointerId, x: e.clientX, y: e.clientY };
+                pointers.set(e.pointerId, point);
+
+                if (pointers.size >= 2) {
+                    backdropDismissId = null;
+                    beginPinch();
+                    return;
+                }
+
+                if (zoomLevel > 1.001) {
+                    backdropDismissId = null;
+                    beginPan(point);
                 }
             };
 
-            modalImg.addEventListener('pointerup', endPan);
-            modalImg.addEventListener('pointercancel', endPan);
+            const onPointerMove = (e) => {
+                if (e.pointerType === 'touch') return;
+                if (!pointers.has(e.pointerId)) return;
+
+                const point = { id: e.pointerId, x: e.clientX, y: e.clientY };
+                pointers.set(e.pointerId, point);
+
+                if (pointers.size >= 2) {
+                    backdropDismissId = null;
+                    if (!gesture || gesture.type !== 'pinch') beginPinch();
+                    updatePinch();
+                    return;
+                }
+
+                if (gesture?.type === 'pan') {
+                    backdropDismissId = null;
+                    updatePan(point);
+                }
+            };
+
+            const onPointerUp = (e) => {
+                if (e.pointerType === 'touch') return;
+                if (!pointers.has(e.pointerId)) return;
+
+                const startedOnImage = pointerDownOnImage;
+                const canDismissBackdrop =
+                    backdropDismissId === e.pointerId &&
+                    !startedOnImage &&
+                    !gesture?.moved &&
+                    gesture?.type !== 'pinch' &&
+                    performance.now() >= suppressClickUntil;
+
+                const result = endGesturePointer(e.pointerId);
+                try { modal.releasePointerCapture(e.pointerId); } catch (_) {}
+
+                backdropDismissId = null;
+                pointerDownOnImage = false;
+
+                if (result.pinched || result.moved) {
+                    suppressClickUntil = performance.now() + 280;
+                }
+
+                if (canDismissBackdrop && !result.moved && !result.pinched) {
+                    closeImageModal();
+                }
+            };
+
+            const onTouchStart = (e) => {
+                if (!modal.classList.contains('active')) return;
+                if (e.target.closest('.image-modal-btn, .image-modal-toolbar')) return;
+
+                const onImage = Boolean(e.target.closest('.image-modal-img, .image-modal-content'));
+                pointerDownOnImage = onImage;
+                backdropDismissId = onImage ? null : 'touch';
+
+                e.preventDefault();
+                syncPointersFromTouches(e.touches);
+
+                if (pointers.size >= 2) {
+                    backdropDismissId = null;
+                    beginPinch();
+                    return;
+                }
+
+                if (pointers.size === 1 && zoomLevel > 1.001) {
+                    backdropDismissId = null;
+                    beginPan(Array.from(pointers.values())[0]);
+                }
+            };
+
+            const onTouchMove = (e) => {
+                if (!modal.classList.contains('active')) return;
+                if (!pointers.size && !e.touches.length) return;
+
+                e.preventDefault();
+                syncPointersFromTouches(e.touches);
+
+                if (pointers.size >= 2) {
+                    backdropDismissId = null;
+                    if (!gesture || gesture.type !== 'pinch') beginPinch();
+                    updatePinch();
+                    return;
+                }
+
+                if (pointers.size === 1 && gesture?.type === 'pan') {
+                    backdropDismissId = null;
+                    updatePan(Array.from(pointers.values())[0]);
+                }
+            };
+
+            const onTouchEnd = (e) => {
+                if (!modal.classList.contains('active')) return;
+
+                const startedOnImage = pointerDownOnImage;
+                const hadPinch = gesture?.type === 'pinch';
+                const hadPanMove = Boolean(gesture?.moved);
+                const canDismissBackdrop =
+                    backdropDismissId === 'touch' &&
+                    !startedOnImage &&
+                    !hadPanMove &&
+                    !hadPinch &&
+                    e.touches.length === 0 &&
+                    performance.now() >= suppressClickUntil;
+
+                const tapPoint = pointers.size === 1 ? Array.from(pointers.values())[0] : null;
+                const wasSingleTapCandidate =
+                    e.touches.length === 0 &&
+                    Boolean(tapPoint) &&
+                    !hadPinch &&
+                    !hadPanMove &&
+                    startedOnImage;
+
+                e.preventDefault();
+                syncPointersFromTouches(e.touches);
+
+                if (pointers.size >= 2) {
+                    beginPinch();
+                    backdropDismissId = null;
+                    pointerDownOnImage = false;
+                    return;
+                }
+
+                if (pointers.size === 1 && zoomLevel > 1.001) {
+                    beginPan(Array.from(pointers.values())[0]);
+                    backdropDismissId = null;
+                    pointerDownOnImage = false;
+                    return;
+                }
+
+                gesture = null;
+                setGesturing(false);
+                zoomLevel = roundZoom(clampZoom(zoomLevel));
+                if (zoomLevel <= ZOOM_MIN + 0.001) {
+                    zoomLevel = 1;
+                    panX = 0;
+                    panY = 0;
+                }
+                applyImageTransform();
+                updateZoomUi();
+
+                backdropDismissId = null;
+                pointerDownOnImage = false;
+
+                if (hadPinch || hadPanMove) {
+                    suppressClickUntil = performance.now() + 280;
+                }
+
+                if (canDismissBackdrop) {
+                    closeImageModal();
+                    return;
+                }
+
+                if (!wasSingleTapCandidate || !tapPoint) return;
+
+                const now = performance.now();
+                const dt = now - lastTapAt;
+                const dist = Math.hypot(tapPoint.x - lastTapX, tapPoint.y - lastTapY);
+                if (dt > 0 && dt < DOUBLE_TAP_MS && dist < DOUBLE_TAP_SLOP) {
+                    handleDoubleTap(tapPoint.x, tapPoint.y);
+                    lastTapAt = 0;
+                    suppressClickUntil = now + 280;
+                } else {
+                    lastTapAt = now;
+                    lastTapX = tapPoint.x;
+                    lastTapY = tapPoint.y;
+                }
+            };
+
+            modal.addEventListener('pointerdown', onPointerDown, { passive: false });
+            modal.addEventListener('pointermove', onPointerMove, { passive: false });
+            modal.addEventListener('pointerup', onPointerUp);
+            modal.addEventListener('pointercancel', onPointerUp);
+
+            // Touch events give all active fingers each frame — better pinch on phones.
+            modal.addEventListener('touchstart', onTouchStart, { passive: false });
+            modal.addEventListener('touchmove', onTouchMove, { passive: false });
+            modal.addEventListener('touchend', onTouchEnd, { passive: false });
+            modal.addEventListener('touchcancel', onTouchEnd, { passive: false });
+
+            // Safari / macOS trackpad pinch (separate from wheel).
+            modal.addEventListener('gesturestart', (e) => {
+                if (!modal.classList.contains('active')) return;
+                e.preventDefault();
+                gestureStartZoom = zoomLevel;
+                modalImg.classList.remove('is-animating');
+            }, { passive: false });
+
+            modal.addEventListener('gesturechange', (e) => {
+                if (!modal.classList.contains('active')) return;
+                e.preventDefault();
+                // Amplify native scale so a small pinch jumps in quickly.
+                const amplified = Math.pow(e.scale, 1.55);
+                const center = getStageCenter();
+                setZoom(
+                    gestureStartZoom * amplified,
+                    center.x,
+                    center.y,
+                    { animate: false }
+                );
+            }, { passive: false });
+
+            modal.addEventListener('gestureend', (e) => {
+                if (!modal.classList.contains('active')) return;
+                e.preventDefault();
+            }, { passive: false });
 
             document.addEventListener('keydown', (e) => {
                 if (!modal.classList.contains('active')) return;
@@ -426,7 +839,7 @@
                     e.preventDefault();
                     zoomOut();
                 } else if (e.key === '0') {
-                    resetZoom();
+                    resetZoom({ animate: true });
                 }
             });
         });

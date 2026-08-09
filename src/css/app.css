@@ -538,6 +538,11 @@ section {
     opacity: 0;
 }
 
+.text-word {
+    display: inline-block;
+    white-space: nowrap;
+}
+
 .text-char {
     display: inline-block;
     white-space: pre;

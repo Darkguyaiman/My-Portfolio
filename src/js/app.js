@@ -573,12 +573,28 @@ function animateTextByCharacter(element) {
             const text = shouldCapitalize
                 ? capitalizeWords(node.textContent || '')
                 : (node.textContent || '');
+            // Group letters into words so line breaks happen between words,
+            // not mid-character (inline-block chars otherwise wrap anywhere).
+            let wordSpan = null;
             for (const char of text) {
                 const span = document.createElement('span');
                 span.className = 'text-char';
                 span.setAttribute('aria-hidden', 'true');
                 span.textContent = char;
-                fragment.appendChild(span);
+
+                if (/\s/.test(char)) {
+                    wordSpan = null;
+                    fragment.appendChild(span);
+                    continue;
+                }
+
+                if (!wordSpan) {
+                    wordSpan = document.createElement('span');
+                    wordSpan.className = 'text-word';
+                    wordSpan.setAttribute('aria-hidden', 'true');
+                    fragment.appendChild(wordSpan);
+                }
+                wordSpan.appendChild(span);
             }
             return fragment;
         }
