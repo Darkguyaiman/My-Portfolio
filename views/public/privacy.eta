@@ -104,15 +104,13 @@
     <!-- Privacy Content Section -->
     <section class="privacy-content">
         <div class="container">
+            <a href="/" class="back-link">
+                <i class="fas fa-chevron-left"></i>
+                <span>back to home</span>
+            </a>
             <div class="privacy-header">
-                <div class="privacy-header-text">
-                    <h1 class="privacy-title">privacy policy</h1>
-                    <p class="privacy-last-updated">Last Updated: <span id="lastUpdatedDate">Sep 2024</span></p>
-                </div>
-                <a href="/" class="back-link">
-                    <i class="fas fa-chevron-left"></i>
-                    <span>back to home</span>
-                </a>
+                <h1 class="privacy-title">privacy policy</h1>
+                <p class="privacy-last-updated">Last Updated: <span id="lastUpdatedDate">Sep 2024</span></p>
             </div>
 
             <div class="privacy-section">

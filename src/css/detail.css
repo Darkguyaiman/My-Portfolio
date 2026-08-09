@@ -100,6 +100,7 @@
         .image-modal-stage {
             position: absolute;
             inset: 0;
+            z-index: 1;
             width: 100%;
             height: 100%;
             display: flex;
@@ -186,8 +187,12 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            position: relative;
             z-index: 10002;
             padding: 0;
+            touch-action: manipulation;
+            pointer-events: auto;
+            -webkit-tap-highlight-color: transparent;
             box-shadow:
                 0 8px 24px rgba(0, 0, 0, 0.28),
                 0 1px 0 rgba(255, 255, 255, 0.08) inset;
@@ -296,6 +301,15 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
+            touch-action: manipulation;
+            pointer-events: auto;
+        }
+
+        .image-modal-close,
+        .image-modal-nav {
+            z-index: 10003;
+            pointer-events: auto;
+            touch-action: manipulation;
         }
 
         .image-modal-zoom {

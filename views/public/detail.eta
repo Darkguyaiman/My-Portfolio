@@ -208,9 +208,14 @@
         // Pointer capture retargets click to the modal — track the real down target.
         let pointerDownOnImage = false;
         let backdropDismissId = null;
+        let touchOnControls = false;
 
         const pointers = new Map();
         let gesture = null;
+
+        function isModalControl(target) {
+            return Boolean(target?.closest?.('.image-modal-btn, .image-modal-toolbar'));
+        }
 
         let lastTapAt = 0;
         let lastTapX = 0;
@@ -548,12 +553,35 @@
             const modalZoomOut = document.getElementById('modalZoomOut');
             const modalZoomReset = document.getElementById('modalZoomReset');
 
-            modalClose.addEventListener('click', closeImageModal);
-            modalPrev.addEventListener('click', prevImage);
-            modalNext.addEventListener('click', nextImage);
-            modalZoomIn.addEventListener('click', () => zoomIn());
-            modalZoomOut.addEventListener('click', () => zoomOut());
-            modalZoomReset.addEventListener('click', () => resetZoom({ animate: true }));
+            const bindControl = (element, handler) => {
+                if (!element) return;
+                let lastRunAt = 0;
+                const run = (e) => {
+                    const now = performance.now();
+                    if (now - lastRunAt < 320) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                    }
+                    lastRunAt = now;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handler();
+                };
+                // pointerup covers mobile; click covers desktop / keyboard activation.
+                element.addEventListener('pointerup', (e) => {
+                    if (e.button != null && e.button !== 0) return;
+                    run(e);
+                });
+                element.addEventListener('click', run);
+            };
+
+            bindControl(modalClose, closeImageModal);
+            bindControl(modalPrev, prevImage);
+            bindControl(modalNext, nextImage);
+            bindControl(modalZoomIn, () => zoomIn());
+            bindControl(modalZoomOut, () => zoomOut());
+            bindControl(modalZoomReset, () => resetZoom({ animate: true }));
 
             // Don't use click-to-dismiss: setPointerCapture retargets click onto the modal,
             // so image taps looked like backdrop taps and closed the viewer.
@@ -666,8 +694,12 @@
 
             const onTouchStart = (e) => {
                 if (!modal.classList.contains('active')) return;
-                if (e.target.closest('.image-modal-btn, .image-modal-toolbar')) return;
+                if (isModalControl(e.target)) {
+                    touchOnControls = true;
+                    return;
+                }
 
+                touchOnControls = false;
                 const onImage = Boolean(e.target.closest('.image-modal-img, .image-modal-content'));
                 pointerDownOnImage = onImage;
                 backdropDismissId = onImage ? null : 'touch';
@@ -689,6 +721,7 @@
 
             const onTouchMove = (e) => {
                 if (!modal.classList.contains('active')) return;
+                if (touchOnControls || isModalControl(e.target)) return;
                 if (!pointers.size && !e.touches.length) return;
 
                 e.preventDefault();
@@ -709,6 +742,12 @@
 
             const onTouchEnd = (e) => {
                 if (!modal.classList.contains('active')) return;
+
+                // Never swallow taps on zoom / close / nav controls.
+                if (touchOnControls || isModalControl(e.target)) {
+                    touchOnControls = false;
+                    return;
+                }
 
                 const startedOnImage = pointerDownOnImage;
                 const hadPinch = gesture?.type === 'pinch';
