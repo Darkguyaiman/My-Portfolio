@@ -22,10 +22,6 @@
 </head>
 <body class="not-found-page">
     <div class="not-found-shell">
-        <header class="not-found-masthead">
-            <a class="not-found-brand" href="/" aria-label="Darkguyaiman home">DARKGUYAIMAN®</a>
-        </header>
-
         <main class="not-found-main">
             <section class="not-found-stage" aria-labelledby="notFoundTitle">
                 <p class="not-found-status"><%= errorKicker %> / ERROR <%= errorStatus %></p>

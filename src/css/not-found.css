@@ -30,7 +30,7 @@ FORM: Full-viewport error poster, pinned by the public-404 surface brief and sta
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: 1fr auto;
     width: min(100%, 1440px);
     min-height: 100svh;
     margin: 0 auto;
@@ -38,12 +38,6 @@ FORM: Full-viewport error poster, pinned by the public-404 surface brief and sta
     padding-right: max(clamp(1rem, 4vw, 4.5rem), env(safe-area-inset-right));
     padding-bottom: max(clamp(1rem, 2vw, 1.75rem), env(safe-area-inset-bottom));
     padding-left: max(clamp(1rem, 4vw, 4.5rem), env(safe-area-inset-left));
-}
-
-.not-found-masthead {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
 }
 
 .not-found-footer {
@@ -61,24 +55,6 @@ FORM: Full-viewport error poster, pinned by the public-404 surface brief and sta
     justify-self: end;
 }
 
-.not-found-masthead {
-    padding-bottom: 1rem;
-    border-bottom: 1px solid color-mix(in srgb, var(--nf-ink) 22%, transparent);
-}
-
-.not-found-brand {
-    color: var(--nf-ink);
-    font-family: 'Press Start 2P', 'Courier New', monospace;
-    font-size: clamp(.58rem, 1.1vw, .72rem);
-    line-height: 1.5;
-    text-decoration: none;
-}
-
-.not-found-brand:hover {
-    color: var(--nf-red);
-}
-
-.not-found-brand:focus-visible,
 .not-found-page .theme-toggle:focus-visible,
 .not-found-action:focus-visible {
     outline: 2px solid var(--nf-red);
