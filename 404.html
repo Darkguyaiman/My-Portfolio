@@ -1,18 +1,103 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="refresh" content="0; url=https://darkguyaiman.com/">
-    <meta name="robots" content="noindex">
-    <title>Redirecting...</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>404: Signal Lost | Mohamed Aiman</title>
+    <meta name="description" content="That page could not be found. Return home or explore Mohamed Aiman’s web development projects.">
+    <meta name="robots" content="noindex,follow">
+    <meta name="theme-color" content="#1a1a1c">
+    <meta name="color-scheme" content="dark light">
+    <link rel="icon" href="/favicon.ico">
+    <script>(function(){document.documentElement.dataset.theme=localStorage.getItem('theme')||'dark'})()</script>
+    <style>html{background:#fdfbf7}html[data-theme="dark"]{background:#1a1a1c}</style>
+    <link rel="preload" href="/vendor/fonts/press-start-2p/press-start-2p-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css?v=20260814-errors">
+    <link rel="stylesheet" href="/css/not-found-page.min.css?v=20260814-bottom-theme">
 </head>
-<body>
-    <p>Redirecting to <a href="https://darkguyaiman.com/">darkguyaiman.com</a>...</p>
-
+<body class="not-found-page">
+    <div class="not-found-shell">
+        <header class="not-found-masthead">
+            <a class="not-found-brand" href="/" aria-label="Darkguyaiman home">DARKGUYAIMAN®</a>
+        </header>
+        <main class="not-found-main">
+            <section class="not-found-stage" aria-labelledby="notFoundTitle">
+                <p class="not-found-status">SIGNAL LOST / ERROR 404</p>
+                <div class="not-found-mark" aria-label="Error 404 with an ASCII portrait of Mohamed Aiman">
+                    <span class="not-found-digit not-found-digit--left" aria-hidden="true">4</span>
+                    <span class="not-found-code" aria-hidden="true">404</span>
+                    <div class="not-found-ascii-shell" tabindex="0" aria-label="ASCII portrait. Hover or focus to distort the signal.">
+                        <pre class="not-found-ascii" id="asciiPortrait" aria-hidden="true">LOADING PORTRAIT...</pre>
+                    </div>
+                    <span class="not-found-digit not-found-digit--right" aria-hidden="true">4</span>
+                </div>
+                <h1 class="not-found-title" id="notFoundTitle">You found the void.</h1>
+                <p class="not-found-copy">This route has slipped off the map. The work is still here, just not at <span class="not-found-path" id="notFoundPath">this address</span></p>
+                <nav class="not-found-actions" aria-label="Error recovery links">
+                    <a class="not-found-action not-found-action--primary" href="/"><span>Return home</span><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
+                    <a class="not-found-action" href="/projects"><span>Browse projects</span><i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                </nav>
+            </section>
+        </main>
+        <footer class="not-found-footer">
+            <span>© <span class="footer-year">2026</span> MOHAMED AIMAN</span>
+            <span class="not-found-footer-status">STATUS 404</span>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <i class="fas fa-sun" id="themeIcon"></i>
+            </button>
+        </footer>
+    </div>
     <script>
-        window.location.replace("https://darkguyaiman.com/");
-        // Just to retrigger the github action
-    </script>  
+        (function () {
+            const root = document.documentElement;
+            const page = document.body;
+            const portrait = document.getElementById('asciiPortrait');
+            const shell = portrait.parentElement;
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const precisePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            document.getElementById('notFoundPath').textContent = location.pathname + location.search;
+            document.querySelector('.footer-year').textContent = new Date().getFullYear();
+
+            function setTheme(theme) {
+                root.dataset.theme = theme;
+                localStorage.setItem('theme', theme);
+                themeIcon.classList.toggle('fa-sun', theme === 'dark');
+                themeIcon.classList.toggle('fa-moon', theme !== 'dark');
+            }
+
+            fetch('/ASCI_ART_ME.txt').then(function (response) {
+                if (!response.ok) throw new Error('Portrait unavailable');
+                return response.text();
+            }).then(function (art) {
+                portrait.textContent = art.trim();
+                ['red', 'blue'].forEach(function (tone) {
+                    const clone = portrait.cloneNode(true);
+                    clone.removeAttribute('id');
+                    clone.className = 'not-found-ascii-clone not-found-ascii-clone--' + tone;
+                    clone.setAttribute('aria-hidden', 'true');
+                    shell.appendChild(clone);
+                });
+                if (!reducedMotion && precisePointer) window.setInterval(function () {
+                    shell.classList.add('is-glitching');
+                    window.setTimeout(function () { shell.classList.remove('is-glitching'); }, 180);
+                }, 4200);
+            }).catch(function () { portrait.textContent = '404 / PORTRAIT SIGNAL LOST'; });
+
+            if (!reducedMotion && precisePointer) window.addEventListener('pointermove', function (event) {
+                page.style.setProperty('--pointer-x', event.clientX + 'px');
+                page.style.setProperty('--pointer-y', event.clientY + 'px');
+            }, { passive: true });
+
+            setTheme(root.dataset.theme || 'dark');
+            themeToggle.addEventListener('click', function () {
+                const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+                themeToggle.classList.add('animating', 'clicked');
+                requestAnimationFrame(function () { setTheme(next); });
+                window.setTimeout(function () { themeToggle.classList.remove('animating', 'clicked'); }, 400);
+            });
+        })();
+    </script>
 </body>
 </html>

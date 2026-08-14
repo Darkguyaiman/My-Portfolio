@@ -20,6 +20,7 @@ const stylesheets = [
   'projects',
   'privacy',
   'detail',
+  'not-found',
   'admin',
   'admin-login',
 ];
@@ -48,6 +49,7 @@ const pageBundles = {
   'projects-page': ['app', 'projects'],
   'privacy-page': ['app', 'privacy'],
   'detail-page': ['app', 'detail'],
+  'not-found-page': ['app', 'not-found'],
 };
 
 for (const [bundleName, bundleStylesheets] of Object.entries(pageBundles)) {

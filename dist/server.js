@@ -96,6 +96,7 @@ function resolvePublicRoots(root) {
 }
 const publicRoots = resolvePublicRoots(appRoot);
 const publicRoot = publicRoots[0];
+const asciiPortrait = fs.readFileSync(path.join(publicRoot, 'ASCI_ART_ME.txt'), 'utf8').trim();
 const publicAssetExists = (relativePath) => publicRoots.some((root) => fs.existsSync(path.join(root, relativePath)));
 const publicAssetRoot = (relativePath) => publicRoots.find((root) => fs.existsSync(path.join(root, relativePath))) || null;
 const encodeAssetPath = (assetPath) => assetPath
@@ -579,21 +580,7 @@ app.get('/projects/:slug', async (req, res) => {
     const siteUrl = getSiteUrl(req);
     const project = await getProjectBySlug(req.params.slug).catch(() => null);
     if (!project) {
-        res.setHeader('Cache-Control', 'no-store');
-        const seo = createSeo(siteUrl, {
-            title: 'Project Not Found | Mohamed Aiman',
-            description: 'The requested project could not be found. Explore Mohamed Aiman’s current web development portfolio.',
-            path: `/projects/${req.params.slug}`,
-            imageAlt: 'Mohamed Aiman portfolio',
-            robots: 'noindex,follow',
-            jsonLd: {
-                '@context': 'https://schema.org',
-                '@type': 'WebPage',
-                name: 'Project Not Found',
-                url: absoluteUrl(siteUrl, `/projects/${req.params.slug}`),
-            },
-        });
-        return res.status(404).render('public/detail', { projectName: null, project: null, projectJson: 'null', seo });
+        return renderPublicError(req, res, 404);
     }
     const projectDescription = truncateDescription(project.description);
     const projectPath = `/projects/${project.slug}`;
@@ -698,6 +685,120 @@ function validDate(value) {
     const date = value instanceof Date ? value : new Date(value);
     return Number.isNaN(date.getTime()) ? null : date;
 }
+const publicErrorCopy = {
+    400: {
+        kicker: 'REQUEST REJECTED',
+        title: 'That request did not land.',
+        message: 'The server could not understand the request. Check the address and try again.',
+    },
+    401: {
+        kicker: 'IDENTITY REQUIRED',
+        title: 'Sign in is required.',
+        message: 'This page needs authentication before it can be opened.',
+    },
+    403: {
+        kicker: 'ACCESS DENIED',
+        title: 'This area is restricted.',
+        message: 'You do not have permission to view this page.',
+    },
+    404: {
+        kicker: 'SIGNAL LOST',
+        title: 'You found the void.',
+        message: 'This route has slipped off the map. The work is still here, just not at this address.',
+    },
+    408: {
+        kicker: 'SIGNAL TIMEOUT',
+        title: 'The request took too long.',
+        message: 'The connection timed out before the page could respond. Try the request again.',
+    },
+    429: {
+        kicker: 'RATE LIMITED',
+        title: 'A little too fast.',
+        message: 'Too many requests arrived at once. Wait a moment, then try again.',
+    },
+    500: {
+        kicker: 'SYSTEM FAULT',
+        title: 'Something broke backstage.',
+        message: 'The server hit an unexpected problem. Try again or return home.',
+    },
+    502: {
+        kicker: 'BAD GATEWAY',
+        title: 'The servers lost contact.',
+        message: 'An upstream service returned an invalid response. Try again shortly.',
+    },
+    503: {
+        kicker: 'SERVICE OFFLINE',
+        title: 'Temporarily unavailable.',
+        message: 'The site cannot complete this request right now. Please try again shortly.',
+    },
+};
+function renderPublicError(req, res, requestedStatus) {
+    const status = Number.isInteger(requestedStatus) && requestedStatus >= 400 && requestedStatus <= 599
+        ? requestedStatus
+        : 500;
+    const copy = publicErrorCopy[status] || {
+        kicker: status >= 500 ? 'SYSTEM FAULT' : 'REQUEST FAILED',
+        title: 'Something went wrong.',
+        message: status >= 500
+            ? 'The server could not complete the request. Try again or return home.'
+            : 'The request could not be completed. Check the address or return home.',
+    };
+    const siteUrl = getSiteUrl(req);
+    const showPath = status === 404;
+    const actions = status >= 500 || status === 408 || status === 429
+        ? [
+            { label: 'Try again', href: req.originalUrl, icon: 'fa-rotate-right' },
+            { label: 'Return home', href: '/', icon: 'fa-arrow-left' },
+        ]
+        : [
+            { label: 'Return home', href: '/', icon: 'fa-arrow-left' },
+            { label: 'Browse projects', href: '/projects', icon: 'fa-arrow-right' },
+        ];
+    const seo = createSeo(siteUrl, {
+        title: `${status}: ${copy.title.replace(/\.$/, '')} | Mohamed Aiman`,
+        description: copy.message,
+        path: req.path,
+        imageAlt: 'Mohamed Aiman portfolio',
+        robots: 'noindex,follow',
+        jsonLd: {
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: `${status}: ${copy.title}`,
+            url: absoluteUrl(siteUrl, req.path),
+            isPartOf: { '@type': 'WebSite', url: absoluteUrl(siteUrl, '/') },
+        },
+    });
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(status).render('public/404', {
+        seo,
+        asciiArt: asciiPortrait,
+        errorStatus: status,
+        errorCode: String(status),
+        errorKicker: copy.kicker,
+        errorTitle: copy.title,
+        errorMessage: copy.message,
+        requestedPath: req.originalUrl,
+        showPath,
+        actions,
+    });
+}
+app.use((req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD')
+        return next();
+    if (req.path.startsWith('/api/'))
+        return res.status(404).json({ error: 'Not found' });
+    return renderPublicError(req, res, 404);
+});
+app.use((error, req, res, next) => {
+    if (res.headersSent)
+        return next(error);
+    const status = error.status || error.statusCode || 500;
+    console.error(`Public request failed with status ${status}:`, error);
+    if (req.path.startsWith('/api/')) {
+        return res.status(status).json({ error: status >= 500 ? 'Internal server error' : error.message });
+    }
+    return renderPublicError(req, res, status);
+});
 app.listen(PORT, HOST, () => {
     console.log(`Serving static files from: ${publicRoots.join(', ')}`);
     console.log(`Server running on http://${HOST}:${PORT}`);

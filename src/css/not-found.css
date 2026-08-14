@@ -1,0 +1,539 @@
+/*
+THESIS: A broken route becomes a personal signal: 4 · Mohamed · 4, not a generic error card.
+OWN-WORLD: Ink-black and warm cream fields, signal red, pixel type, exposed registration marks.
+STORY: The visitor sees whose site this is, understands the dead end, then recovers in one click.
+FIRST VIEWPORT: A compact masthead sits above one oversized ASCII portrait flanked by two 4s; actions anchor the frame.
+FORM: Full-viewport error poster, pinned by the public-404 surface brief and staged as a centered typographic lockup.
+*/
+
+.not-found-page {
+    --nf-ink: var(--dark-gray);
+    --nf-paper: var(--cream-white);
+    --nf-red: var(--red);
+    --pointer-x: 50%;
+    --pointer-y: 50%;
+    min-height: 100svh;
+    overflow-x: hidden;
+    background: var(--nf-paper);
+}
+
+.not-found-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), color-mix(in srgb, var(--nf-red) 16%, transparent), transparent 28rem);
+    opacity: .72;
+}
+
+.not-found-shell {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    width: min(100%, 1440px);
+    min-height: 100svh;
+    margin: 0 auto;
+    padding-top: max(clamp(1rem, 2.4vw, 2rem), env(safe-area-inset-top));
+    padding-right: max(clamp(1rem, 4vw, 4.5rem), env(safe-area-inset-right));
+    padding-bottom: max(clamp(1rem, 2vw, 1.75rem), env(safe-area-inset-bottom));
+    padding-left: max(clamp(1rem, 4vw, 4.5rem), env(safe-area-inset-left));
+}
+
+.not-found-masthead {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.not-found-footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+}
+
+.not-found-footer-status {
+    justify-self: center;
+}
+
+.not-found-footer .theme-toggle {
+    justify-self: end;
+}
+
+.not-found-masthead {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--nf-ink) 22%, transparent);
+}
+
+.not-found-brand {
+    color: var(--nf-ink);
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: clamp(.58rem, 1.1vw, .72rem);
+    line-height: 1.5;
+    text-decoration: none;
+}
+
+.not-found-brand:hover {
+    color: var(--nf-red);
+}
+
+.not-found-brand:focus-visible,
+.not-found-page .theme-toggle:focus-visible,
+.not-found-action:focus-visible {
+    outline: 2px solid var(--nf-red);
+    outline-offset: .3rem;
+}
+
+.not-found-main {
+    display: grid;
+    place-items: center;
+    padding: clamp(2rem, 5vh, 4.5rem) 0;
+}
+
+.not-found-stage {
+    width: 100%;
+    text-align: center;
+}
+
+.not-found-status {
+    display: inline-flex;
+    align-items: center;
+    gap: .7rem;
+    margin-bottom: clamp(1rem, 2.5vh, 1.75rem);
+    color: var(--nf-red);
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: clamp(.5rem, .9vw, .68rem);
+    line-height: 1.6;
+}
+
+.not-found-status::before {
+    content: '';
+    width: .55rem;
+    height: .55rem;
+    background: currentColor;
+    box-shadow: 0 0 0 .28rem color-mix(in srgb, currentColor 14%, transparent);
+    animation: not-found-pulse 1.8s steps(2, end) infinite;
+}
+
+.not-found-mark {
+    display: grid;
+    grid-template-columns: minmax(3.5rem, 1fr) auto minmax(3.5rem, 1fr);
+    align-items: center;
+    gap: clamp(.75rem, 3vw, 3rem);
+    width: min(100%, 68rem);
+    margin: 0 auto clamp(1.75rem, 4vh, 3rem);
+}
+
+.not-found-digit {
+    position: relative;
+    z-index: 3;
+    color: var(--nf-ink);
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: clamp(4.4rem, 10vw, 8rem);
+    line-height: .82;
+    user-select: none;
+    text-shadow: .055em .055em 0 var(--nf-red);
+    transition: color .28s ease, transform .55s cubic-bezier(.22, 1, .36, 1), text-shadow .28s ease;
+}
+
+.not-found-digit--left {
+    justify-self: end;
+}
+
+.not-found-digit--right {
+    justify-self: start;
+}
+
+.not-found-code {
+    display: none;
+}
+
+.not-found-ascii-shell {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    justify-self: center;
+    width: fit-content;
+    max-width: 100%;
+    overflow: hidden;
+    cursor: crosshair;
+    outline: none;
+    filter: drop-shadow(.75rem .85rem 0 color-mix(in srgb, var(--nf-red) 75%, transparent));
+}
+
+.not-found-ascii-shell::before,
+.not-found-ascii-shell::after {
+    content: '';
+    position: absolute;
+    z-index: 5;
+    width: 1.2rem;
+    height: 1.2rem;
+    pointer-events: none;
+    border-color: var(--nf-red);
+}
+
+.not-found-ascii-shell::before {
+    top: 0;
+    left: 0;
+    border-top: 2px solid;
+    border-left: 2px solid;
+}
+
+.not-found-ascii-shell::after {
+    right: 0;
+    bottom: 0;
+    border-right: 2px solid;
+    border-bottom: 2px solid;
+}
+
+.not-found-ascii,
+.not-found-ascii-clone {
+    grid-area: 1 / 1;
+    width: max-content;
+    max-width: 100%;
+    margin: 0;
+    padding: .35rem 0;
+    overflow: hidden;
+    color: var(--nf-ink);
+    font-family: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: clamp(3.45px, .47vw, 6.65px);
+    line-height: 1.02;
+    letter-spacing: 0;
+    text-align: left;
+    white-space: pre;
+    justify-self: center;
+}
+
+.not-found-ascii {
+    position: relative;
+    z-index: 2;
+    transition: color .25s ease, filter .25s ease;
+}
+
+.not-found-ascii-clone {
+    z-index: 3;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.not-found-ascii-clone--red {
+    color: var(--nf-red);
+    mix-blend-mode: screen;
+}
+
+.not-found-ascii-clone--blue {
+    color: #42a5f5;
+    mix-blend-mode: screen;
+}
+
+.not-found-mark:has(.not-found-ascii-shell:hover) .not-found-digit,
+.not-found-mark:has(.not-found-ascii-shell:focus-visible) .not-found-digit {
+    color: var(--nf-red);
+    text-shadow: .045em .045em 0 var(--nf-ink);
+}
+
+.not-found-mark:has(.not-found-ascii-shell:hover) .not-found-digit--left,
+.not-found-mark:has(.not-found-ascii-shell:focus-visible) .not-found-digit--left {
+    transform: translateY(-.03em) rotate(-2deg);
+}
+
+.not-found-mark:has(.not-found-ascii-shell:hover) .not-found-digit--right,
+.not-found-mark:has(.not-found-ascii-shell:focus-visible) .not-found-digit--right {
+    transform: translateY(-.03em) rotate(2deg);
+}
+
+.not-found-ascii-shell:hover .not-found-ascii,
+.not-found-ascii-shell:focus-visible .not-found-ascii {
+    color: var(--nf-red);
+    filter: contrast(1.25);
+}
+
+.not-found-ascii-shell:hover .not-found-ascii-clone,
+.not-found-ascii-shell:focus-visible .not-found-ascii-clone,
+.not-found-ascii-shell.is-glitching .not-found-ascii-clone {
+    opacity: .72;
+    animation: not-found-glitch .72s steps(2, end) infinite;
+}
+
+.not-found-ascii-shell:hover .not-found-ascii-clone--blue,
+.not-found-ascii-shell:focus-visible .not-found-ascii-clone--blue,
+.not-found-ascii-shell.is-glitching .not-found-ascii-clone--blue {
+    animation-delay: -.18s;
+    animation-direction: reverse;
+}
+
+.not-found-ascii-shell:focus-visible {
+    outline: 2px solid var(--nf-red);
+    outline-offset: .65rem;
+}
+
+.not-found-title {
+    max-width: 16ch;
+    margin: 0 auto .7rem;
+    color: var(--nf-ink);
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 4.3vw, 4rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.03em;
+    text-wrap: balance;
+}
+
+.not-found-copy {
+    max-width: 58ch;
+    margin: 0 auto 1.5rem;
+    color: var(--gray-text);
+    font-size: clamp(.92rem, 1.5vw, 1.05rem);
+    line-height: 1.65;
+}
+
+.not-found-path {
+    display: block;
+    margin-top: .25rem;
+    overflow-wrap: anywhere;
+    color: var(--nf-red);
+    font-family: ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+    font-size: .78em;
+}
+
+.not-found-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .8rem;
+}
+
+.not-found-action {
+    position: relative;
+    display: inline-grid;
+    grid-template-columns: minmax(8rem, 1fr) 2.15rem;
+    align-items: center;
+    gap: .7rem;
+    min-width: 13.5rem;
+    min-height: 3.65rem;
+    padding: .65rem .7rem .65rem 1rem;
+    color: var(--nf-ink);
+    border: 1px solid color-mix(in srgb, var(--nf-ink) 28%, transparent);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--nf-paper) 92%, transparent);
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: .2rem .2rem 0 transparent;
+    transition: color .25s ease, border-color .25s ease, background-color .25s ease, transform .35s cubic-bezier(.22, 1, .36, 1), box-shadow .35s ease;
+}
+
+.not-found-action::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    right: .65rem;
+    width: 1.65rem;
+    height: 2px;
+    background: var(--nf-red);
+    transition: width .35s cubic-bezier(.22, 1, .36, 1);
+}
+
+.not-found-action i {
+    display: grid;
+    place-items: center;
+    width: 2.15rem;
+    height: 2.15rem;
+    color: var(--nf-red);
+    border: 1px solid color-mix(in srgb, var(--nf-red) 50%, transparent);
+    border-radius: 50%;
+    font-size: .72rem;
+    transition: color .25s ease, background-color .25s ease, border-color .25s ease, transform .4s cubic-bezier(.22, 1, .36, 1);
+}
+
+.not-found-action--primary {
+    color: var(--nf-red);
+    border-color: color-mix(in srgb, var(--nf-red) 58%, transparent);
+    background: color-mix(in srgb, var(--nf-red) 7%, var(--nf-paper));
+}
+
+@media (hover: hover) {
+    .not-found-action:hover {
+        color: var(--nf-paper);
+        border-color: var(--nf-red);
+        background: var(--nf-red);
+        box-shadow: .32rem .34rem 0 color-mix(in srgb, var(--nf-ink) 88%, transparent);
+        transform: translate(-2px, -2px);
+    }
+
+    .not-found-action:hover::after {
+        width: calc(100% - 1.3rem);
+        background: var(--nf-paper);
+    }
+
+    .not-found-action:hover i {
+        color: var(--nf-red);
+        border-color: var(--nf-paper);
+        background: var(--nf-paper);
+        transform: rotate(-8deg) scale(1.06);
+    }
+}
+
+.not-found-action:active {
+    box-shadow: .12rem .14rem 0 color-mix(in srgb, var(--nf-ink) 70%, transparent);
+    transform: translate(0, 0);
+}
+
+.not-found-footer {
+    align-self: end;
+    padding-top: .9rem;
+    border-top: 1px solid color-mix(in srgb, var(--nf-ink) 22%, transparent);
+    color: var(--gray-text);
+    font-family: ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+    font-size: .68rem;
+}
+
+.not-found-footer a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .2em;
+}
+
+.not-found-footer a:hover {
+    color: var(--nf-red);
+}
+
+@keyframes not-found-pulse {
+    0%, 52%, 100% { opacity: 1; }
+    53%, 76% { opacity: .25; }
+}
+
+@keyframes not-found-glitch {
+    0% { clip-path: inset(8% 0 75%); transform: translate(4px, -1px); }
+    20% { clip-path: inset(62% 0 18%); transform: translate(-5px, 2px); }
+    40% { clip-path: inset(30% 0 52%); transform: translate(3px, 1px); }
+    60% { clip-path: inset(78% 0 5%); transform: translate(-3px, -2px); }
+    80% { clip-path: inset(43% 0 36%); transform: translate(5px, 2px); }
+    100% { clip-path: inset(14% 0 68%); transform: translate(-2px, -1px); }
+}
+
+@media (max-width: 760px) {
+    .not-found-shell {
+        padding-right: max(1rem, env(safe-area-inset-right));
+        padding-left: max(1rem, env(safe-area-inset-left));
+    }
+
+    .not-found-mark {
+        grid-template-columns: minmax(0, 1fr);
+        gap: .9rem;
+        width: min(100%, 30rem);
+    }
+
+    .not-found-digit {
+        display: none;
+    }
+
+    .not-found-code {
+        display: block;
+        grid-column: 1;
+        justify-self: center;
+        color: var(--nf-ink);
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: clamp(3rem, 16vw, 5.5rem);
+        line-height: .9;
+        letter-spacing: -.03em;
+        text-shadow: .055em .055em 0 var(--nf-red);
+    }
+
+    .not-found-ascii-shell {
+        grid-column: 1;
+        grid-row: 2;
+        width: fit-content;
+        max-width: 100%;
+        filter: drop-shadow(.35rem .4rem 0 color-mix(in srgb, var(--nf-red) 65%, transparent));
+    }
+
+    .not-found-ascii-shell::before,
+    .not-found-ascii-shell::after,
+    .not-found-ascii-clone {
+        display: none;
+    }
+
+    .not-found-ascii,
+    .not-found-ascii-clone {
+        font-size: clamp(2.65px, 1.08vw, 4.65px);
+    }
+}
+
+@media (max-width: 430px) {
+    .not-found-main {
+        padding-block: 1.25rem 1.75rem;
+        align-items: start;
+    }
+
+    .not-found-mark {
+        gap: .7rem;
+        margin-bottom: 1.35rem;
+    }
+
+    .not-found-ascii,
+    .not-found-ascii-clone {
+        font-size: clamp(2.45px, 1.06vw, 4.15px);
+    }
+
+    .not-found-status {
+        margin-bottom: .8rem;
+    }
+
+    .not-found-title {
+        font-size: clamp(1.8rem, 9vw, 2.5rem);
+    }
+
+    .not-found-copy {
+        margin-bottom: 1rem;
+        font-size: .9rem;
+    }
+
+    .not-found-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: .65rem;
+    }
+
+    .not-found-action {
+        width: min(100%, 20rem);
+        min-height: 3.5rem;
+        font-size: .9rem;
+    }
+
+    .not-found-footer {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .not-found-footer-status {
+        display: none;
+    }
+
+    .not-found-footer .theme-toggle {
+        grid-column: 2;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .not-found-page::before {
+        display: none;
+    }
+
+    .not-found-status::before,
+    .not-found-ascii-shell:hover .not-found-ascii-clone,
+    .not-found-ascii-shell:focus-visible .not-found-ascii-clone,
+    .not-found-ascii-shell.is-glitching .not-found-ascii-clone {
+        animation: none;
+    }
+
+    .not-found-ascii-shell:hover .not-found-ascii-clone,
+    .not-found-ascii-shell:focus-visible .not-found-ascii-clone,
+    .not-found-ascii-shell.is-glitching .not-found-ascii-clone {
+        opacity: 0;
+    }
+
+    .not-found-digit,
+    .not-found-action {
+        transition: none;
+    }
+}
