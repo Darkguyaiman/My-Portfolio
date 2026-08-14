@@ -10,6 +10,8 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
+    <meta name="apple-mobile-web-app-title" content="<%= webAppTitle %>">
+    <meta name="application-name" content="<%= webAppTitle %>">
     <style>html{background:#f6f4f0}</style>
     <link rel="preload" href="/vendor/fonts/inter/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/css/app.min.css?v=<%= assetVersion %>">

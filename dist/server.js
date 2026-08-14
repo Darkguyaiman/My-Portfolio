@@ -8,12 +8,12 @@ import educationRoutes from './routes/educationRoutes.js';
 import languageRoutes from './routes/languageRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import workRoutes from './routes/workRoutes.js';
-import { getSiteContent } from './models/adminModel.js';
+import { defaultSiteContent, getSiteContent } from './models/adminModel.js';
 import { getEducation } from './models/educationModel.js';
 import { getLanguages } from './models/languageModel.js';
 import { getProjectByName, getProjectBySlug, getProjects } from './models/projectModel.js';
 import { getWorkExperiences } from './models/workModel.js';
-import { absoluteUrl, DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_ALT, DEFAULT_SOCIAL_IMAGE_HEIGHT, DEFAULT_SOCIAL_IMAGE_TYPE, DEFAULT_SOCIAL_IMAGE_WIDTH, getSiteUrl, INDEX_ROBOTS, serializeJsonLd, SITE_NAME, truncateDescription, xmlEscape, } from './utils/seo.js';
+import { absoluteUrl, DEFAULT_SITE_URL, DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_ALT, DEFAULT_SOCIAL_IMAGE_HEIGHT, DEFAULT_SOCIAL_IMAGE_TYPE, DEFAULT_SOCIAL_IMAGE_WIDTH, getSiteUrl, INDEX_ROBOTS, serializeJsonLd, SITE_NAME, truncateDescription, WEB_APP_TITLE, xmlEscape, } from './utils/seo.js';
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -120,6 +120,7 @@ app.set('view engine', 'eta');
 app.set('views', viewsRoot);
 app.set('view cache', templateCacheEnabled);
 app.locals.assetVersion = assetVersion;
+app.locals.webAppTitle = WEB_APP_TITLE;
 app.locals.techIcon = (technology) => techIconClasses[technology] || null;
 app.locals.formatMonthYear = (value) => {
     if (value.toLowerCase() === 'present')
@@ -308,10 +309,24 @@ app.get('/sitemap.xml', async (req, res) => {
     res.type('application/xml').setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
     res.send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
 });
-app.get(['/llms.txt', '/llms-full.txt'], async (req, res) => {
-    const siteUrl = getSiteUrl(req);
-    const data = await loadPublicPortfolioData();
-    const full = req.path === '/llms-full.txt';
+const llmsBodies = new Map();
+const llmsRefreshInFlight = new Map();
+const llmsRefreshedAt = new Map();
+const llmsRefreshMs = 60000;
+const llmsCacheControl = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
+function llmsCacheKey(siteUrl, full) {
+    return `${full ? 'full' : 'summary'}:${siteUrl}`;
+}
+function fallbackLlmsMarkdown(siteUrl) {
+    return buildLlmsMarkdown(siteUrl, {
+        content: defaultSiteContent,
+        projects: [],
+        workExperiences: [],
+        education: [],
+        languages: [],
+    }, false);
+}
+function buildLlmsMarkdown(siteUrl, data, full) {
     const projectLines = data.projects.map((project) => {
         const technologies = project.techUsed.length ? ` Technologies: ${project.techUsed.join(', ')}.` : '';
         const description = full ? ` ${project.description}` : '';
@@ -320,8 +335,7 @@ app.get(['/llms.txt', '/llms-full.txt'], async (req, res) => {
     const experienceLines = full
         ? data.workExperiences.map((work) => `- ${work.role} at ${work.company} (${work.startDate}–${work.endDate})`)
         : [];
-    res.type('text/plain').setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
-    res.send([
+    return [
         '# Mohamed Aiman',
         '',
         '> Full-stack and backend developer in Malaysia building web applications, business systems, dashboards, and automation tools.',
@@ -335,21 +349,55 @@ app.get(['/llms.txt', '/llms-full.txt'], async (req, res) => {
         '',
         '## Projects',
         '',
-        ...projectLines,
+        ...(projectLines.length
+            ? projectLines
+            : [`- [Projects index](${absoluteUrl(siteUrl, '/projects')}): Full-stack and backend development projects.`]),
         ...(experienceLines.length ? ['', '## Experience', '', ...experienceLines] : []),
         '',
         '## Contact and profiles',
         '',
-        `- GitHub: ${data.content.githubUrl}`,
-        `- LinkedIn: ${data.content.linkedinUrl}`,
-        `- Email: mailto:${data.content.email}`,
+        `- [GitHub](${data.content.githubUrl})`,
+        `- [LinkedIn](${data.content.linkedinUrl})`,
+        `- [Email](mailto:${data.content.email})`,
         '',
         'Public portfolio content may be quoted with attribution to Mohamed Aiman and a link to the canonical page.',
         '',
-    ].join('\n'));
-});
-app.get('/.well-known/llms.txt', (_req, res) => {
-    res.redirect(308, '/llms.txt');
+    ].join('\n');
+}
+function maybeRefreshLlmsMarkdown(siteUrl, full) {
+    const key = llmsCacheKey(siteUrl, full);
+    const lastRefresh = llmsRefreshedAt.get(key) || 0;
+    if (llmsBodies.has(key) && Date.now() - lastRefresh < llmsRefreshMs)
+        return;
+    const inFlight = llmsRefreshInFlight.get(key);
+    if (inFlight)
+        return;
+    llmsRefreshedAt.set(key, Date.now());
+    const refresh = loadPublicPortfolioData()
+        .then((data) => {
+        const body = buildLlmsMarkdown(siteUrl, data, full);
+        llmsBodies.set(key, body);
+        return body;
+    })
+        .catch((error) => {
+        console.error('Error refreshing llms.txt:', error);
+        return llmsBodies.get(key) || fallbackLlmsMarkdown(siteUrl);
+    })
+        .finally(() => {
+        if (llmsRefreshInFlight.get(key) === refresh) {
+            llmsRefreshInFlight.delete(key);
+        }
+    });
+    llmsRefreshInFlight.set(key, refresh);
+}
+app.get(['/llms.txt', '/llms-full.txt', '/.well-known/llms.txt'], (req, res) => {
+    const siteUrl = getSiteUrl(req);
+    const full = req.path === '/llms-full.txt';
+    const key = llmsCacheKey(siteUrl, full);
+    maybeRefreshLlmsMarkdown(siteUrl, full);
+    const body = llmsBodies.get(key) || fallbackLlmsMarkdown(siteUrl);
+    res.type('text/plain').setHeader('Cache-Control', llmsCacheControl);
+    res.send(body.endsWith('\n') ? body : `${body}\n`);
 });
 app.get('/portfolio.json', async (req, res) => {
     const siteUrl = getSiteUrl(req);
@@ -657,5 +705,7 @@ app.listen(PORT, HOST, () => {
     console.log(`Local: http://localhost:${PORT}`);
     void loadPublicPortfolioData().then(() => {
         console.log('Public portfolio cache warmed.');
+        maybeRefreshLlmsMarkdown(DEFAULT_SITE_URL, false);
+        maybeRefreshLlmsMarkdown(DEFAULT_SITE_URL, true);
     });
 });

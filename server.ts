@@ -8,13 +8,14 @@ import educationRoutes from './routes/educationRoutes.js';
 import languageRoutes from './routes/languageRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import workRoutes from './routes/workRoutes.js';
-import { getSiteContent, type SiteContent } from './models/adminModel.js';
+import { defaultSiteContent, getSiteContent, type SiteContent } from './models/adminModel.js';
 import { getEducation } from './models/educationModel.js';
 import { getLanguages } from './models/languageModel.js';
 import { getProjectByName, getProjectBySlug, getProjects, type Project } from './models/projectModel.js';
 import { getWorkExperiences } from './models/workModel.js';
 import {
   absoluteUrl,
+  DEFAULT_SITE_URL,
   DEFAULT_SOCIAL_IMAGE,
   DEFAULT_SOCIAL_IMAGE_ALT,
   DEFAULT_SOCIAL_IMAGE_HEIGHT,
@@ -25,6 +26,7 @@ import {
   serializeJsonLd,
   SITE_NAME,
   truncateDescription,
+  WEB_APP_TITLE,
   xmlEscape,
   type SeoData,
 } from './utils/seo.js';
@@ -147,6 +149,7 @@ app.set('view engine', 'eta');
 app.set('views', viewsRoot);
 app.set('view cache', templateCacheEnabled);
 app.locals.assetVersion = assetVersion;
+app.locals.webAppTitle = WEB_APP_TITLE;
 app.locals.techIcon = (technology: string) => techIconClasses[technology] || null;
 app.locals.formatMonthYear = (value: string) => {
   if (value.toLowerCase() === 'present') return 'Present';
@@ -358,10 +361,27 @@ app.get('/sitemap.xml', async (req: Request, res: Response) => {
   res.send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
 });
 
-app.get(['/llms.txt', '/llms-full.txt'], async (req: Request, res: Response) => {
-  const siteUrl = getSiteUrl(req);
-  const data = await loadPublicPortfolioData();
-  const full = req.path === '/llms-full.txt';
+const llmsBodies = new Map<string, string>();
+const llmsRefreshInFlight = new Map<string, Promise<string>>();
+const llmsRefreshedAt = new Map<string, number>();
+const llmsRefreshMs = 60_000;
+const llmsCacheControl = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
+
+function llmsCacheKey(siteUrl: string, full: boolean): string {
+  return `${full ? 'full' : 'summary'}:${siteUrl}`;
+}
+
+function fallbackLlmsMarkdown(siteUrl: string): string {
+  return buildLlmsMarkdown(siteUrl, {
+    content: defaultSiteContent,
+    projects: [],
+    workExperiences: [],
+    education: [],
+    languages: [],
+  }, false);
+}
+
+function buildLlmsMarkdown(siteUrl: string, data: PublicPortfolioData, full: boolean): string {
   const projectLines = data.projects.map((project) => {
     const technologies = project.techUsed.length ? ` Technologies: ${project.techUsed.join(', ')}.` : '';
     const description = full ? ` ${project.description}` : '';
@@ -371,8 +391,7 @@ app.get(['/llms.txt', '/llms-full.txt'], async (req: Request, res: Response) => 
     ? data.workExperiences.map((work) => `- ${work.role} at ${work.company} (${work.startDate}–${work.endDate})`)
     : [];
 
-  res.type('text/plain').setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
-  res.send([
+  return [
     '# Mohamed Aiman',
     '',
     '> Full-stack and backend developer in Malaysia building web applications, business systems, dashboards, and automation tools.',
@@ -386,22 +405,57 @@ app.get(['/llms.txt', '/llms-full.txt'], async (req: Request, res: Response) => 
     '',
     '## Projects',
     '',
-    ...projectLines,
+    ...(projectLines.length
+      ? projectLines
+      : [`- [Projects index](${absoluteUrl(siteUrl, '/projects')}): Full-stack and backend development projects.`]),
     ...(experienceLines.length ? ['', '## Experience', '', ...experienceLines] : []),
     '',
     '## Contact and profiles',
     '',
-    `- GitHub: ${data.content.githubUrl}`,
-    `- LinkedIn: ${data.content.linkedinUrl}`,
-    `- Email: mailto:${data.content.email}`,
+    `- [GitHub](${data.content.githubUrl})`,
+    `- [LinkedIn](${data.content.linkedinUrl})`,
+    `- [Email](mailto:${data.content.email})`,
     '',
     'Public portfolio content may be quoted with attribution to Mohamed Aiman and a link to the canonical page.',
     '',
-  ].join('\n'));
-});
+  ].join('\n');
+}
 
-app.get('/.well-known/llms.txt', (_req: Request, res: Response) => {
-  res.redirect(308, '/llms.txt');
+function maybeRefreshLlmsMarkdown(siteUrl: string, full: boolean): void {
+  const key = llmsCacheKey(siteUrl, full);
+  const lastRefresh = llmsRefreshedAt.get(key) || 0;
+  if (llmsBodies.has(key) && Date.now() - lastRefresh < llmsRefreshMs) return;
+
+  const inFlight = llmsRefreshInFlight.get(key);
+  if (inFlight) return;
+
+  llmsRefreshedAt.set(key, Date.now());
+  const refresh = loadPublicPortfolioData()
+    .then((data) => {
+      const body = buildLlmsMarkdown(siteUrl, data, full);
+      llmsBodies.set(key, body);
+      return body;
+    })
+    .catch((error) => {
+      console.error('Error refreshing llms.txt:', error);
+      return llmsBodies.get(key) || fallbackLlmsMarkdown(siteUrl);
+    })
+    .finally(() => {
+      if (llmsRefreshInFlight.get(key) === refresh) {
+        llmsRefreshInFlight.delete(key);
+      }
+    });
+  llmsRefreshInFlight.set(key, refresh);
+}
+
+app.get(['/llms.txt', '/llms-full.txt', '/.well-known/llms.txt'], (req: Request, res: Response) => {
+  const siteUrl = getSiteUrl(req);
+  const full = req.path === '/llms-full.txt';
+  const key = llmsCacheKey(siteUrl, full);
+  maybeRefreshLlmsMarkdown(siteUrl, full);
+  const body = llmsBodies.get(key) || fallbackLlmsMarkdown(siteUrl);
+  res.type('text/plain').setHeader('Cache-Control', llmsCacheControl);
+  res.send(body.endsWith('\n') ? body : `${body}\n`);
 });
 
 app.get('/portfolio.json', async (req: Request, res: Response) => {
@@ -738,5 +792,7 @@ app.listen(PORT, HOST, () => {
   console.log(`Local: http://localhost:${PORT}`);
   void loadPublicPortfolioData().then(() => {
     console.log('Public portfolio cache warmed.');
+    maybeRefreshLlmsMarkdown(DEFAULT_SITE_URL, false);
+    maybeRefreshLlmsMarkdown(DEFAULT_SITE_URL, true);
   });
 });

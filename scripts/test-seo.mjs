@@ -35,6 +35,8 @@ try {
   assert.match(home.body, /"identifier":"darkguyaiman"/);
   assert.match(home.body, /"@type":"SoftwareSourceCode"/);
   assert.match(home.body, /<script type="application\/ld\+json">/);
+  assert.match(home.body, /<meta name="apple-mobile-web-app-title" content="Darkguyaiman">/);
+  assert.match(home.body, /<meta name="application-name" content="Darkguyaiman">/);
   assertStructuredData(home.body);
   assertValidSrcsets(home.body);
   assert.ok(count(home.body, 'class="project-card"') > 0, 'Homepage should contain server-rendered project cards.');
@@ -47,7 +49,10 @@ try {
   assert.ok(sitemapUrls.every((url) => url.startsWith(canonicalOrigin)), 'Sitemap URLs should use SITE_URL.');
   assert.match(robots.body, /Sitemap: https:\/\/darkguyaiman\.com\/sitemap\.xml/);
   assert.match(robots.body, /User-agent: GPTBot/);
+  assert.match(llms.body, /^# Mohamed Aiman/m);
   assert.match(llms.body, /## Projects/);
+  assert.match(llms.body, /\[[^\]]+\]\([^)]+\)/);
+  assert.match(llms.headers.get('cache-control') || '', /s-maxage=3600/);
   assert.equal(portfolio.status, 200);
   assert.ok(Array.isArray(portfolioData.projects) && portfolioData.projects.length > 0);
   assert.equal(portfolioData.mainEntity.alternateName, 'Darkguyaiman');

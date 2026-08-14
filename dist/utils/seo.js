@@ -1,4 +1,5 @@
 export const SITE_NAME = 'Mohamed Aiman Portfolio';
+export const WEB_APP_TITLE = 'Darkguyaiman';
 export const DEFAULT_SITE_URL = 'https://darkguyaiman.com';
 export const DEFAULT_SOCIAL_IMAGE = '/assets/Mohamed Aiman Alter Ego.webp';
 export const DEFAULT_SOCIAL_IMAGE_WIDTH = 1024;
