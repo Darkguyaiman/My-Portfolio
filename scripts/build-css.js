@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -25,24 +25,7 @@ const stylesheets = [
   'admin-login',
 ];
 
-for (const stylesheet of stylesheets) {
-  const result = spawnSync(
-    process.execPath,
-    [
-      cli,
-      '-i',
-      `./src/css/${stylesheet}.css`,
-      '-o',
-      path.join(cssRoot, `${stylesheet}.min.css`),
-      '--minify',
-    ],
-    { stdio: 'inherit' },
-  );
-
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1);
-  }
-}
+await Promise.all(stylesheets.map(buildStylesheet));
 
 const pageBundles = {
   'home-page': ['app', 'home', 'projects'],
@@ -57,4 +40,27 @@ for (const [bundleName, bundleStylesheets] of Object.entries(pageBundles)) {
     .map((stylesheet) => fs.readFileSync(path.join(cssRoot, `${stylesheet}.min.css`), 'utf8'))
     .join('');
   fs.writeFileSync(path.join(cssRoot, `${bundleName}.min.css`), bundle);
+}
+
+function buildStylesheet(stylesheet) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      process.execPath,
+      [
+        cli,
+        '-i',
+        `./src/css/${stylesheet}.css`,
+        '-o',
+        path.join(cssRoot, `${stylesheet}.min.css`),
+        '--minify',
+      ],
+      { stdio: 'inherit', windowsHide: true },
+    );
+
+    child.once('error', reject);
+    child.once('exit', (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`CSS build failed for ${stylesheet} with exit code ${code ?? 1}.`));
+    });
+  });
 }

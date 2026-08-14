@@ -4,9 +4,9 @@
   "description": "Portfolio website built with TypeScript, Express, and Eta",
   "main": "dist/server.js",
   "scripts": {
-    "build": "npm run build:server && npm run build:assets",
+    "build": "node scripts/build.js",
     "build:server": "tsc",
-    "build:assets": "npm run build:vendor && npm run build:images && npm run build:css && npm run build:js",
+    "build:assets": "node scripts/build.js --assets",
     "build:images": "node scripts/optimize-images.js",
     "build:vendor": "node scripts/copy-vendor-assets.js",
     "build:css": "node scripts/build-css.js",
