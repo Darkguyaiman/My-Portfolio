@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { scheduleCloudflarePurge } from './cloudflare.js';
 
 type CacheLoader<T> = () => Promise<T>;
 
@@ -82,6 +83,7 @@ export function invalidateCacheTags(...tags: string[]): number {
   }
 
   counters.invalidations += invalidated;
+  if (invalidated > 0) scheduleCloudflarePurge();
   return invalidated;
 }
 

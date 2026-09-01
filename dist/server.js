@@ -1,8 +1,10 @@
 import compression from 'compression';
+import crypto from 'crypto';
 import express from 'express';
 import { Eta } from 'eta';
 import fs from 'fs';
 import path from 'path';
+import { pool } from './config/db.js';
 import adminRoutes from './routes/adminRoutes.js';
 import educationRoutes from './routes/educationRoutes.js';
 import languageRoutes from './routes/languageRoutes.js';
@@ -20,9 +22,12 @@ const HOST = process.env.HOST || '0.0.0.0';
 const appRoot = process.cwd();
 const viewsRoot = path.join(appRoot, 'views');
 const templateCacheEnabled = process.env.NODE_ENV === 'production';
-const assetVersion = Date.now().toString(36);
-const publicHtmlEdgeTtlSeconds = 60;
-const publicHtmlStaleSeconds = 600;
+const publicHtmlEdgeTtlSeconds = Number(process.env.CACHE_HTML_S_MAXAGE) > 0
+    ? Number(process.env.CACHE_HTML_S_MAXAGE)
+    : 3600;
+const publicHtmlStaleSeconds = Number(process.env.CACHE_HTML_STALE_SECONDS) > 0
+    ? Number(process.env.CACHE_HTML_STALE_SECONDS)
+    : 86400;
 const eta = new Eta({
     views: viewsRoot,
     cache: templateCacheEnabled,
@@ -94,8 +99,33 @@ function resolvePublicRoots(root) {
     }
     return dirs.length > 0 ? dirs : [path.join(root, 'public')];
 }
+function fingerprintPublicAssets(root) {
+    const files = [
+        'css/home-page.min.css',
+        'css/projects-page.min.css',
+        'css/privacy-page.min.css',
+        'css/detail-page.min.css',
+        'css/not-found-page.min.css',
+        'css/app.min.css',
+        'css/admin.min.css',
+        'css/admin-login.min.css',
+        'js/app.min.js',
+        'js/cms-admin.js',
+        'vendor/fontawesome/css/all.min.css',
+        'vendor/devicon/devicon-subset.css',
+    ];
+    const hash = crypto.createHash('sha1');
+    for (const file of files) {
+        const fullPath = path.join(root, file);
+        hash.update(file);
+        if (fs.existsSync(fullPath))
+            hash.update(fs.readFileSync(fullPath));
+    }
+    return hash.digest('hex').slice(0, 10);
+}
 const publicRoots = resolvePublicRoots(appRoot);
 const publicRoot = publicRoots[0];
+const assetVersion = process.env.ASSET_VERSION || fingerprintPublicAssets(publicRoot);
 const asciiPortrait = fs.readFileSync(path.join(publicRoot, 'ASCI_ART_ME.txt'), 'utf8').trim();
 const publicAssetExists = (relativePath) => publicRoots.some((root) => fs.existsSync(path.join(root, relativePath)));
 const publicAssetRoot = (relativePath) => publicRoots.find((root) => fs.existsSync(path.join(root, relativePath))) || null;
@@ -225,9 +255,14 @@ app.use((req, res, next) => {
         || req.path === '/projects'
         || req.path === '/privacy'
         || (req.path !== '/projects/detail' && /^\/projects\/[^/]+$/.test(req.path)));
-    res.setHeader('Cache-Control', isPublicHtml
-        ? `public, max-age=0, s-maxage=${publicHtmlEdgeTtlSeconds}, stale-while-revalidate=${publicHtmlStaleSeconds}`
-        : 'no-store');
+    if (isPublicHtml) {
+        const htmlCache = `public, max-age=0, s-maxage=${publicHtmlEdgeTtlSeconds}, stale-while-revalidate=${publicHtmlStaleSeconds}`;
+        res.setHeader('Cache-Control', htmlCache);
+        res.setHeader('CDN-Cache-Control', htmlCache);
+    }
+    else {
+        res.setHeader('Cache-Control', 'no-store');
+    }
     next();
 });
 app.use(express.urlencoded({ extended: true }));
@@ -799,14 +834,31 @@ app.use((error, req, res, next) => {
     }
     return renderPublicError(req, res, status);
 });
-app.listen(PORT, HOST, () => {
-    console.log(`Serving static files from: ${publicRoots.join(', ')}`);
-    console.log(`Server running on http://${HOST}:${PORT}`);
-    console.log(`Tailscale MagicDNS: http://server1:${PORT}`);
-    console.log(`Local: http://localhost:${PORT}`);
-    void loadPublicPortfolioData().then(() => {
+function warmupProjectAssets(projects) {
+    for (const project of projects) {
+        for (const image of project.images || []) {
+            app.locals.projectThumbnail(image);
+            app.locals.projectImageSources(image);
+        }
+    }
+}
+async function startServer() {
+    try {
+        await pool.query('SELECT 1');
+        const data = await loadPublicPortfolioData();
+        warmupProjectAssets(data.projects);
         console.log('Public portfolio cache warmed.');
         maybeRefreshLlmsMarkdown(DEFAULT_SITE_URL, false);
         maybeRefreshLlmsMarkdown(DEFAULT_SITE_URL, true);
+    }
+    catch (error) {
+        console.error('Public portfolio cache warmup failed:', error);
+    }
+    app.listen(PORT, HOST, () => {
+        console.log(`Serving static files from: ${publicRoots.join(', ')}`);
+        console.log(`Server running on http://${HOST}:${PORT}`);
+        console.log(`Tailscale MagicDNS: http://server1:${PORT}`);
+        console.log(`Local: http://localhost:${PORT}`);
     });
-});
+}
+void startServer();

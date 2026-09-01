@@ -30,7 +30,8 @@ try {
   const detailUrl = sitemapUrls.find((url) => /\/projects\/[^/]+$/.test(url));
 
   assert.equal(home.status, 200);
-  assert.match(home.headers.get('cache-control') || '', /s-maxage=60/);
+  assert.match(home.headers.get('cache-control') || '', /s-maxage=3600/);
+  assert.match(home.headers.get('cdn-cache-control') || '', /s-maxage=3600/);
   assert.match(home.body, /<title>Mohamed Aiman \(Darkguyaiman\) \| Backend Developer<\/title>/);
   assert.match(home.body, /"identifier":"darkguyaiman"/);
   assert.match(home.body, /"@type":"SoftwareSourceCode"/);

@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { scheduleCloudflarePurge } from './cloudflare.js';
 const defaultRevalidateAfterMs = positiveInteger(process.env.CACHE_REVALIDATE_MS, 15000);
 const defaultMaxStaleMs = positiveInteger(process.env.CACHE_MAX_STALE_MS, 5 * 60000);
 const maximumEntries = positiveInteger(process.env.CACHE_MAX_ENTRIES, 50);
@@ -48,6 +49,8 @@ export function invalidateCacheTags(...tags) {
         }
     }
     counters.invalidations += invalidated;
+    if (invalidated > 0)
+        scheduleCloudflarePurge();
     return invalidated;
 }
 export function clearMemoryCache() {
