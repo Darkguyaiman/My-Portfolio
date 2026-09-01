@@ -8,11 +8,20 @@
             margin-bottom: 3rem;
         }
 
+        .privacy-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
         .privacy-title {
             font-size: clamp(1.75rem, 6vw, 2.5rem);
             font-weight: 600;
             color: var(--dark-gray);
-            margin-bottom: 0.75rem;
+            margin: 0;
+            min-width: 0;
             text-align: left;
             text-transform: capitalize;
             overflow: visible;
@@ -103,7 +112,8 @@
             border-radius: 6px;
             border: 1px solid transparent;
             font-weight: 500;
-            margin-bottom: 1.25rem;
+            margin: 0;
+            flex-shrink: 0;
             width: fit-content;
             max-width: 100%;
         }
@@ -148,7 +158,6 @@
             }
 
             .back-link {
-                margin-bottom: 1rem;
                 padding: 8px 12px;
             }
         }
