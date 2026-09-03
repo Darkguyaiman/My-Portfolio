@@ -35,6 +35,8 @@ import {
 } from './utils/seo.js';
 
 const app = express();
+let httpServer: ReturnType<typeof app.listen> | null = null;
+let isShuttingDown = false;
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 const appRoot = process.cwd();
@@ -995,12 +997,46 @@ async function startServer() {
     console.error('Public portfolio cache warmup failed:', error);
   }
 
-  app.listen(PORT, HOST, () => {
+  httpServer = app.listen(PORT, HOST, () => {
     console.log(`Serving static files from: ${publicRoots.join(', ')}`);
     console.log(`Server running on http://${HOST}:${PORT}`);
     console.log(`Tailscale MagicDNS: http://server1:${PORT}`);
     console.log(`Local: http://localhost:${PORT}`);
+    if (typeof process.send === 'function') process.send('ready');
   });
 }
+
+async function shutdown(signal: NodeJS.Signals): Promise<void> {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  console.log(`${signal} received; finishing active requests.`);
+
+  const forceExit = setTimeout(() => {
+    console.error('Graceful shutdown timed out; exiting.');
+    process.exit(1);
+  }, 8_000);
+  forceExit.unref();
+
+  if (!httpServer) {
+    clearTimeout(forceExit);
+    process.exit(0);
+  }
+
+  httpServer.close(async () => {
+    try {
+      await pool.end();
+      clearTimeout(forceExit);
+      process.exit(0);
+    } catch (error) {
+      console.error('Database shutdown failed:', error);
+      clearTimeout(forceExit);
+      process.exit(1);
+    }
+  });
+  httpServer.closeIdleConnections?.();
+}
+
+process.once('SIGINT', () => void shutdown('SIGINT'));
+process.once('SIGTERM', () => void shutdown('SIGTERM'));
 
 void startServer();

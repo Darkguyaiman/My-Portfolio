@@ -32,6 +32,39 @@ SITE_URL=https://darkguyaiman.com
 
 Keep the HTTPS `SITE_URL` when visitors use HTTPS through Cloudflare even though Nginx listens on port 80 at the origin. If the public site is temporarily HTTP-only, use `http://darkguyaiman.com` until TLS is enabled.
 
+## Run Node with PM2
+
+Install PM2 once, then build and start the application with the included one-vCPU configuration:
+
+```bash
+cd /var/www/My-Portfolio
+npm ci
+npm run build
+sudo npm install --global pm2
+pm2 start ecosystem.config.cjs --env production
+pm2 save
+pm2 startup
+```
+
+Run the final command printed by `pm2 startup`, then run `pm2 save` once more. PM2 must be configured under the same non-root Linux account that will own the application process.
+
+Verify the upstream before testing Nginx:
+
+```bash
+pm2 status
+pm2 logs portfolio --lines 50
+curl -I http://127.0.0.1:3000/
+```
+
+For later deployments:
+
+```bash
+cd /var/www/My-Portfolio
+npm ci
+npm run build
+pm2 restart ecosystem.config.cjs --env production --update-env
+```
+
 Nginx behavior:
 
 - Static files are served directly from `public/`.
