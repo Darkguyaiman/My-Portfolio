@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { scheduleCloudflarePurge } from './cloudflare.js';
 const defaultRevalidateAfterMs = positiveInteger(process.env.CACHE_REVALIDATE_MS, 15000);
 const defaultMaxStaleMs = positiveInteger(process.env.CACHE_MAX_STALE_MS, 5 * 60000);
 const maximumEntries = positiveInteger(process.env.CACHE_MAX_ENTRIES, 50);
@@ -8,6 +7,7 @@ const entries = new Map();
 const inFlight = new Map();
 const keyTags = new Map();
 const generations = new Map();
+let cacheRevision = 0;
 const counters = {
     hits: 0,
     misses: 0,
@@ -35,6 +35,8 @@ export async function getCached(key, loader, options = {}) {
     return loadAndStore(key, loader, normalizedOptions(options), false);
 }
 export function invalidateCacheTags(...tags) {
+    if (tags.length > 0)
+        cacheRevision += 1;
     const requested = new Set(tags);
     let invalidated = 0;
     for (const [key, registeredTags] of keyTags) {
@@ -49,9 +51,10 @@ export function invalidateCacheTags(...tags) {
         }
     }
     counters.invalidations += invalidated;
-    if (invalidated > 0)
-        scheduleCloudflarePurge();
     return invalidated;
+}
+export function getCacheRevision() {
+    return cacheRevision;
 }
 export function clearMemoryCache() {
     for (const key of keyTags.keys()) {

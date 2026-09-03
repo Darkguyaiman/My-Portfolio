@@ -1,8 +1,8 @@
-<link rel="icon" href="/favicon.ico" sizes="48x48">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
+<link rel="icon" href="/favicon.ico?v=<%= assetVersion %>" sizes="48x48">
+    <link rel="icon" href="/favicon.svg?v=<%= assetVersion %>" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=<%= assetVersion %>">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png?v=<%= assetVersion %>">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=<%= assetVersion %>">
+    <link rel="manifest" href="/site.webmanifest?v=<%= assetVersion %>">
     <meta name="apple-mobile-web-app-title" content="<%= webAppTitle %>">
     <meta name="application-name" content="<%= webAppTitle %>">

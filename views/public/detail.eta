@@ -115,14 +115,15 @@
         <!-- Project Detail Section -->
         <section class="project-detail">
             <div class="container">
-                <a href="/projects" class="back-link">
-                    <i class="fas fa-chevron-left"></i>
-                    <span>back to projects</span>
-                </a>
-
                 <% if (project) { %>
                 <div class="project-detail-header">
-                    <h1 class="project-detail-title" id="projectTitle"><%= project.projectName %></h1>
+                    <div class="project-detail-heading">
+                        <h1 class="project-detail-title" id="projectTitle"><%= project.projectName %></h1>
+                        <a href="/projects" class="back-link">
+                            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            <span>back to projects</span>
+                        </a>
+                    </div>
                     <div class="project-detail-links" id="projectLinks"<% if (!project.deployedLink && !project.githubLink) { %> hidden<% } %>>
                         <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Website</span></a><% } %>
                         <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> on GitHub"><i class="fab fa-github" aria-hidden="true"></i><span>Github</span></a><% } %>
@@ -145,7 +146,13 @@
                 </div>
                 <% } else { %>
                 <div class="project-detail-header">
-                    <h1 class="project-detail-title">Project not found</h1>
+                    <div class="project-detail-heading">
+                        <h1 class="project-detail-title">Project not found</h1>
+                        <a href="/projects" class="back-link">
+                            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            <span>back to projects</span>
+                        </a>
+                    </div>
                     <p class="project-detail-description">This project may have moved or no longer exists. Browse the current projects instead.</p>
                 </div>
                 <% } %>

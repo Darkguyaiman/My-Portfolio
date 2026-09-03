@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {
   clearMemoryCache,
   getCached,
+  getCacheRevision,
   getMemoryCacheStats,
   invalidateCacheTags,
 } from '../dist/utils/cache.js';
@@ -49,7 +50,9 @@ let invalidationLoads = 0;
 const invalidationLoader = async () => ++invalidationLoads;
 assert.equal(await getCached('test:invalidation', invalidationLoader, { tags: ['projects'] }), 1);
 assert.equal(await getCached('test:invalidation', invalidationLoader, { tags: ['projects'] }), 1);
+const revisionBeforeInvalidation = getCacheRevision();
 assert.equal(invalidateCacheTags('projects'), 1);
+assert.equal(getCacheRevision(), revisionBeforeInvalidation + 1, 'CMS invalidation should advance the public cache version.');
 assert.equal(await getCached('test:invalidation', invalidationLoader, { tags: ['projects'] }), 2);
 
 const stats = getMemoryCacheStats();

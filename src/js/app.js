@@ -1011,3 +1011,26 @@ function updateCopyrightYear() {
         element.textContent = currentYear;
     });
 }
+
+// Keep public pages and their static resources warm between full-page navigations.
+// A tiny version request lets the worker discard them after a deploy or CMS update.
+function registerPortfolioCache() {
+    if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
+
+    const register = () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' })
+            .then(() => navigator.serviceWorker.ready)
+            .then((registration) => {
+                registration.active?.postMessage({ type: 'CACHE_URLS', urls: [window.location.href] });
+            })
+            .catch((error) => console.warn('Portfolio cache registration failed:', error));
+    };
+
+    if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(register, { timeout: 2000 });
+    } else {
+        window.addEventListener('load', register, { once: true });
+    }
+}
+
+registerPortfolioCache();

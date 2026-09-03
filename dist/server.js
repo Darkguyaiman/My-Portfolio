@@ -15,6 +15,7 @@ import { getEducation } from './models/educationModel.js';
 import { getLanguages } from './models/languageModel.js';
 import { getProjectByName, getProjectBySlug, getProjects } from './models/projectModel.js';
 import { getWorkExperiences } from './models/workModel.js';
+import { getCacheRevision } from './utils/cache.js';
 import { absoluteUrl, DEFAULT_SITE_URL, DEFAULT_SOCIAL_IMAGE, DEFAULT_SOCIAL_IMAGE_ALT, DEFAULT_SOCIAL_IMAGE_HEIGHT, DEFAULT_SOCIAL_IMAGE_TYPE, DEFAULT_SOCIAL_IMAGE_WIDTH, getSiteUrl, INDEX_ROBOTS, serializeJsonLd, SITE_NAME, truncateDescription, WEB_APP_TITLE, xmlEscape, } from './utils/seo.js';
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -33,7 +34,7 @@ const eta = new Eta({
     cache: templateCacheEnabled,
     useWith: true,
 });
-const cachedAssetPattern = /\.(?:css|js|svg|woff2?|ttf|otf|eot)$/i;
+const immutableUploadPattern = /^\/uploads\/(?:images|documents)\/\d+-[a-f0-9]+-/i;
 const techIconClasses = {
     'Next.js': 'devicon-nextjs-plain colored',
     React: 'devicon-react-original colored',
@@ -111,6 +112,12 @@ function fingerprintPublicAssets(root) {
         'css/admin-login.min.css',
         'js/app.min.js',
         'js/cms-admin.js',
+        'favicon.ico',
+        'favicon.svg',
+        'favicon-64.png',
+        'favicon-96x96.png',
+        'apple-touch-icon.png',
+        'site.webmanifest',
         'vendor/fontawesome/css/all.min.css',
         'vendor/devicon/devicon-subset.css',
     ];
@@ -123,9 +130,31 @@ function fingerprintPublicAssets(root) {
     }
     return hash.digest('hex').slice(0, 10);
 }
+function fingerprintDeployment(paths) {
+    const hash = crypto.createHash('sha1');
+    const visit = (candidate) => {
+        if (!fs.existsSync(candidate))
+            return;
+        const stat = fs.statSync(candidate);
+        const relative = path.relative(appRoot, candidate).replace(/\\/g, '/');
+        hash.update(`${relative}:${stat.size}:${stat.mtimeMs}\n`);
+        if (!stat.isDirectory())
+            return;
+        for (const child of fs.readdirSync(candidate).sort())
+            visit(path.join(candidate, child));
+    };
+    for (const candidate of paths)
+        visit(candidate);
+    return hash.digest('hex').slice(0, 12);
+}
 const publicRoots = resolvePublicRoots(appRoot);
 const publicRoot = publicRoots[0];
 const assetVersion = process.env.ASSET_VERSION || fingerprintPublicAssets(publicRoot);
+const deploymentVersion = process.env.RELEASE_VERSION || fingerprintDeployment([
+    path.join(appRoot, 'dist'),
+    path.join(appRoot, 'views'),
+    publicRoot,
+]);
 const asciiPortrait = fs.readFileSync(path.join(publicRoot, 'ASCI_ART_ME.txt'), 'utf8').trim();
 const publicAssetExists = (relativePath) => publicRoots.some((root) => fs.existsSync(path.join(root, relativePath)));
 const publicAssetRoot = (relativePath) => publicRoots.find((root) => fs.existsSync(path.join(root, relativePath))) || null;
@@ -134,9 +163,19 @@ const encodeAssetPath = (assetPath) => assetPath
     .map((segment) => encodeURIComponent(segment))
     .join('/');
 const setStaticCacheHeaders = (res, filePath) => {
-    if (cachedAssetPattern.test(filePath)) {
-        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    const requestPath = res.req.path;
+    if (requestPath === '/sw.js') {
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Service-Worker-Allowed', '/');
+        return;
     }
+    const isVersioned = res.req.query.v === assetVersion || immutableUploadPattern.test(requestPath);
+    if (isVersioned) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        return;
+    }
+    // Runtime caching handles repeat visits; this TTL also helps browsers without service workers.
+    res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
 };
 app.engine('eta', (filePath, options, callback) => {
     try {
@@ -288,6 +327,10 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/work', workRoutes);
 app.use('/api/education', educationRoutes);
 app.use('/api/languages', languageRoutes);
+app.get('/cache-version', (_req, res) => {
+    res.type('text/plain').setHeader('Cache-Control', 'no-store');
+    res.send(`${deploymentVersion}:${getCacheRevision()}`);
+});
 app.get('/robots.txt', (req, res) => {
     const sitemapUrl = absoluteUrl(getSiteUrl(req), '/sitemap.xml');
     res.type('text/plain').setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');

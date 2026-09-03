@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { scheduleCloudflarePurge } from './cloudflare.js';
 
 type CacheLoader<T> = () => Promise<T>;
 
@@ -37,6 +36,7 @@ const entries = new Map<string, CacheEntry<unknown>>();
 const inFlight = new Map<string, Promise<unknown>>();
 const keyTags = new Map<string, Set<string>>();
 const generations = new Map<string, number>();
+let cacheRevision = 0;
 const counters = {
   hits: 0,
   misses: 0,
@@ -69,6 +69,7 @@ export async function getCached<T>(key: string, loader: CacheLoader<T>, options:
 }
 
 export function invalidateCacheTags(...tags: string[]): number {
+  if (tags.length > 0) cacheRevision += 1;
   const requested = new Set(tags);
   let invalidated = 0;
 
@@ -83,8 +84,11 @@ export function invalidateCacheTags(...tags: string[]): number {
   }
 
   counters.invalidations += invalidated;
-  if (invalidated > 0) scheduleCloudflarePurge();
   return invalidated;
+}
+
+export function getCacheRevision(): number {
+  return cacheRevision;
 }
 
 export function clearMemoryCache(): void {
