@@ -861,10 +861,9 @@ function calculateWorkDurations() {
         const years = end.getFullYear() - start.getFullYear();
         const months = end.getMonth() - start.getMonth();
 
-        let totalMonths = years * 12 + months;
-        if (end.getDate() < start.getDate()) {
-            totalMonths--;
-        }
+        // Work dates only store month precision, so count both boundary months.
+        // This matches the inclusive duration shown by LinkedIn (Mar-Sep = 7 mos).
+        let totalMonths = years * 12 + months + 1;
 
 
         if (totalMonths < 0) totalMonths = 0;

@@ -290,9 +290,10 @@ INSERT INTO education (id, qualification, institution, field, duration_start, du
   (2, 'IGCSE O Level', 'International Modern Arabic School', 'High School / Secondary Education', 'September 2021', 'June 2024', '{"total_subjects":7,"grades":{"A*":4,"A":3}}', 'Completed lower education at IMAS, gaining strong academic foundations, meaningful friendships, and a clear understanding that personal ability and action matter more than external perceptions.', 2);
 
 INSERT INTO work_experiences (id, company, role, start_date, end_date, logo, display_order) VALUES
-  (1, 'Backpack Techworks', 'Co-Founder', '2025-01', 'present', 'companies/Backpack.webp', 1),
-  (2, 'Fussional', 'Team Leader', '2024-05', '2025-09', 'companies/Fussional.webp', 2),
-  (3, 'Working for myself', 'Freelancer', '2021-01', '2024-12', 'assets/2D Mohamed Leaning.webp', 3);
+  (1, 'Backpack Techworks', 'Co-Founder', '2025-01', '2026-08', 'companies/Backpack.webp', 2),
+  (2, 'Fussional', 'Team Leader', '2024-05', '2025-09', 'companies/Fussional.webp', 3),
+  (3, 'Working for myself', 'Freelancer', '2021-01', '2024-12', 'assets/2D Mohamed Leaning.webp', 4),
+  (4, 'Myself', 'Full Stack Engineer', '2026-03', 'present', 'companies/freelance_ma_logo.webp', 1);
 
 INSERT INTO work_experience_descriptions (work_experience_id, description, display_order) VALUES
   (1, 'Developed custom systems in Google App Script as well as web apps in Node.js', 1),
@@ -306,7 +307,8 @@ INSERT INTO work_experience_descriptions (work_experience_id, description, displ
   (3, 'Built server-side applications using Google Apps Script, focusing on automation, data processing, and creating custom web apps.', 2),
   (3, 'Developed and managed solutions using Google Sheets, including advanced formulas, data handling, and workflow automation.', 3),
   (3, 'Created simple and responsive websites using HTML, CSS, and JavaScript, focusing on clean design and usability.', 4),
-  (3, 'Explored different tools and technologies to improve performance, scalability, and overall project structure.', 5);
+  (3, 'Explored different tools and technologies to improve performance, scalability, and overall project structure.', 5),
+  (4, 'Specializing in Next.js, Express.js, EJS, MySQL, and Tailwind CSS. Experienced in building custom web applications, SaaS platforms, admin dashboards, POS systems, and business automation tools with clean, scalable, and responsive solutions.', 1);
 
 INSERT INTO site_content (content_key, content_value) VALUES
   ('heroTitlePrefix', 'Hellow, I''m'),
