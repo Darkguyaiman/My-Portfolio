@@ -46,7 +46,9 @@ async function cachedPage(request) {
   if (cached && versionState.available && !versionState.changed) return cached;
 
   try {
-    const response = await fetch(versionState.changed ? cacheRefreshRequest(request) : request);
+    const response = await fetch(versionState.changed
+      ? cacheRefreshRequest(request, versionState.currentVersion)
+      : request);
     if (response.ok && response.type === 'basic') await cache.put(request, response.clone());
     return response;
   } catch (error) {
@@ -72,7 +74,9 @@ async function refreshVersion() {
 
   try {
     const response = await fetch('/cache-version', { cache: 'no-store' });
-    if (!response.ok) return { available: Boolean(storedVersion), changed: false };
+    if (!response.ok) {
+      return { available: Boolean(storedVersion), changed: false, currentVersion: storedVersion };
+    }
     const currentVersion = await response.text();
     const changed = Boolean(storedVersion && storedVersion !== currentVersion);
     if (changed) {
@@ -83,9 +87,9 @@ async function refreshVersion() {
         headers: { 'Content-Type': 'text/plain' },
       }));
     }
-    return { available: true, changed };
+    return { available: true, changed, currentVersion };
   } catch {
-    return { available: Boolean(storedVersion), changed: false };
+    return { available: Boolean(storedVersion), changed: false, currentVersion: storedVersion };
   }
 }
 
@@ -97,7 +101,9 @@ async function cachePages(urls) {
     const request = new Request(url.href, { credentials: 'same-origin' });
     if (!isPublicPage({ mode: 'navigate' }, url)) return;
     try {
-      const response = await fetch(versionState.changed ? cacheRefreshRequest(request) : request);
+      const response = await fetch(versionState.changed
+        ? cacheRefreshRequest(request, versionState.currentVersion)
+        : request);
       if (response.ok && response.type === 'basic') await cache.put(request, response);
     } catch {
       // Warming is best-effort; navigation retains its normal network fallback.
@@ -105,8 +111,15 @@ async function cachePages(urls) {
   }));
 }
 
-function cacheRefreshRequest(request) {
+function cacheRefreshRequest(request, version) {
   const headers = new Headers(request.headers);
   headers.set('X-Portfolio-Cache-Refresh', '1');
-  return new Request(request, { headers });
+  const url = new URL(request.url);
+  url.searchParams.set('__portfolio_version', version || Date.now().toString());
+  return new Request(url, {
+    method: request.method,
+    headers,
+    credentials: request.credentials,
+    redirect: request.redirect,
+  });
 }
