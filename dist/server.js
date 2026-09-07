@@ -58,6 +58,7 @@ const techIconClasses = {
     'Google Drive API': 'fa-brands fa-google-drive',
     'Google Sheets API': 'fa-regular fa-file-excel',
     'Google Sheets': 'fa-regular fa-file-excel',
+    'Gmail API': 'fa-solid fa-envelope',
 };
 const developerSkills = [
     'Backend development',

@@ -396,6 +396,10 @@
     color: #0F9D58 !important;
 }
 
+.project-card:hover .project-tech-icon.fa-envelope {
+    color: #EA4335 !important;
+}
+
 /* EJS small icon */
 .ejs-icon-small {
     font-size: 1.2rem;
