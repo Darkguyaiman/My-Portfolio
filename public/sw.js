@@ -43,12 +43,11 @@ async function cachedPage(request) {
   const versionState = await refreshVersion();
   const cache = await caches.open(PAGE_CACHE);
   const cached = await cache.match(request, { ignoreSearch: true });
-  if (cached && versionState.available && !versionState.changed) return cached;
 
   try {
     const response = await fetch(versionState.changed
       ? cacheRefreshRequest(request, versionState.currentVersion)
-      : request);
+      : new Request(request, { cache: 'no-store' }));
     if (response.ok && response.type === 'basic') await cache.put(request, response.clone());
     return response;
   } catch (error) {

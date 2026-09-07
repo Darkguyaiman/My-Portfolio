@@ -25,12 +25,6 @@ const HOST = process.env.HOST || '0.0.0.0';
 const appRoot = process.cwd();
 const viewsRoot = path.join(appRoot, 'views');
 const templateCacheEnabled = process.env.NODE_ENV === 'production';
-const publicHtmlEdgeTtlSeconds = Number(process.env.CACHE_HTML_S_MAXAGE) > 0
-    ? Number(process.env.CACHE_HTML_S_MAXAGE)
-    : 3600;
-const publicHtmlStaleSeconds = Number(process.env.CACHE_HTML_STALE_SECONDS) > 0
-    ? Number(process.env.CACHE_HTML_STALE_SECONDS)
-    : 86400;
 const eta = new Eta({
     views: viewsRoot,
     cache: templateCacheEnabled,
@@ -114,6 +108,7 @@ function fingerprintPublicAssets(root) {
         'css/admin-login.min.css',
         'js/app.min.js',
         'js/cms-admin.js',
+        'resume/resume.pdf',
         'favicon.ico',
         'favicon.svg',
         'favicon-64.png',
@@ -192,6 +187,10 @@ app.set('view engine', 'eta');
 app.set('views', viewsRoot);
 app.set('view cache', templateCacheEnabled);
 app.locals.assetVersion = assetVersion;
+app.locals.versionedAsset = (assetPath) => {
+    const value = String(assetPath || '');
+    return `${value}${value.includes('?') ? '&' : '?'}v=${assetVersion}`;
+};
 app.locals.webAppTitle = WEB_APP_TITLE;
 app.locals.techIcon = (technology) => techIconClasses[technology] || null;
 app.locals.formatMonthYear = (value) => {
@@ -297,7 +296,9 @@ app.use((req, res, next) => {
         || req.path === '/privacy'
         || (req.path !== '/projects/detail' && /^\/projects\/[^/]+$/.test(req.path)));
     if (isPublicHtml) {
-        const htmlCache = `public, max-age=0, s-maxage=${publicHtmlEdgeTtlSeconds}, stale-while-revalidate=${publicHtmlStaleSeconds}`;
+        // Public pages contain database-backed portfolio content. Always revalidate at
+        // the origin so Cloudflare cannot keep an old CMS or migration result alive.
+        const htmlCache = 'no-cache, no-store, must-revalidate';
         res.setHeader('Cache-Control', htmlCache);
         res.setHeader('CDN-Cache-Control', htmlCache);
     }

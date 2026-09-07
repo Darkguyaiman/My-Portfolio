@@ -120,7 +120,7 @@
                         <%= content.heroDescription %>
                     </p>
                     <div class="hero-links">
-                        <a href="<%= content.resumePath %>" target="_blank" class="resume-link" id="resumeLink">
+                        <a href="<%= versionedAsset(content.resumePath) %>" target="_blank" class="resume-link" id="resumeLink">
                             <i class="fas fa-file-pdf"></i>
                             Resume
                         </a>
