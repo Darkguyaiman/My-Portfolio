@@ -28,6 +28,11 @@ export async function ensureCmsSchema() {
     for (const [key, value] of entries) {
         await pool.query('INSERT IGNORE INTO site_content (content_key, content_value) VALUES (?, ?)', [key, value]);
     }
+    // Migrate the bundled resume URL already stored by earlier CMS versions.
+    await pool.query(`UPDATE site_content SET content_value = ?
+     WHERE content_key = 'resumePath'
+       AND SUBSTRING_INDEX(SUBSTRING_INDEX(content_value, '?', 1), '#', 1)
+         IN ('/resume.pdf', '/resume/resume.pdf')`, [defaultSiteContent.resumePath]);
 }
 export async function getDashboardStats() {
     const [[projects]] = await pool.query('SELECT COUNT(*) AS total FROM projects');

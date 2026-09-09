@@ -136,6 +136,15 @@ export async function ensureCmsSchema() {
       [key, value],
     );
   }
+
+  // Migrate the bundled resume URL already stored by earlier CMS versions.
+  await pool.query(
+    `UPDATE site_content SET content_value = ?
+     WHERE content_key = 'resumePath'
+       AND SUBSTRING_INDEX(SUBSTRING_INDEX(content_value, '?', 1), '#', 1)
+         IN ('/resume.pdf', '/resume/resume.pdf')`,
+    [defaultSiteContent.resumePath],
+  );
 }
 
 export async function getDashboardStats() {
