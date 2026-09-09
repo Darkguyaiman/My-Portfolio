@@ -6,7 +6,7 @@ export const defaultSiteContent = {
     heroName: 'Mohamed Aiman',
     heroSubtitle: '<span class="age" id="age">17</span> yo web developer in <span class="location">Malaysia</span>, from <span class="location">Myanmar</span> & <span class="location">Sudan</span> <span class="blasian-note">(yes, that makes me blasian)</span>',
     heroDescription: 'I specialise in server-side development, that makes me more of a backend developer however I am proficient on the frontend as well such as making responsive UIs.',
-    resumePath: '/resume/resume.pdf',
+    resumePath: '/resume/Mohamed_Aiman_Resume.pdf',
     contactText: "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.",
     linkedinUrl: 'https://www.linkedin.com/in/mohamed-aiman-7365701ba/',
     githubUrl: 'https://github.com/Darkguyaiman',

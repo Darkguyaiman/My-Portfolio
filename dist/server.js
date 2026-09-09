@@ -109,7 +109,7 @@ function fingerprintPublicAssets(root) {
         'css/admin-login.min.css',
         'js/app.min.js',
         'js/cms-admin.js',
-        'resume/resume.pdf',
+        'resume/Mohamed_Aiman_Resume.pdf',
         'favicon.ico',
         'favicon.svg',
         'favicon-64.png',
