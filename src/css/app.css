@@ -194,6 +194,27 @@ html {
     }
 }
 
+/* Scroll progress — thin top edge, left → right with page depth */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+.scroll-progress__bar {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left center;
+    will-change: transform;
+}
+
 /* Navigation */
 .navbar {
     position: fixed;

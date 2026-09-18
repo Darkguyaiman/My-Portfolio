@@ -300,6 +300,38 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+(function initScrollProgress() {
+    const track = document.createElement('div');
+    track.className = 'scroll-progress';
+    track.setAttribute('aria-hidden', 'true');
+
+    const bar = document.createElement('div');
+    bar.className = 'scroll-progress__bar';
+    track.appendChild(bar);
+    document.body.prepend(track);
+
+    let ticking = false;
+
+    function updateScrollProgress() {
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = scrollable > 0
+            ? Math.min(1, Math.max(0, window.scrollY / scrollable))
+            : 0;
+        bar.style.transform = `scaleX(${progress})`;
+        ticking = false;
+    }
+
+    function requestScrollProgressUpdate() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(updateScrollProgress);
+    }
+
+    window.addEventListener('scroll', requestScrollProgressUpdate, { passive: true });
+    window.addEventListener('resize', requestScrollProgressUpdate, { passive: true });
+    updateScrollProgress();
+})();
+
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-link');
 
