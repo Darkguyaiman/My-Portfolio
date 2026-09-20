@@ -1,7 +1,7 @@
 <!--
-  THESIS: Floating Dark AI companion — Tidio-style chat chrome, portfolio colors, brown blobatar.
+  THESIS: Floating Ai-man companion — Tidio-style chat chrome, portfolio colors, brown blobatar.
   OWN-WORLD: cream/dark + red header; warm brown face; Inter body, Press Start name.
-  STORY: Visitors ask about Mohamed; Dark AI answers; face tracks pointer and escalates on pokes.
+  STORY: Visitors ask about Mohamed; Ai-man answers; face tracks pointer and escalates on pokes.
   FIRST VIEWPORT: Free-floating launcher; panel opens above with solid header and persistent input.
   FORM: Local extension of public Experience surfaces; inherits Darkguyaiman identity.
 -->
@@ -13,9 +13,11 @@
   <div class="dark-ai-panel" id="darkAiPanel" hidden>
     <header class="dark-ai-header">
       <div class="dark-ai-identity">
-        <div class="dark-ai-face-slot dark-ai-face-slot--header" id="darkAiFaceHeader" aria-hidden="true"></div>
+        <div class="dark-ai-face-tip" id="darkAiFaceTip" data-tooltip="Ai-man" role="img" aria-label="Ai-man">
+          <div class="dark-ai-face-slot dark-ai-face-slot--header" id="darkAiFaceHeader" aria-hidden="true"></div>
+        </div>
         <div class="dark-ai-identity-copy">
-          <p class="dark-ai-name">Dark AI</p>
+          <p class="dark-ai-name">Ai-man</p>
           <p class="dark-ai-status" id="darkAiStatus">
             <span class="dark-ai-online-dot" aria-hidden="true"></span>
             <span id="darkAiStatusText">We're online</span>
@@ -28,18 +30,29 @@
           class="dark-ai-icon-btn dark-ai-close"
           id="darkAiClose"
           aria-label="Minimize chat"
+          data-tooltip="Minimize"
         >
           <i class="fas fa-chevron-down" aria-hidden="true"></i>
         </button>
       </div>
-      <svg class="dark-ai-header-wave" viewBox="0 0 480 24" preserveAspectRatio="none" aria-hidden="true">
-        <path fill="currentColor" d="M0 10c40 10 80-8 120-6s80 14 120 12 80-14 120-10 80 14 120 8V24H0Z"></path>
-      </svg>
+      <div class="dark-ai-header-wave" aria-hidden="true">
+        <svg class="dark-ai-header-wave-svg" viewBox="0 0 2880 48" preserveAspectRatio="none">
+          <path
+            fill="currentColor"
+            d="M0 28
+               C360 28 360 8 720 8
+               C1080 8 1080 28 1440 28
+               C1800 28 1800 8 2160 8
+               C2520 8 2520 28 2880 28
+               V48 H0 Z"
+          ></path>
+        </svg>
+      </div>
     </header>
 
     <div class="dark-ai-messages" id="darkAiMessages" role="log" aria-live="polite" aria-relevant="additions">
       <div class="dark-ai-bubble dark-ai-bubble--bot dark-ai-bubble--enter">
-        <p>Hey — I&rsquo;m <strong>Dark AI</strong>. Ask about Mohamed&rsquo;s skills, projects, experience, or salary expectations.</p>
+        <p>Hey — I&rsquo;m <strong>Ai-man</strong>. Ask about Mohamed&rsquo;s skills, projects, experience, or salary expectations.</p>
       </div>
       <div class="dark-ai-quick-replies" id="darkAiQuickReplies">
         <button type="button" class="dark-ai-chip dark-ai-chip--solid" data-prompt="What tech is Mohamed familiar with?">Skills</button>
@@ -50,7 +63,7 @@
     </div>
 
     <form class="dark-ai-form" id="darkAiForm" autocomplete="off">
-      <label class="visually-hidden" for="darkAiInput">Message Dark AI</label>
+      <label class="visually-hidden" for="darkAiInput">Message Ai-man</label>
       <textarea
         id="darkAiInput"
         class="dark-ai-input"
@@ -75,8 +88,8 @@
     id="darkAiLauncher"
     aria-expanded="false"
     aria-controls="darkAiPanel"
-    aria-label="Open Dark AI chat"
-    data-tooltip="Chat with Dark AI"
+    aria-label="Open Ai-man chat"
+    data-tooltip="Chat with Ai-man"
   >
     <span class="dark-ai-face-slot dark-ai-face-slot--launcher" id="darkAiFace" aria-hidden="true"></span>
   </button>

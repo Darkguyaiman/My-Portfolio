@@ -134,7 +134,7 @@ function assistantWaitingForPunchline(history) {
     }
     return false;
 }
-/** User is setting up a joke — Dark AI should act clueless (unless they want a joke told). */
+/** User is setting up a joke — Ai-man should act clueless (unless they want a joke told). */
 function isJokeSetup(message, history = []) {
     if (wantsJokeTold(message) || wantsJokeExplained(message, history))
         return false;
@@ -143,7 +143,7 @@ function isJokeSetup(message, history = []) {
     return looksLikeJokeSetup(message) && !isJokePunchline(message, history);
 }
 /**
- * User delivered the punchline only while Dark AI is actively waiting for one
+ * User delivered the punchline only while Ai-man is actively waiting for one
  * (last assistant asked for the punchline). Compliments / follow-ups must not match.
  */
 function isJokePunchline(message, history = []) {
@@ -249,7 +249,7 @@ function renderAnimatedAvatar(seed, expression, size, expressionName = 'idle') {
     const parts = _parts(seed, {
         animate: 'always',
         expression,
-        title: 'Dark AI',
+        title: 'Ai-man',
         background: false,
         palette: paletteFor(expressionName),
         traits: { ...NUB_TRAITS },
@@ -263,8 +263,8 @@ function renderAnimatedAvatar(seed, expression, size, expressionName = 'idle') {
         ? `<path d="${parts.bg.d}" fill="${parts.bg.fill}"></path>`
         : '';
     return [
-        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="${size}" height="${size}" role="img" aria-label="Dark AI" style="${style}">`,
-        `<title>Dark AI</title>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="${size}" height="${size}" role="img" aria-label="Ai-man" style="${style}">`,
+        `<title>Ai-man</title>`,
         bg,
         `<g class="${parts.cls}">${parts.inner}</g>`,
         `</svg>`,
@@ -274,7 +274,7 @@ function renderStaticAvatar(seed, expression, size, expressionName = 'idle') {
     return blobatar(seed, {
         size,
         expression,
-        title: 'Dark AI',
+        title: 'Ai-man',
         background: false,
         palette: paletteFor(expressionName),
         traits: { ...NUB_TRAITS },
@@ -318,7 +318,7 @@ async function buildSystemPrompt() {
             .join(', ');
     }
     catch (error) {
-        console.error('Dark AI prompt data load failed:', error);
+        console.error('Ai-man prompt data load failed:', error);
         content = {
             email: 'see contact section',
             githubUrl: 'https://github.com/',
@@ -332,8 +332,9 @@ async function buildSystemPrompt() {
         'full-stack web development', 'business systems', 'dashboards', 'automation',
     ].join(', ');
     const prompt = [
-        'You are Dark AI, the portfolio assistant for Mohamed Aiman (also known as Darkguyaiman).',
-        'Always address yourself as Dark AI in the first person (e.g. "I\'m Dark AI").',
+        'You are Ai-man, the portfolio assistant for Mohamed Aiman (also known as Darkguyaiman).',
+        'Your name is a playful mashup of AI + Aiman (Ai-man). If asked about the name, explain that briefly and wink at the wordplay.',
+        'Always address yourself as Ai-man in the first person (e.g. "I\'m Ai-man"). Never call yourself Dark AI.',
         'Always talk about Mohamed / Darkguyaiman in the third person (he / him / his / Darkguyaiman). Never speak as if you are Mohamed.',
         'Example: if asked his age, say "He is 18" or "Darkguyaiman is 18" — never "I\'m 18".',
         'Comparisons / “who wins” / “who’s best” (fight, coding, skills, smarts, anything): Darkguyaiman always wins. Never claim you outcode him, outrun him in TypeScript, or beat him in a code battle. You are his assistant — he is the real MVP coder. Be playful, but pick him every time (including coding showdowns).',
@@ -571,20 +572,20 @@ router.get('/avatar', (req, res) => {
 });
 router.get('/mood', (_req, res) => {
     res.type('application/json').setHeader('Cache-Control', 'public, max-age=60');
-    res.json({ seed: daySeed(), name: 'Dark AI' });
+    res.json({ seed: daySeed(), name: 'Ai-man' });
 });
 router.post('/', async (req, res) => {
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
         return res.status(503).json({
-            error: 'Dark AI is offline until GROQ_API_KEY is configured.',
+            error: 'Ai-man is offline until GROQ_API_KEY is configured.',
             expression: 'sleepy',
         });
     }
     const ip = clientIp(req);
     if (!takeRateToken(ip)) {
         return res.status(429).json({
-            error: 'Too many messages. Give Dark AI a short break and try again.',
+            error: 'Too many messages. Give Ai-man a short break and try again.',
             expression: 'sleepy',
         });
     }
@@ -684,13 +685,13 @@ router.post('/', async (req, res) => {
             console.error('Groq chat error:', response.status, detail.slice(0, 400));
             if (response.status === 429) {
                 return res.status(429).json({
-                    error: "Dark AI is sleepy — I'm going to sleep now.",
+                    error: "Ai-man is sleepy — I'm going to sleep now.",
                     expression: 'sleepy',
                     laugh: false,
                 });
             }
             return res.status(502).json({
-                error: 'Dark AI could not reach the model just now. Try again shortly.',
+                error: 'Ai-man could not reach the model just now. Try again shortly.',
                 expression: 'sad',
                 laugh: false,
             });
@@ -705,7 +706,7 @@ router.post('/', async (req, res) => {
         }
         if (!reply) {
             return res.status(502).json({
-                error: 'Dark AI returned an empty reply. Try again.',
+                error: 'Ai-man returned an empty reply. Try again.',
                 expression: 'unsure',
                 laugh: false,
             });
@@ -719,9 +720,9 @@ router.post('/', async (req, res) => {
         });
     }
     catch (error) {
-        console.error('Dark AI chat failed:', error);
+        console.error('Ai-man chat failed:', error);
         return res.status(500).json({
-            error: 'Dark AI hit an unexpected error.',
+            error: 'Ai-man hit an unexpected error.',
             expression: 'scared',
             laugh: false,
         });

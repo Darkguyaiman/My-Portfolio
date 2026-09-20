@@ -13,12 +13,13 @@
 .dark-ai {
   --dark-ai-brown: #a67c52;
   --dark-ai-cream: #f7efe6;
-  --dark-ai-header: #f3ebe1;
+  --dark-ai-header: #e5d4c2;
   --dark-ai-header-ink: #2e2a26;
   --dark-ai-header-muted: #6f655c;
   --dark-ai-border: color-mix(in srgb, var(--dark-gray) 14%, transparent);
   --dark-ai-shadow: 0 18px 44px color-mix(in srgb, #000 28%, transparent);
   --dark-ai-surface: #fffdf9;
+  --dark-ai-wave-edge: color-mix(in srgb, var(--dark-ai-brown) 32%, transparent);
   position: fixed;
   right: max(1rem, env(safe-area-inset-right));
   bottom: max(1rem, env(safe-area-inset-bottom));
@@ -36,6 +37,7 @@
   --dark-ai-header: color-mix(in srgb, var(--cream-white) 78%, var(--dark-ai-brown) 22%);
   --dark-ai-header-ink: #f4efe8;
   --dark-ai-header-muted: color-mix(in srgb, #f4efe8 68%, transparent);
+  --dark-ai-wave-edge: color-mix(in srgb, #000 28%, transparent);
 }
 
 .dark-ai > * {
@@ -197,6 +199,55 @@
   filter: none;
 }
 
+.dark-ai-face-tip {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+.dark-ai-face-tip[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, #1a1a1c 92%, var(--dark-ai-brown) 8%);
+  color: #f7f4ef;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 8px 18px color-mix(in srgb, #000 28%, transparent);
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 8;
+}
+
+.dark-ai-face-tip[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  top: calc(100% + 0.18rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  border: 5px solid transparent;
+  border-bottom-color: color-mix(in srgb, #1a1a1c 92%, var(--dark-ai-brown) 8%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 8;
+}
+
+.dark-ai-face-tip[data-tooltip]:hover::after,
+.dark-ai-face-tip[data-tooltip]:hover::before,
+.dark-ai-face-tip[data-tooltip]:focus-visible::after,
+.dark-ai-face-tip[data-tooltip]:focus-visible::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 .dark-ai-panel {
   position: relative;
   width: min(22.5rem, calc(100vw - 2rem));
@@ -226,7 +277,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 1rem 1rem 1.55rem;
+  padding: 1.35rem 1.1rem 2.35rem;
   background:
     linear-gradient(165deg, color-mix(in srgb, var(--dark-ai-header) 88%, #fff 12%) 0%, var(--dark-ai-header) 55%, color-mix(in srgb, var(--dark-ai-header) 90%, var(--dark-ai-brown) 10%) 100%);
   color: var(--dark-ai-header-ink);
@@ -239,10 +290,30 @@
   right: 0;
   bottom: -1px;
   width: 100%;
-  height: 1.15rem;
-  display: block;
+  height: 1.9rem;
+  overflow: hidden;
   pointer-events: none;
   color: var(--dark-ai-surface);
+  filter: drop-shadow(0 -1px 0 var(--dark-ai-wave-edge));
+}
+
+.dark-ai-header-wave-svg {
+  display: block;
+  width: 200%;
+  height: 100%;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  animation: dark-ai-wave-drift 8s linear infinite;
+}
+
+@keyframes dark-ai-wave-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
 .dark-ai-identity {
@@ -372,12 +443,15 @@
 }
 
 .dark-ai-header-actions {
+  position: relative;
+  z-index: 4;
   display: flex;
   align-items: center;
   gap: 0.2rem;
 }
 
 .dark-ai-icon-btn {
+  position: relative;
   width: 2.1rem;
   height: 2.1rem;
   border: 0;
@@ -388,6 +462,49 @@
   display: grid;
   place-items: center;
   transition: background 160ms ease, transform 160ms ease, color 160ms ease;
+}
+
+.dark-ai-icon-btn[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, #1a1a1c 92%, var(--dark-ai-brown) 8%);
+  color: #f7f4ef;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 8px 18px color-mix(in srgb, #000 28%, transparent);
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 6;
+}
+
+.dark-ai-icon-btn[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  top: calc(100% + 0.18rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  border: 5px solid transparent;
+  border-bottom-color: color-mix(in srgb, #1a1a1c 92%, var(--dark-ai-brown) 8%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 6;
+}
+
+.dark-ai-icon-btn[data-tooltip]:hover::after,
+.dark-ai-icon-btn[data-tooltip]:hover::before,
+.dark-ai-icon-btn[data-tooltip]:focus-visible::after,
+.dark-ai-icon-btn[data-tooltip]:focus-visible::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .dark-ai-icon-btn:hover,
@@ -888,7 +1005,11 @@ h4.dark-ai-h {
   .dark-ai-input,
   .dark-ai-chip,
   .dark-ai-launcher[data-tooltip]::after,
-  .dark-ai-launcher[data-tooltip]::before {
+  .dark-ai-launcher[data-tooltip]::before,
+  .dark-ai-icon-btn[data-tooltip]::after,
+  .dark-ai-icon-btn[data-tooltip]::before,
+  .dark-ai-face-tip[data-tooltip]::after,
+  .dark-ai-face-tip[data-tooltip]::before {
     transition: none;
   }
 
@@ -901,7 +1022,8 @@ h4.dark-ai-h {
   .dark-ai.is-thinking .dark-ai-online-dot,
   .dark-ai.is-thinking .dark-ai-face-slot--launcher svg,
   .dark-ai.is-laugh .dark-ai-face-slot--launcher svg,
-  .dark-ai.is-laugh .dark-ai-face-slot--header svg {
+  .dark-ai.is-laugh .dark-ai-face-slot--header svg,
+  .dark-ai-header-wave-svg {
     animation: none;
   }
 }

@@ -256,34 +256,51 @@
         });
       });
     } catch (error) {
-      console.warn('Dark AI gaze unavailable', error);
+      console.warn('Ai-man gaze unavailable', error);
     }
   }
 
   function syncLauncherTooltip() {
     if (!launcher) return;
+    const faceTip = document.getElementById('darkAiFaceTip');
+    let tip = 'Chat with Ai-man';
+    let headerTip = 'Ai-man';
+
     if (root.classList.contains('is-laugh')) {
-      launcher.setAttribute('data-tooltip', "He's laughing");
-      if (!open) launcher.setAttribute('aria-label', 'Dark AI is laughing — open chat');
+      tip = "He's laughing";
+      headerTip = "He's laughing";
+      launcher.setAttribute('data-tooltip', tip);
+      faceTip?.setAttribute('data-tooltip', headerTip);
+      if (!open) launcher.setAttribute('aria-label', 'Ai-man is laughing — open chat');
       return;
     }
     if (expression === 'love' || expression === 'shy') {
-      launcher.setAttribute('data-tooltip', "He's blushing");
-      if (!open) launcher.setAttribute('aria-label', 'Dark AI is blushing — open chat');
+      tip = "He's blushing";
+      headerTip = "He's blushing";
+      launcher.setAttribute('data-tooltip', tip);
+      faceTip?.setAttribute('data-tooltip', headerTip);
+      if (!open) launcher.setAttribute('aria-label', 'Ai-man is blushing — open chat');
       return;
     }
     if (expression === 'thinking' || busy) {
-      launcher.setAttribute('data-tooltip', 'Thinking…');
-      if (!open) launcher.setAttribute('aria-label', 'Dark AI is thinking — open chat');
+      tip = 'Thinking…';
+      headerTip = 'Thinking…';
+      launcher.setAttribute('data-tooltip', tip);
+      faceTip?.setAttribute('data-tooltip', headerTip);
+      if (!open) launcher.setAttribute('aria-label', 'Ai-man is thinking — open chat');
       return;
     }
     const mad = annoyance >= 3 || expression === 'mad';
     if (mad) {
-      launcher.setAttribute('data-tooltip', "He's mad");
-      if (!open) launcher.setAttribute('aria-label', "Dark AI is mad — open chat");
+      tip = "He's mad";
+      headerTip = "He's mad";
+      launcher.setAttribute('data-tooltip', tip);
+      faceTip?.setAttribute('data-tooltip', headerTip);
+      if (!open) launcher.setAttribute('aria-label', "Ai-man is mad — open chat");
     } else {
-      launcher.setAttribute('data-tooltip', 'Chat with Dark AI');
-      if (!open) launcher.setAttribute('aria-label', 'Open Dark AI chat');
+      launcher.setAttribute('data-tooltip', 'Chat with Ai-man');
+      faceTip?.setAttribute('data-tooltip', 'Ai-man');
+      if (!open) launcher.setAttribute('aria-label', 'Open Ai-man chat');
     }
   }
 
@@ -780,7 +797,7 @@
     typingEl = document.createElement('div');
     typingEl.className = 'dark-ai-bubble dark-ai-bubble--bot dark-ai-bubble--typing dark-ai-bubble--enter';
     typingEl.innerHTML = '<span></span><span></span><span></span>';
-    typingEl.setAttribute('aria-label', 'Dark AI is typing');
+    typingEl.setAttribute('aria-label', 'Ai-man is typing');
     messages.appendChild(typingEl);
     messages.scrollTop = messages.scrollHeight;
   }
@@ -809,7 +826,7 @@
     open = next;
     launcher.classList.toggle('is-open', open);
     launcher.setAttribute('aria-expanded', open ? 'true' : 'false');
-    launcher.setAttribute('aria-label', open ? 'Dark AI chat open' : 'Open Dark AI chat');
+    launcher.setAttribute('aria-label', open ? 'Ai-man chat open' : 'Open Ai-man chat');
 
     if (open) {
       if (annoyance < 2) setExpression('surprised', 'listening');
@@ -865,8 +882,8 @@
 
       if (!res.ok) {
         const sleepy = data.expression === 'sleepy' || res.status === 429;
-        const sleepyMsg = data.error || "Dark AI is sleepy — I'm going to sleep now.";
-        appendBubble(sleepy ? sleepyMsg : (data.error || 'Dark AI could not reply.'), sleepy ? 'bot' : 'error');
+        const sleepyMsg = data.error || "Ai-man is sleepy — I'm going to sleep now.";
+        appendBubble(sleepy ? sleepyMsg : (data.error || 'Ai-man could not reply.'), sleepy ? 'bot' : 'error');
         setExpression(
           data.expression || (sleepy ? 'sleepy' : 'sad'),
           sleepy ? 'zzz…' : 'signal dropped',
@@ -886,7 +903,7 @@
       setExpression(mood.expression, mood.status, { force: true, laugh: mood.laugh });
     } catch (_) {
       hideTyping();
-      appendBubble('Network hiccup. Dark AI will try again when you resend.', 'error');
+      appendBubble('Network hiccup. Ai-man will try again when you resend.', 'error');
       setExpression('scared', 'offline blip', { force: true });
     } finally {
       setBusy(false);
