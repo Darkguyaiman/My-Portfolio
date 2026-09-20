@@ -23,6 +23,7 @@ const stylesheets = [
   'not-found',
   'admin',
   'admin-login',
+  'dark-ai-chat',
 ];
 
 await Promise.all(stylesheets.map(buildStylesheet));

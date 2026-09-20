@@ -105,3 +105,18 @@ fs.writeFileSync(
 );
 
 console.log('Vendor assets copied to public/vendor');
+
+const blobatarVendor = path.join(vendorRoot, 'blobatar');
+fs.mkdirSync(blobatarVendor, { recursive: true });
+copyFile(
+  path.join(nodeModules, 'blobatar', 'dist', 'motion.css'),
+  path.join(blobatarVendor, 'motion.css'),
+);
+copyFile(
+  path.join(nodeModules, 'blobatar', 'dist', 'gaze.css'),
+  path.join(blobatarVendor, 'gaze.css'),
+);
+copyFile(
+  path.join(nodeModules, 'blobatar', 'dist', 'gaze.js'),
+  path.join(blobatarVendor, 'gaze.js'),
+);

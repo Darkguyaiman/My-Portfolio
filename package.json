@@ -10,7 +10,7 @@
     "build:images": "node scripts/optimize-images.js",
     "build:vendor": "node scripts/copy-vendor-assets.js",
     "build:css": "node scripts/build-css.js",
-    "build:js": "terser ./src/js/app.js --compress --mangle --output ./public/js/app.min.js",
+    "build:js": "node scripts/build-js.js",
     "audit:performance": "npm run build && node scripts/audit-performance.mjs",
     "test:cache": "npm run build:server && node scripts/test-cache.mjs",
     "test:uploads": "npm run build:server && node scripts/test-image-uploads.mjs",
@@ -22,6 +22,7 @@
   "dependencies": {
     "@fontsource/playfair-display": "^5.2.8",
     "@types/multer": "^2.2.0",
+    "blobatar": "^2.7.0",
     "compression": "^1.8.1",
     "dotenv": "^17.4.2",
     "eta": "^4.6.0",

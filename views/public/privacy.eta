@@ -180,6 +180,7 @@
     </footer>
 
     <script src="/js/app.min.js?v=<%= assetVersion %>"></script>
+    <%~ include('partials/dark-ai-chat') %>
     <script>
 
         function updateLastUpdatedDate() {

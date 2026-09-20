@@ -10,6 +10,7 @@ import educationRoutes from './routes/educationRoutes.js';
 import languageRoutes from './routes/languageRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import workRoutes from './routes/workRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 import { defaultSiteContent, getSiteContent, type SiteContent } from './models/adminModel.js';
 import { getEducation } from './models/educationModel.js';
 import { getLanguages } from './models/languageModel.js';
@@ -136,7 +137,9 @@ function fingerprintPublicAssets(root: string): string {
     'css/admin.min.css',
     'css/admin-login.min.css',
     'js/app.min.js',
+    'js/dark-ai-chat.min.js',
     'js/cms-admin.js',
+    'css/dark-ai-chat.min.css',
     'resume/Mohamed_Aiman_Resume.pdf',
     'favicon.ico',
     'favicon.svg',
@@ -146,6 +149,9 @@ function fingerprintPublicAssets(root: string): string {
     'site.webmanifest',
     'vendor/fontawesome/css/all.min.css',
     'vendor/devicon/devicon-subset.css',
+    'vendor/blobatar/motion.css',
+    'vendor/blobatar/gaze.css',
+    'vendor/blobatar/gaze.js',
   ];
   const hash = crypto.createHash('sha1');
   for (const file of files) {
@@ -373,6 +379,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/work', workRoutes);
 app.use('/api/education', educationRoutes);
 app.use('/api/languages', languageRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.get('/cache-version', (_req: Request, res: Response) => {
   res.type('text/plain').setHeader('Cache-Control', 'no-store');
