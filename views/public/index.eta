@@ -28,8 +28,8 @@
     <meta property="profile:username" content="Darkguyaiman">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@MohamedAiman103">
-    <meta name="twitter:creator" content="@MohamedAiman103">
+    <meta name="twitter:site" content="@thedarkguyaiman">
+    <meta name="twitter:creator" content="@thedarkguyaiman">
     <meta name="twitter:title" content="<%= seo.title %>">
     <meta name="twitter:description" content="<%= seo.description %>">
     <meta name="twitter:image" content="<%= seo.image %>">
@@ -257,7 +257,7 @@
                         <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> on GitHub">Github</a><% } %>
                         <a href="/projects/<%= project.slug %>" class="project-link" aria-label="View <%= project.projectName %> details">Details</a>
                     </div>
-                    <p class="project-description"><%= project.description %></p>
+                    <p class="project-description"><%= cleanDescription(project.description) %></p>
                     <div class="project-tags" role="group" aria-label="Technologies used">
                         <% project.techUsed.forEach(function(technology) { %>
                         <% const iconClass = techIcon(technology); %>

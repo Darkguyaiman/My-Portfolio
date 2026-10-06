@@ -42,9 +42,13 @@ export function serializeJsonLd(value: unknown): string {
 
 export function cleanDescription(value: string): string {
   return value
-    .replace(/\s+Email:\s.*$/i, '')
+    .replace(/\s+Email:\s[\s\S]*$/i, '')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+export function projectDemoAccess(value: string): string {
+  return value.match(/\s+Email:\s[\s\S]*$/i)?.[0].trim() || '';
 }
 
 export function truncateDescription(value: string, maximumLength = 160): string {

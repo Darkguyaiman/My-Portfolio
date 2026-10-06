@@ -25,8 +25,8 @@
     <meta property="og:image:alt" content="<%= seo.imageAlt %>">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@MohamedAiman103">
-    <meta name="twitter:creator" content="@MohamedAiman103">
+    <meta name="twitter:site" content="@thedarkguyaiman">
+    <meta name="twitter:creator" content="@thedarkguyaiman">
     <meta name="twitter:title" content="<%= seo.title %>">
     <meta name="twitter:description" content="<%= seo.description %>">
     <meta name="twitter:image" content="<%= seo.image %>">
@@ -109,9 +109,10 @@
     <section class="projects" style="padding-top: 120px;">
         <div class="container">
             <div class="section-header">
-                <h1 class="section-title">all projects</h1>
+                <h1 class="section-title">web development projects</h1>
                 <a href="/" class="view-more"><i class="fas fa-chevron-left"></i> back to home</a>
             </div>
+            <p class="projects-intro">Web applications, business systems, and automation projects by <a href="/">Mohamed Aiman</a>, a full-stack and backend developer in Malaysia.</p>
             <div class="projects-grid" id="allProjectsGrid" data-server-rendered="true">
                 <% projects.forEach(function(project) { %>
                 <% const displayImages = (project.images || []).slice(0, 3); %>
@@ -129,7 +130,7 @@
                         <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> on GitHub">Github</a><% } %>
                         <a href="/projects/<%= project.slug %>" class="project-link" aria-label="View <%= project.projectName %> details">Details</a>
                     </div>
-                    <p class="project-description"><%= project.description %></p>
+                    <p class="project-description"><%= cleanDescription(project.description) %></p>
                     <div class="project-tags" role="group" aria-label="Technologies used">
                         <% project.techUsed.forEach(function(technology) { const iconClass = techIcon(technology); %><% if (iconClass) { %><span class="project-tech-icon <%= iconClass %>" data-tooltip="<%= technology %>"><span class="visually-hidden"><%= technology %></span></span><% } else if (technology === 'EJS') { %><span class="project-tech-icon ejs-icon-small" data-tooltip="EJS">EJS</span><% } else { %><span class="project-tech-icon-fallback" data-tooltip="<%= technology %>"><%= technology %></span><% } %><% }) %>
                     </div>

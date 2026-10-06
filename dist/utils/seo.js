@@ -19,9 +19,12 @@ export function serializeJsonLd(value) {
 }
 export function cleanDescription(value) {
     return value
-        .replace(/\s+Email:\s.*$/i, '')
+        .replace(/\s+Email:\s[\s\S]*$/i, '')
         .replace(/\s+/g, ' ')
         .trim();
+}
+export function projectDemoAccess(value) {
+    return value.match(/\s+Email:\s[\s\S]*$/i)?.[0].trim() || '';
 }
 export function truncateDescription(value, maximumLength = 160) {
     const cleaned = cleanDescription(value);

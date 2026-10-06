@@ -5,12 +5,12 @@ export const defaultSiteContent = {
     heroTitlePrefix: "Hellow, I'm",
     heroName: 'Mohamed Aiman',
     heroSubtitle: '<span class="age" id="age">17</span> yo web developer in <span class="location">Malaysia</span>, from <span class="location">Myanmar</span> & <span class="location">Sudan</span> <span class="blasian-note">(yes, that makes me blasian)</span>',
-    heroDescription: 'I specialise in server-side development, that makes me more of a backend developer however I am proficient on the frontend as well such as making responsive UIs.',
+    heroDescription: 'I’m a full-stack and backend developer in Malaysia. I build web applications, business systems, and dashboards with TypeScript, Node.js, Express, Next.js, React, and MySQL.',
     resumePath: '/resume/Mohamed_Aiman_Resume.pdf',
     contactText: "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.",
-    linkedinUrl: 'https://www.linkedin.com/in/mohamed-aiman-7365701ba/',
+    linkedinUrl: 'https://www.linkedin.com/in/darkguyaiman/',
     githubUrl: 'https://github.com/Darkguyaiman',
-    xUrl: 'https://x.com/MohamedAiman103',
+    xUrl: 'https://x.com/thedarkguyaiman',
     instagramUrl: 'https://www.instagram.com/darkguyaiman/',
     facebookUrl: 'https://www.facebook.com/darkguyaiman',
     email: 'mohamedaiman103@gmail.com',
@@ -58,12 +58,27 @@ export async function getSiteContent() {
 async function loadSiteContent() {
     await ensureCmsSchema();
     const [rows] = await pool.query('SELECT content_key, content_value FROM site_content');
-    return rows.reduce((content, row) => {
+    const content = rows.reduce((content, row) => {
         if (row.content_key in content) {
             content[row.content_key] = row.content_value;
         }
         return content;
     }, { ...defaultSiteContent });
+    return normalizeSiteContent(content);
+}
+// Refresh the original bundled copy and handles without overwriting CMS customizations.
+export function normalizeSiteContent(content) {
+    const legacyDefaults = {
+        heroDescription: 'I specialise in server-side development, that makes me more of a backend developer however I am proficient on the frontend as well such as making responsive UIs.',
+        linkedinUrl: 'https://www.linkedin.com/in/mohamed-aiman-7365701ba/',
+        xUrl: 'https://x.com/MohamedAiman103',
+    };
+    const normalized = { ...content };
+    for (const key of Object.keys(legacyDefaults)) {
+        if (normalized[key] === legacyDefaults[key])
+            normalized[key] = defaultSiteContent[key];
+    }
+    return normalized;
 }
 export async function saveSiteContent(content) {
     await ensureCmsSchema();

@@ -13,6 +13,7 @@
     "build:js": "node scripts/build-js.js",
     "audit:performance": "npm run build && node scripts/audit-performance.mjs",
     "test:cache": "npm run build:server && node scripts/test-cache.mjs",
+    "test:groq": "npm run build:server && node scripts/test-groq.mjs",
     "test:uploads": "npm run build:server && node scripts/test-image-uploads.mjs",
     "test:seo": "npm run build && node scripts/test-seo.mjs",
     "start": "node dist/server.js",

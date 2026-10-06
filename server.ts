@@ -19,6 +19,7 @@ import { getWorkExperiences } from './models/workModel.js';
 import { getCacheRevision } from './utils/cache.js';
 import {
   absoluteUrl,
+  cleanDescription,
   DEFAULT_SITE_URL,
   DEFAULT_SOCIAL_IMAGE,
   DEFAULT_SOCIAL_IMAGE_ALT,
@@ -27,6 +28,7 @@ import {
   DEFAULT_SOCIAL_IMAGE_WIDTH,
   getSiteUrl,
   INDEX_ROBOTS,
+  projectDemoAccess,
   serializeJsonLd,
   SITE_NAME,
   truncateDescription,
@@ -228,6 +230,8 @@ app.locals.versionedAsset = (assetPath: string) => {
 };
 app.locals.webAppTitle = WEB_APP_TITLE;
 app.locals.techIcon = (technology: string) => techIconClasses[technology] || null;
+app.locals.cleanDescription = cleanDescription;
+app.locals.projectDemoAccess = projectDemoAccess;
 app.locals.formatMonthYear = (value: string) => {
   if (value.toLowerCase() === 'present') return 'Present';
   const [year, month] = value.split('-').map(Number);
@@ -470,7 +474,7 @@ function fallbackLlmsMarkdown(siteUrl: string): string {
 function buildLlmsMarkdown(siteUrl: string, data: PublicPortfolioData, full: boolean): string {
   const projectLines = data.projects.map((project) => {
     const technologies = project.techUsed.length ? ` Technologies: ${project.techUsed.join(', ')}.` : '';
-    const description = full ? ` ${project.description}` : '';
+    const description = full ? ` ${cleanDescription(project.description)}` : '';
     return `- [${project.projectName}](${absoluteUrl(siteUrl, `/projects/${project.slug}`)}):${description}${technologies}`;
   });
   const experienceLines = full
@@ -576,7 +580,7 @@ app.get('/portfolio.json', async (req: Request, res: Response) => {
       '@type': 'SoftwareSourceCode',
       '@id': `${absoluteUrl(siteUrl, `/projects/${project.slug}`)}#project`,
       name: project.projectName,
-      description: project.description,
+      description: cleanDescription(project.description),
       url: absoluteUrl(siteUrl, `/projects/${project.slug}`),
       image: project.images?.map((image) => absoluteUrl(siteUrl, `/${image}`)) || [],
       keywords: project.techUsed,
@@ -597,7 +601,7 @@ app.get('/', async (req: Request, res: Response) => {
   const data = await loadPublicPortfolioData();
   const personId = `${absoluteUrl(siteUrl, '/')}#person`;
   const seo = createSeo(siteUrl, {
-    title: 'Mohamed Aiman (Darkguyaiman) | Backend Developer',
+    title: 'Mohamed Aiman | Full-Stack & Backend Developer in Malaysia',
     description: homeDescription,
     path: '/',
     type: 'profile',
@@ -652,7 +656,7 @@ app.get('/', async (req: Request, res: Response) => {
           '@id': `${absoluteUrl(siteUrl, `/projects/${project.slug}`)}#project`,
           name: project.projectName,
           url: absoluteUrl(siteUrl, `/projects/${project.slug}`),
-          description: project.description,
+          description: cleanDescription(project.description),
           programmingLanguage: project.techUsed,
           author: { '@id': personId },
         })),
@@ -754,7 +758,7 @@ app.get('/projects/:slug', async (req: Request, res: Response) => {
           '@type': 'SoftwareSourceCode',
           '@id': `${absoluteUrl(siteUrl, projectPath)}#project`,
           name: project.projectName,
-          description: project.description,
+          description: cleanDescription(project.description),
           url: absoluteUrl(siteUrl, projectPath),
           image: project.images?.map((image) => absoluteUrl(siteUrl, `/${image}`)) || [],
           keywords: project.techUsed,
@@ -765,6 +769,14 @@ app.get('/projects/:slug', async (req: Request, res: Response) => {
           codeRepository: project.githubLink,
           workExample: project.deployedLink,
           dateModified: validDate(project.updatedAt)?.toISOString(),
+        },
+        {
+          '@type': 'Person',
+          '@id': `${absoluteUrl(siteUrl, '/')}#person`,
+          name: 'Mohamed Aiman',
+          alternateName: 'Darkguyaiman',
+          url: absoluteUrl(siteUrl, '/'),
+          jobTitle: 'Full-Stack and Backend Developer',
         },
         {
           '@type': 'BreadcrumbList',

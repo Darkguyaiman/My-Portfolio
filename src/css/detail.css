@@ -29,7 +29,8 @@
             color: var(--dark-gray);
             margin: 0;
             min-width: 0;
-            flex: 1 0 auto;
+            flex: 1 1 auto;
+            max-width: 100%;
             text-align: left;
             text-transform: capitalize;
             overflow: visible;
@@ -47,6 +48,17 @@
             color: var(--gray);
             line-height: 1.7;
             margin-bottom: 2rem;
+        }
+
+        .project-detail-byline {
+            color: var(--gray-text);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .project-detail-byline a {
+            color: var(--dark-gray);
+            text-underline-offset: 0.2em;
         }
 
         .project-detail-images {

@@ -23,10 +23,10 @@ import { getEducation } from '../models/educationModel.js';
 import { getLanguages } from '../models/languageModel.js';
 import { getProjects } from '../models/projectModel.js';
 import { getWorkExperiences } from '../models/workModel.js';
+import { getGroqApiKeys, GroqUnavailableError, requestGroqReply } from '../utils/groq.js';
 
 const router = Router();
 
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL = 'openai/gpt-oss-20b';
 const MAX_MESSAGE_CHARS = 1200;
 const MAX_HISTORY = 12;
@@ -489,21 +489,6 @@ function sanitizeHistory(raw: unknown): ChatTurn[] {
   return cleaned;
 }
 
-function extractAssistantText(payload: unknown): string {
-  const choice = (payload as { choices?: Array<{ message?: { content?: string | Array<{ type?: string; text?: string }> } }> })
-    ?.choices?.[0]?.message;
-  if (!choice) return '';
-  const content = choice.content;
-  if (typeof content === 'string') return content.trim();
-  if (Array.isArray(content)) {
-    return content
-      .map((part) => (typeof part === 'string' ? part : part?.text || ''))
-      .join('')
-      .trim();
-  }
-  return '';
-}
-
 function looksLikeSafetyRefusal(text: string): boolean {
   return /\b(i('m| am) sorry|i can('|no)t help|i cannot help|i won'?t help|not able to (help|assist)|against my (guidelines|principles)|can'?t assist with that|i can'?t help with that|as an ai|i must decline|i have to decline|keep it (appropriate|respectful)|i'?ll keep it (brief and )?respectful)\b/i
     .test(text);
@@ -658,10 +643,10 @@ router.get('/mood', (_req: Request, res: Response) => {
 });
 
 router.post('/', async (req: Request, res: Response) => {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
+  const apiKeys = getGroqApiKeys();
+  if (!apiKeys.length) {
     return res.status(503).json({
-      error: 'Ai-man is offline until GROQ_API_KEY is configured.',
+      error: 'Ai-man is offline until a Groq API key is configured.',
       expression: 'sleepy',
     });
   }
@@ -758,40 +743,13 @@ router.post('/', async (req: Request, res: Response) => {
 
     messages.push(...history, { role: 'user', content: message });
 
-    const response = await fetch(GROQ_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        temperature: jokeTell || jokeExplain ? 0.8 : 0.6,
-        max_completion_tokens: 700,
-        include_reasoning: false,
-        messages,
-      }),
+    let reply = await requestGroqReply(apiKeys, {
+      model: GROQ_MODEL,
+      temperature: jokeTell || jokeExplain ? 0.8 : 0.6,
+      max_completion_tokens: 700,
+      include_reasoning: false,
+      messages,
     });
-
-    if (!response.ok) {
-      const detail = await response.text().catch(() => '');
-      console.error('Groq chat error:', response.status, detail.slice(0, 400));
-      if (response.status === 429) {
-        return res.status(429).json({
-          error: "Ai-man is sleepy — I'm going to sleep now.",
-          expression: 'sleepy',
-          laugh: false,
-        });
-      }
-      return res.status(502).json({
-        error: 'Ai-man could not reach the model just now. Try again shortly.',
-        expression: 'sad',
-        laugh: false,
-      });
-    }
-
-    const payload = await response.json();
-    let reply = extractAssistantText(payload);
 
     if (mentionedProject && (!reply || looksLikeSafetyRefusal(reply))) {
       reply = portfolioProjectFallback(mentionedProject);
@@ -822,6 +780,13 @@ router.post('/', async (req: Request, res: Response) => {
       seed: daySeed(),
     });
   } catch (error) {
+    if (error instanceof GroqUnavailableError) {
+      return res.status(503).json({
+        error: "Ai-man is sleepy — I'm going to sleep now.",
+        expression: 'sleepy',
+        laugh: false,
+      });
+    }
     console.error('Ai-man chat failed:', error);
     return res.status(500).json({
       error: 'Ai-man hit an unexpected error.',
