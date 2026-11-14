@@ -20,6 +20,7 @@ import { _parts } from 'blobatar/internal';
 import { Router, type Request, type Response } from 'express';
 import { getSiteContent } from '../models/adminModel.js';
 import { getEducation } from '../models/educationModel.js';
+import { getCertifications } from '../models/certificationModel.js';
 import { getLanguages } from '../models/languageModel.js';
 import { getProjects } from '../models/projectModel.js';
 import { getWorkExperiences } from '../models/workModel.js';
@@ -349,18 +350,21 @@ async function buildSystemPrompt(): Promise<string> {
   let projects: string[] = [];
   let experience: string[] = [];
   let education: string[] = [];
+  let certifications: string[] = [];
   let languages = '';
 
   try {
-    const [siteContent, projectsResult, work, educationResult, languagesResult] = await Promise.all([
+    const [siteContent, projectsResult, work, educationResult, languagesResult, certificates] = await Promise.all([
       getSiteContent(),
       getProjects().catch(() => []),
       getWorkExperiences().catch(() => []),
       getEducation().catch(() => ({ education: [] })),
       getLanguages().catch(() => ({ languages: [] })),
+      getCertifications().catch(() => []),
     ]);
 
     content = siteContent;
+    certifications = certificates.map((certificate) => `- ${certificate.name} — ${certificate.issuer}, issued ${certificate.issued}. ${certificate.credentialUrl}`);
     projects = (projectsResult || []).map((project) => {
       const tech = project.techUsed?.length ? ` [${project.techUsed.join(', ')}]` : '';
       const links = [
@@ -392,7 +396,8 @@ async function buildSystemPrompt(): Promise<string> {
   const skills = [
     'Next.js', 'React', 'TypeScript', 'JavaScript', 'Node.js', 'Express.js',
     'MySQL', 'HTML', 'CSS', 'Tailwind CSS', 'Nginx', 'Ubuntu', 'Google Cloud',
-    'jQuery', 'EJS', 'Google Apps Script', 'Python', 'backend development',
+    'jQuery', 'EJS', 'Google Apps Script', 'Python', 'C#', 'ASP.NET Core', 'SignalR',
+    'PowerShell', 'Bash', 'PM2', 'Cloudflare', 'SQLite', 'Three.js', 'Vite', 'Blender', 'backend development',
     'full-stack web development', 'business systems', 'dashboards', 'automation',
   ].join(', ');
 
@@ -448,6 +453,9 @@ async function buildSystemPrompt(): Promise<string> {
     '',
     'Education:',
     ...(education.length ? education : ['- See the Education section on the site.']),
+    '',
+    'Certificates and achievements:',
+    ...(certifications.length ? certifications : ['- See the certificates section on the site.']),
     '',
     'Banter & humour:',
     '- Jokes, puns, roast jokes, dirty jokes, sex jokes, and dark / edgy humour are welcome — including adult standup-style sex humour.',

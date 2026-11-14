@@ -579,12 +579,12 @@
 
         /* Ensure icons are visible in dark mode by default - use filter for SVG icons */
         [data-theme="dark"] .tech-icon-item i {
-            color: var(--cream-white) !important;
+            color: var(--dark-gray) !important;
         }
 
         [data-theme="dark"] .tech-icon-item i.colored {
-            color: var(--cream-white) !important;
-            filter: brightness(0) saturate(100%) invert(1);
+            color: var(--dark-gray) !important;
+            filter: none !important;
         }
 
         /* Show true colors when show-true-color class is added - remove color override */

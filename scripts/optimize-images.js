@@ -97,21 +97,22 @@ async function createProjectDetailVariants() {
     .filter((entry) => entry.isFile() && /\.(?:avif|gif|jpe?g|png|webp)$/i.test(entry.name))
     .map(async (entry) => {
       const basename = path.parse(entry.name).name;
+      const detailWidths = basename.startsWith('whatsappsharp-') ? [640, 1024, 1280, 1920] : [640, 1024, 1280];
       const inputPath = path.join(inputDirectory, entry.name);
       const outputPaths = [
-        ...[640, 1024, 1280].map((width) => path.join(outputDirectory, `${basename}-${width}.webp`)),
+        ...detailWidths.map((width) => path.join(outputDirectory, `${basename}-${width}.webp`)),
         path.join(outputDirectory, `${basename}.json`),
       ];
       if (await outputsAreCurrent(inputPath, outputPaths)) {
         cachedSets += 1;
         return;
       }
-      const variants = await Promise.all([640, 1024, 1280].map(async (width) => {
+      const variants = await Promise.all(detailWidths.map(async (width) => {
         const filename = `${basename}-${width}.webp`;
         const info = await sharp(inputPath, { animated: /\.gif$/i.test(entry.name) })
           .rotate()
           .resize({ width, withoutEnlargement: true })
-          .webp({ quality: 78, alphaQuality: 82, effort: 4, smartSubsample: true })
+          .webp({ quality: 78, lossless: basename.startsWith('whatsappsharp-'), alphaQuality: 82, effort: 4, smartSubsample: true })
           .toFile(path.join(outputDirectory, filename));
         return { path: `detail/${filename}`, width: info.width, height: info.height };
       }));

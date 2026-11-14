@@ -18,6 +18,7 @@ const stylesheets = [
   'app',
   'home',
   'projects',
+  'project-icon-colors',
   'privacy',
   'detail',
   'not-found',
@@ -29,10 +30,10 @@ const stylesheets = [
 await Promise.all(stylesheets.map(buildStylesheet));
 
 const pageBundles = {
-  'home-page': ['app', 'home', 'projects'],
-  'projects-page': ['app', 'projects'],
+  'home-page': ['app', 'home', 'projects', 'project-icon-colors'],
+  'projects-page': ['app', 'projects', 'project-icon-colors'],
   'privacy-page': ['app', 'privacy'],
-  'detail-page': ['app', 'detail'],
+  'detail-page': ['app', 'detail', 'project-icon-colors'],
   'not-found-page': ['app', 'not-found'],
 };
 

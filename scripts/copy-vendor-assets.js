@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import subsetFont from 'subset-font';
+import { technologyIcons } from '../utils/technologies.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,23 +56,10 @@ copyDir(
   path.join(vendorRoot, 'fontawesome', 'webfonts'),
 );
 
-const deviconClasses = [
-  'bootstrap-plain',
-  'css3-plain',
-  'express-original',
-  'google-plain',
-  'googlecloud-plain',
-  'html5-plain',
-  'javascript-plain',
-  'jquery-plain',
-  'mysql-plain',
-  'nextjs-plain',
-  'nginx-original',
-  'python-plain',
-  'react-original',
-  'tailwindcss-plain',
-  'typescript-plain',
-];
+const deviconClasses = [...new Set(Object.values(technologyIcons)
+  .flatMap((classes) => classes.split(' '))
+  .filter((name) => name.startsWith('devicon-'))
+  .map((name) => name.slice('devicon-'.length)))];
 
 const deviconRoot = path.join(nodeModules, 'devicon');
 const deviconCss = fs.readFileSync(path.join(deviconRoot, 'devicon.min.css'), 'utf8');
@@ -83,12 +71,18 @@ for (const match of deviconCss.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
   const selectors = match[1].split(',').map((selector) => selector.trim());
   const declarations = match[2];
   const retained = selectors.filter((selector) =>
-    [...selectedSelectors].some((selected) => selector === selected || selector === `${selected}:before`),
+    [...selectedSelectors].some((selected) => selector === selected || selector === `${selected}:before` || selector === `${selected}.colored`),
   );
   if (!retained.length) continue;
   const content = declarations.match(/content:"([^"]+)"/u)?.[1];
   if (content) glyphs.push(content);
   subsetRules.push(`${retained.join(',')}{${declarations}}`);
+}
+
+for (const selected of selectedSelectors) {
+  if (!subsetRules.some((rule) => rule.startsWith(`${selected}:before{`) || rule.startsWith(`${selected}{`))) {
+    throw new Error(`Missing Devicon glyph: ${selected}`);
+  }
 }
 
 const subset = await subsetFont(

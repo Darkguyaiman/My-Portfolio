@@ -18,6 +18,7 @@
     "test:seo": "npm run build && node scripts/test-seo.mjs",
     "start": "node dist/server.js",
     "dev": "tsx watch server.ts",
+    "db:update-portfolio": "node scripts/update-portfolio.mjs",
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {

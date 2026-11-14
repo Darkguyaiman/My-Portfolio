@@ -76,6 +76,7 @@
                 <li><a href="/#projects" class="nav-link">projects</a></li>
                 <li><a href="/#work" class="nav-link">work</a></li>
                 <li><a href="/#education" class="nav-link">education</a></li>
+                <li><a href="/#certifications" class="nav-link">certificates</a></li>
                 <li><a href="/#languages" class="nav-link">languages</a></li>
                 <li><a href="/#contact" class="nav-link">contact</a></li>
                 <li class="nav-image-container">
@@ -109,10 +110,9 @@
     <section class="projects" style="padding-top: 120px;">
         <div class="container">
             <div class="section-header">
-                <h1 class="section-title">web development projects</h1>
+                <h1 class="section-title">development projects</h1>
                 <a href="/" class="view-more"><i class="fas fa-chevron-left"></i> back to home</a>
             </div>
-            <p class="projects-intro">Web applications, business systems, and automation projects by <a href="/">Mohamed Aiman</a>, a full-stack and backend developer in Malaysia.</p>
             <div class="projects-grid" id="allProjectsGrid" data-server-rendered="true">
                 <% projects.forEach(function(project) { %>
                 <% const displayImages = (project.images || []).slice(0, 3); %>
@@ -120,19 +120,19 @@
                     <a href="/projects/<%= project.slug %>" class="project-card-main-link">View <%= project.projectName %> details</a>
                     <% if (displayImages.length) { %>
                     <div class="project-card-images">
-                        <% displayImages.forEach(function(image) { %><img src="/<%= projectThumbnail(image) %>" alt="Screenshot of <%= project.projectName %>" class="project-card-image" loading="lazy" decoding="async"><% }) %>
-                        <% if ((project.images || []).length > 3) { %><div class="project-card-image-more" role="img" aria-label="<%= project.images.length - 3 %> more screenshots">+<%= project.images.length - 3 %></div><% } %>
+                        <% displayImages.forEach(function(image) { %><% const cardImage = projectImageSources(image); %><img src="/<%= projectThumbnail(image) %>"<% if (cardImage.srcset) { %> srcset="<%= cardImage.srcset %>" sizes="(max-width: 600px) calc(100vw - 64px), 820px"<% } %> alt="Screenshot of <%= project.projectName %>" class="project-card-image" loading="lazy" decoding="async"><% }) %>
+                        <% if ((project.images || []).length > displayImages.length) { %><div class="project-card-image-more" role="img" aria-label="<%= project.images.length - displayImages.length %> more screenshots">+<%= project.images.length - displayImages.length %></div><% } %>
                     </div>
                     <% } %>
                     <h3 class="project-title"><%= project.projectName %></h3>
                     <div class="project-links">
-                        <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website">Website</a><% } %>
+                        <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website"><%= projectLinkLabel(project) %></a><% } %>
                         <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> on GitHub">Github</a><% } %>
                         <a href="/projects/<%= project.slug %>" class="project-link" aria-label="View <%= project.projectName %> details">Details</a>
                     </div>
                     <p class="project-description"><%= cleanDescription(project.description) %></p>
                     <div class="project-tags" role="group" aria-label="Technologies used">
-                        <% project.techUsed.forEach(function(technology) { const iconClass = techIcon(technology); %><% if (iconClass) { %><span class="project-tech-icon <%= iconClass %>" data-tooltip="<%= technology %>"><span class="visually-hidden"><%= technology %></span></span><% } else if (technology === 'EJS') { %><span class="project-tech-icon ejs-icon-small" data-tooltip="EJS">EJS</span><% } else { %><span class="project-tech-icon-fallback" data-tooltip="<%= technology %>"><%= technology %></span><% } %><% }) %>
+                        <% project.techUsed.forEach(function(technology) { const iconClass = techIcon(technology); %><% if (technology === 'EJS') { %><span class="project-tech-icon ejs-icon-small" data-tooltip="EJS">EJS</span><% } else if (iconClass) { %><span class="project-tech-icon <%= iconClass %>" data-tooltip="<%= technology %>"><span class="visually-hidden"><%= technology %></span></span><% } else { %><span class="project-tech-icon-fallback" data-tooltip="<%= technology %>"><%= technology %></span><% } %><% }) %>
                     </div>
                 </article>
                 <% }) %>

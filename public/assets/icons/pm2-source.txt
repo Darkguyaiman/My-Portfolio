@@ -1,0 +1,2 @@
+PM2 logo from Simple Icons (CC0): https://github.com/simple-icons/simple-icons/blob/develop/icons/pm2.svg
+Brand: https://pm2.keymetrics.io/

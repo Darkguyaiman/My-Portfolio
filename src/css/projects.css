@@ -119,6 +119,7 @@
 .project-card-images {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: minmax(0, 1fr);
     gap: 0.5rem;
     border-radius: 8px;
     overflow: hidden;
@@ -270,8 +271,8 @@
 }
 
 [data-theme="dark"] .project-tech-icon.colored {
-    color: var(--cream-white) !important;
-    filter: brightness(0) saturate(100%) invert(1);
+    color: var(--dark-gray) !important;
+    filter: none !important;
 }
 
 /* Fast custom tooltips */

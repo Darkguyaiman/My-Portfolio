@@ -80,6 +80,7 @@
                 <li><a href="#projects" class="nav-link">projects</a></li>
                 <li><a href="#work" class="nav-link">work</a></li>
                 <li><a href="#education" class="nav-link">education</a></li>
+                <li><a href="#certifications" class="nav-link">certificates</a></li>
                 <li><a href="#languages" class="nav-link">languages</a></li>
                 <li><a href="#contact" class="nav-link">contact</a></li>
                 <li class="nav-image-container">
@@ -244,16 +245,16 @@
                     <% if (displayImages.length) { %>
                     <div class="project-card-images">
                         <% displayImages.forEach(function(image) { %>
-                        <img src="/<%= projectThumbnail(image) %>" alt="Screenshot of <%= project.projectName %>" class="project-card-image" loading="lazy" decoding="async">
+                        <% const cardImage = projectImageSources(image); %><img src="/<%= projectThumbnail(image) %>"<% if (cardImage.srcset) { %> srcset="<%= cardImage.srcset %>" sizes="(max-width: 600px) calc(100vw - 64px), 820px"<% } %> alt="Screenshot of <%= project.projectName %>" class="project-card-image" loading="lazy" decoding="async">
                         <% }) %>
-                        <% if ((project.images || []).length > 3) { %>
-                        <div class="project-card-image-more" role="img" aria-label="<%= project.images.length - 3 %> more screenshots">+<%= project.images.length - 3 %></div>
+                        <% if ((project.images || []).length > displayImages.length) { %>
+                        <div class="project-card-image-more" role="img" aria-label="<%= project.images.length - displayImages.length %> more screenshots">+<%= project.images.length - displayImages.length %></div>
                         <% } %>
                     </div>
                     <% } %>
                     <h3 class="project-title"><%= project.projectName %></h3>
                     <div class="project-links">
-                        <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website">Website</a><% } %>
+                        <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website"><%= projectLinkLabel(project) %></a><% } %>
                         <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> on GitHub">Github</a><% } %>
                         <a href="/projects/<%= project.slug %>" class="project-link" aria-label="View <%= project.projectName %> details">Details</a>
                     </div>
@@ -261,7 +262,7 @@
                     <div class="project-tags" role="group" aria-label="Technologies used">
                         <% project.techUsed.forEach(function(technology) { %>
                         <% const iconClass = techIcon(technology); %>
-                        <% if (iconClass) { %><span class="project-tech-icon <%= iconClass %>" data-tooltip="<%= technology %>"><span class="visually-hidden"><%= technology %></span></span><% } else if (technology === 'EJS') { %><span class="project-tech-icon ejs-icon-small" data-tooltip="EJS">EJS</span><% } else { %><span class="project-tech-icon-fallback" data-tooltip="<%= technology %>"><%= technology %></span><% } %>
+                        <% if (technology === 'EJS') { %><span class="project-tech-icon ejs-icon-small" data-tooltip="EJS">EJS</span><% } else if (iconClass) { %><span class="project-tech-icon <%= iconClass %>" data-tooltip="<%= technology %>"><span class="visually-hidden"><%= technology %></span></span><% } else { %><span class="project-tech-icon-fallback" data-tooltip="<%= technology %>"><%= technology %></span><% } %>
                         <% }) %>
                     </div>
                 </article>
@@ -324,6 +325,34 @@
                 </article>
                 <% }) %>
             </div>
+        </div>
+    </section>
+
+    <section id="certifications" class="certifications" aria-labelledby="certifications-title">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" id="certifications-title">certificates & achievements</h2>
+                <a href="https://www.linkedin.com/in/darkguyaiman/details/certifications/" target="_blank" rel="noopener noreferrer" class="view-more">view on LinkedIn <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+            </div>
+            <ul class="certification-list">
+                <% certifications.forEach(function(certificate) { %>
+                <li class="certification-item">
+                    <% if (certificate.logo) { %>
+                    <span class="certification-logo"><img src="/<%= certificate.logo %>" alt="<%= certificate.issuer %> logo" width="64" height="64" loading="lazy" decoding="async"></span>
+                    <% } else { %>
+                    <i class="fas fa-award certification-icon" aria-hidden="true"></i>
+                    <% } %>
+                    <div class="certification-content">
+                        <h3><%= certificate.name %></h3>
+                        <p class="certification-issuer"><%= certificate.issuer %></p>
+                        <p class="certification-meta">Issued <time datetime="<%= certificate.issued %>"><%= formatMonthYear(certificate.issued) %></time><% if (certificate.credentialId) { %> · Credential ID: <%= certificate.credentialId %><% } %></p>
+                        <% if (certificate.description) { %><p class="certification-description"><%= certificate.description %></p><% } %>
+                        <a href="<%= certificate.credentialUrl %>" target="_blank" rel="noopener noreferrer" class="certification-link" aria-label="View <%= certificate.name %> credential"><%= certificate.credentialUrl.includes('sololearn.com') ? 'View credential' : 'View on LinkedIn' %> <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                    </div>
+                </li>
+                <% }) %>
+            </ul>
+            <% if (!certifications.length) { %><p>Browse my certificates and achievements on LinkedIn using the link above.</p><% } %>
         </div>
     </section>
 

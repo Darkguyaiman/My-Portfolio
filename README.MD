@@ -15,6 +15,16 @@ The site brings together my web development projects, experience, skills, and co
 
 ## Explore the project
 
+### November 2026 portfolio additions
+
+The portfolio includes NEEM Stack Setup, WhatsAppSharp, the MUST T-Shirt Design Viewer, and the Tuition Management System demo, plus all 10 certificates listed on [LinkedIn](https://www.linkedin.com/in/darkguyaiman/details/certifications/) as of 14 November 2026.
+
+For an **existing database**, run `npm run db:update-portfolio` with the usual `DB_*` environment configuration, then build and restart the app. This applies the portfolio additions and screenshot/order migrations in `database/migrations/0002_add_certifications_and_projects.sql` and `0003_rank_projects_and_add_screenshots.sql` and is safe to rerun. It preserves existing projects, descriptions, and screenshots while applying the requested showcase order. `database/schema.sql` also includes the additions for fresh installations; do not import that file over an existing database.
+
+Certificate titles, issuers, issue dates, and available credential IDs were transcribed from LinkedIn. Sololearn links directly to its public credential; the other entries link to their certificate attachment on LinkedIn and may require sign-in. Project information was verified against the supplied repositories and demo sites. The T-shirt and tuition source repositories are private, so the public portfolio links to their deployed sites only. WhatsAppSharp and the tuition system are explicitly labelled as testing demos; the tuition credentials are shown only on its detail page.
+
+Technology icons are defined in `utils/technologies.js`. The vendor build derives its icon subset from that same map and rejects missing glyphs, keeping project cards and project detail pages consistent. The Specialities section retains its original 15 entries and markup.
+
 - `server.ts`: Express application entry point.
 - `routes/`, `controllers/`, and `models/`: request handling and data access.
 - `views/`: public website and admin templates.
@@ -57,3 +67,9 @@ GROQ_API_KEY_3=your-third-groq-api-key
 Numbered keys are tried in numeric order; numbering gaps are allowed and there is no key-count limit. You can also use a comma-separated `GROQ_API_KEYS` list. Blank entries are ignored and duplicate keys are tried only once.
 
 For each chat request, Ai-man tries the next key if Groq returns an error (including rate limits), the connection fails, the request exceeds 15 seconds, or the response is unusable. It stops at the first usable reply and shows the sleepy message only when all configured keys fail. The existing per-visitor message limit still applies. Restart the server after updating `.env`.
+
+### Project screenshots and showcase order
+
+Tuition Management, WhatsAppSharp, and NEEM lead the showcase, followed by the pharmacy ERP, logistics analytics dashboard, and other work. The homepage features the first three entries. Screenshots include the tuition dashboard and schedule, WhatsAppSharp’s public sign-in page, the T-shirt viewer’s front/back views, and three genuine NEEM terminal captures from the creator’s LinkedIn post. No messages or demonstration records were created for the screenshots.
+
+WhatsAppSharp gallery images use lossless WebP from the original local launch screenshots with fictional demo conversations. Project icons keep their brand hover colours when visible; black marks, PowerShell, and Bash use the red hover fallback in dark mode; other coloured brands retain their originals. EJS retains its lettermark and orange hover colour.

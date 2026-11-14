@@ -82,6 +82,7 @@
                 <li><a href="/#projects" class="nav-link">projects</a></li>
                 <li><a href="/#work" class="nav-link">work</a></li>
                 <li><a href="/#education" class="nav-link">education</a></li>
+                <li><a href="/#certifications" class="nav-link">certificates</a></li>
                 <li><a href="/#languages" class="nav-link">languages</a></li>
                 <li><a href="/#contact" class="nav-link">contact</a></li>
                 <li class="nav-image-container">
@@ -125,7 +126,7 @@
                         </a>
                     </div>
                     <div class="project-detail-links" id="projectLinks"<% if (!project.deployedLink && !project.githubLink) { %> hidden<% } %>>
-                        <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Website</span></a><% } %>
+                        <% if (project.deployedLink) { %><a href="<%= project.deployedLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> website"><i class="fas fa-external-link-alt" aria-hidden="true"></i><span><%= projectLinkLabel(project) %></span></a><% } %>
                         <% if (project.githubLink) { %><a href="<%= project.githubLink %>" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View <%= project.projectName %> on GitHub"><i class="fab fa-github" aria-hidden="true"></i><span>Github</span></a><% } %>
                     </div>
                     <p class="project-detail-byline">Built by <a href="/">Mohamed Aiman</a> · full-stack and backend developer in Malaysia.</p>
@@ -142,7 +143,7 @@
                 <div class="project-detail-tech">
                     <h2 class="section-title" style="margin-bottom: 1rem;">technologies used</h2>
                     <div class="project-tech-icons" id="projectTech">
-                        <% project.techUsed.forEach(function(technology) { const iconClass = techIcon(technology); const techKey = technology.toLowerCase().replace(/\s+/g, '').replace('.', ''); %><div class="tech-icon-item" data-tech="<%= techKey %>"><% if (iconClass) { %><i class="<%= iconClass %>" aria-hidden="true"></i><% } else if (technology === 'EJS') { %><span class="ejs-icon" aria-hidden="true">EJS</span><% } %><span class="tech-icon-name"><%= technology %></span></div><% }) %>
+                        <% project.techUsed.forEach(function(technology) { const iconClass = techIcon(technology); const techKey = technology.toLowerCase().replace(/\s+/g, '').replace('.', ''); %><div class="tech-icon-item" data-tech="<%= techKey %>"><% if (technology === 'EJS') { %><span class="ejs-icon" aria-hidden="true">EJS</span><% } else if (iconClass) { %><i class="<%= iconClass %>" aria-hidden="true"></i><% } %><span class="tech-icon-name"><%= technology %></span></div><% }) %>
                     </div>
                 </div>
                 <% } else { %>

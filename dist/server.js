@@ -13,6 +13,8 @@ import workRoutes from './routes/workRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import { defaultSiteContent, getSiteContent } from './models/adminModel.js';
 import { getEducation } from './models/educationModel.js';
+import { getCertifications } from './models/certificationModel.js';
+import { technologyIcons } from './utils/technologies.js';
 import { getLanguages } from './models/languageModel.js';
 import { getProjectByName, getProjectBySlug, getProjects } from './models/projectModel.js';
 import { getWorkExperiences } from './models/workModel.js';
@@ -32,35 +34,6 @@ const eta = new Eta({
     useWith: true,
 });
 const immutableUploadPattern = /^\/uploads\/(?:images|documents)\/\d+-[a-f0-9]+-/i;
-const techIconClasses = {
-    'Next.js': 'devicon-nextjs-plain colored',
-    React: 'devicon-react-original colored',
-    TypeScript: 'devicon-typescript-plain colored',
-    Nginx: 'devicon-nginx-original colored',
-    Ubuntu: 'fa-brands fa-ubuntu colored',
-    'Google Cloud': 'devicon-googlecloud-plain colored',
-    'Google Cloud Platform': 'devicon-googlecloud-plain colored',
-    GCP: 'devicon-googlecloud-plain colored',
-    'Node.js': 'fa-brands fa-node-js colored',
-    Node: 'fa-brands fa-node-js colored',
-    'Express.js': 'devicon-express-original colored',
-    Express: 'devicon-express-original colored',
-    jQuery: 'devicon-jquery-plain colored',
-    HTML: 'devicon-html5-plain colored',
-    CSS: 'devicon-css3-plain colored',
-    JavaScript: 'devicon-javascript-plain colored',
-    MySQL: 'devicon-mysql-plain colored',
-    Bootstrap: 'devicon-bootstrap-plain colored',
-    'Tailwind CSS': 'devicon-tailwindcss-plain colored',
-    Python: 'devicon-python-plain colored',
-    SQL: 'devicon-mysql-plain colored',
-    'MySQL Workbench': 'devicon-mysql-plain colored',
-    'Google Apps Script': 'devicon-google-plain colored',
-    'Google Drive API': 'fa-brands fa-google-drive',
-    'Google Sheets API': 'fa-regular fa-file-excel',
-    'Google Sheets': 'fa-regular fa-file-excel',
-    'Gmail API': 'fa-solid fa-envelope',
-};
 const developerSkills = [
     'Backend development',
     'Full-stack web development',
@@ -71,6 +44,12 @@ const developerSkills = [
     'Next.js',
     'React',
     'Google Apps Script',
+    'C#',
+    'ASP.NET Core',
+    'SignalR',
+    'PowerShell',
+    'Bash',
+    'Three.js',
     'Business systems',
     'Web application development',
 ];
@@ -199,7 +178,8 @@ app.locals.versionedAsset = (assetPath) => {
     return `${value}${value.includes('?') ? '&' : '?'}v=${assetVersion}`;
 };
 app.locals.webAppTitle = WEB_APP_TITLE;
-app.locals.techIcon = (technology) => techIconClasses[technology] || null;
+app.locals.projectLinkLabel = (project) => /demo only/i.test(project.description) ? 'Try demo' : 'Website';
+app.locals.techIcon = (technology) => technologyIcons[technology] || 'fa-solid fa-code';
 app.locals.cleanDescription = cleanDescription;
 app.locals.projectDemoAccess = projectDemoAccess;
 app.locals.formatMonthYear = (value) => {
@@ -416,6 +396,7 @@ function fallbackLlmsMarkdown(siteUrl) {
         workExperiences: [],
         education: [],
         languages: [],
+        certifications: [],
     }, false);
 }
 function buildLlmsMarkdown(siteUrl, data, full) {
@@ -445,6 +426,7 @@ function buildLlmsMarkdown(siteUrl, data, full) {
             ? projectLines
             : [`- [Projects index](${absoluteUrl(siteUrl, '/projects')}): Full-stack and backend development projects.`]),
         ...(experienceLines.length ? ['', '## Experience', '', ...experienceLines] : []),
+        ...(full && data.certifications.length ? ['', '## Certificates', '', ...data.certifications.map((certificate) => `- [${certificate.name}](${certificate.credentialUrl}) — ${certificate.issuer}, issued ${certificate.issued}`)] : []),
         '',
         '## Contact and profiles',
         '',
@@ -512,6 +494,7 @@ app.get('/portfolio.json', async (req, res) => {
             email: `mailto:${data.content.email}`,
             sameAs: socialProfiles(data.content),
             knowsAbout: developerSkills,
+            hasCredential: certificationCredentials(data.certifications),
             hasOccupation: {
                 '@type': 'Occupation',
                 name: 'Full-Stack and Backend Developer',
@@ -534,6 +517,7 @@ app.get('/portfolio.json', async (req, res) => {
             dateModified: validDate(project.updatedAt)?.toISOString(),
         })),
         workExperience: data.workExperiences,
+        certifications: data.certifications,
         education: data.education,
         languages: data.languages,
     });
@@ -586,6 +570,7 @@ app.get('/', async (req, res) => {
                     email: `mailto:${data.content.email}`,
                     sameAs: socialProfiles(data.content),
                     knowsAbout: developerSkills,
+                    hasCredential: certificationCredentials(data.certifications),
                     hasOccupation: {
                         '@type': 'Occupation',
                         name: 'Full-Stack and Backend Developer',
@@ -730,7 +715,7 @@ app.get('/projects/:slug', async (req, res) => {
     });
 });
 async function loadPublicPortfolioData() {
-    const [content, projects, workExperiences, education, languages] = await Promise.all([
+    const [content, projects, workExperiences, education, languages, certifications] = await Promise.all([
         getSiteContent(),
         getProjects().catch((error) => {
             console.error('Error loading public projects:', error);
@@ -748,6 +733,10 @@ async function loadPublicPortfolioData() {
             console.error('Error loading public languages:', error);
             return { languages: [] };
         }),
+        getCertifications().catch((error) => {
+            console.error('Error loading certifications:', error);
+            return [];
+        }),
     ]);
     return {
         content,
@@ -755,7 +744,17 @@ async function loadPublicPortfolioData() {
         workExperiences,
         education: education.education,
         languages: languages.languages,
+        certifications,
     };
+}
+function certificationCredentials(certifications) {
+    return certifications.map((certificate) => ({
+        '@type': 'EducationalOccupationalCredential',
+        name: certificate.name,
+        recognizedBy: { '@type': 'Organization', name: certificate.issuer },
+        url: certificate.credentialUrl,
+        identifier: certificate.credentialId || undefined,
+    }));
 }
 function createSeo(siteUrl, options) {
     const imagePath = options.image || DEFAULT_SOCIAL_IMAGE;
