@@ -71,6 +71,7 @@
 }
 
 :root {
+    --content-max-width: 990px;
     --red: #c51d34;
     --dark-gray: #2e2e30;
     --gray: #808080;
@@ -176,20 +177,23 @@ html {
     scrollbar-color: var(--red) var(--cream-white);
 }
 
-.container {
-    max-width: 900px;
+.container,
+.nav-container {
+    max-width: var(--content-max-width);
     margin: 0 auto;
     padding: 0 20px;
 }
 
 @media (max-width: 400px) {
-    .container {
+    .container,
+    .nav-container {
         padding: 0 12px;
     }
 }
 
 @media (max-width: 320px) {
-    .container {
+    .container,
+    .nav-container {
         padding: 0 8px;
     }
 }
@@ -255,9 +259,6 @@ html {
 }
 
 .nav-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
